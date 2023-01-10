@@ -22,7 +22,7 @@
 }
 
 - (BOOL)paused {
-  return static_cast<BOOL>(_engine->IsPaused());
+  return (BOOL)_engine->IsPaused();
 }
 
 - (void)play {
