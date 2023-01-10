@@ -23,7 +23,7 @@
 
 @property(readonly, copy, nonnull, nonatomic) NSString* resourceDirectory;
 
-@property(readonly, copy, nonnull, nonatomic) NSString* script;
+@property(readonly, copy, nonnull, nonatomic) NSData* module;
 
 - (nullable instancetype)initWithContentsOfFile:(nullable NSString*)path;
 
@@ -32,9 +32,15 @@
 @interface SEENEngine : NSObject
 
 @property(readonly, nonnull, nonatomic) SEEN_OS_VIEW* view;
-@property(assign, nonatomic, getter=isPaused) BOOL paused;
+@property(readonly, nonatomic) BOOL isPaused;
 
-- (void)runPackage:(SEENPackage*)package;
+- (void)runPackage:(nullable SEENPackage*)package;
+- (void)runPackage:(nullable SEENPackage*)package withCompletionHandler:(nonnull void (^)(void))handler;
+
+- (void)play;
+- (void)playWithCompletionHandler:(nonnull void (^)(void))handler;
+- (void)pause;
+- (void)pauseWithCompletionHandler:(nonnull void (^)(void))handler;
 
 - (void)draw:(NSTimeInterval)timeDeltaMillisec;
 - (void)draw:(NSTimeInterval)timeDeltaMillisec withCompletionHandler:(nonnull void (^)(void))handler;

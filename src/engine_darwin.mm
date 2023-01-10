@@ -3,10 +3,11 @@
  */
 
 #import <SeenKit/SeenKit.h>
+#include <objc/NSObjCRuntime.h>
 
 #include <memory>
 
-#include "seen_kit.h"
+#include "engine.h"
 
 @implementation SEENEngine {
   SEEN_OS_VIEW* _view;
@@ -20,16 +21,46 @@
   return _view;
 }
 
-- (void)runPackage:(SEENPackage*)package {
+- (BOOL)paused {
+  return static_cast<BOOL>(_engine->IsPaused());
 }
 
-- (void)draw:(NSTimeInterval)timeDeltaMillisec {
+- (void)play {
+  _engine->Play();
+}
+
+- (void)playWithCompletionHandler:(nonnull void (^)(void))handler {
+  _engine->Play(handler);
+}
+
+- (void)pause {
+  _engine->Pause();
+}
+
+- (void)pauseWithCompletionHandler:(nonnull void (^)(void))handler {
+  _engine->Pause(handler);
+}
+
+- (void)runPackage:(SEENPackage*)package {
   // clang-format off
-  [self draw:timeDeltaMillisec withCompletionHandler:^(void){}];
+  [self runPackage:package withCompletionHandler:^(void){}];
   // clang-format on
 }
 
+- (void)runPackage:(SEENPackage*)package withCompletionHandler:(void (^)())handler {
+  NSUInteger byteLength = package.module.length;
+  std::vector<std::byte> bytes;
+  bytes.reserve(byteLength);
+  [package.module getBytes:bytes.data() length:byteLength];
+  _engine->RunModule(bytes, handler);
+}
+
+- (void)draw:(NSTimeInterval)timeDeltaMillisec {
+  _engine->Draw(timeDeltaMillisec);
+}
+
 - (void)draw:(NSTimeInterval)timeDeltaMillisec withCompletionHandler:(nonnull void (^)(void))handler {
+  _engine->Draw(timeDeltaMillisec, handler);
 }
 
 @end
