@@ -20,6 +20,8 @@ class Engine {
   void RunModule(const std::vector<std::byte>& module_data, const std::function<void()>& on_complete = nullptr);
 
   void Draw(double timeDeltaMillisec, const std::function<void()>& on_complete = nullptr);
+
+  void Reset(const std::function<void()>& on_complete = nullptr);
 };
 
 }  // namespace seen

@@ -45,6 +45,9 @@
 - (void)draw:(NSTimeInterval)timeDeltaMillisec;
 - (void)draw:(NSTimeInterval)timeDeltaMillisec withCompletionHandler:(nonnull void (^)(void))handler;
 
+- (void)reset;
+- (void)resetWithCompletionHandler:(nonnull void (^)(void))handler;
+
 @end
 
 #endif

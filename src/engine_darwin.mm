@@ -63,4 +63,12 @@
   _engine->Draw(timeDeltaMillisec, handler);
 }
 
+- (void)reset {
+  _engine->Reset();
+}
+
+- (void)resetWithCompletionHandler:(void (^)())handler {
+  _engine->Reset(handler);
+}
+
 @end
