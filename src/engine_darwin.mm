@@ -29,7 +29,7 @@
   _engine->Play();
 }
 
-- (void)playWithCompletionHandler:(nonnull void (^)(void))handler {
+- (void)playWithCompletionHandler:(void (^)(void))handler {
   _engine->Play(handler);
 }
 
@@ -37,7 +37,7 @@
   _engine->Pause();
 }
 
-- (void)pauseWithCompletionHandler:(nonnull void (^)(void))handler {
+- (void)pauseWithCompletionHandler:(void (^)(void))handler {
   _engine->Pause(handler);
 }
 
@@ -59,7 +59,7 @@
   _engine->Draw(timeDeltaMillisec);
 }
 
-- (void)draw:(NSTimeInterval)timeDeltaMillisec withCompletionHandler:(nonnull void (^)(void))handler {
+- (void)draw:(NSTimeInterval)timeDeltaMillisec withCompletionHandler:(void (^)(void))handler {
   _engine->Draw(timeDeltaMillisec, handler);
 }
 
