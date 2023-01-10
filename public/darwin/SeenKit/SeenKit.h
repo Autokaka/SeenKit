@@ -41,12 +41,11 @@
 - (void)playWithCompletionHandler:(nonnull void (^)(void))handler;
 - (void)pause;
 - (void)pauseWithCompletionHandler:(nonnull void (^)(void))handler;
+- (void)reset;
+- (void)resetWithCompletionHandler:(nonnull void (^)(void))handler;
 
 - (void)draw:(NSTimeInterval)timeDeltaMillisec;
 - (void)draw:(NSTimeInterval)timeDeltaMillisec withCompletionHandler:(nonnull void (^)(void))handler;
-
-- (void)reset;
-- (void)resetWithCompletionHandler:(nonnull void (^)(void))handler;
 
 @end
 

@@ -41,6 +41,14 @@
   _engine->Pause(handler);
 }
 
+- (void)reset {
+  _engine->Reset();
+}
+
+- (void)resetWithCompletionHandler:(void (^)())handler {
+  _engine->Reset(handler);
+}
+
 - (void)runPackage:(SEENPackage*)package {
   // clang-format off
   [self runPackage:package withCompletionHandler:^(void){}];
@@ -61,14 +69,6 @@
 
 - (void)draw:(NSTimeInterval)timeDeltaMillisec withCompletionHandler:(void (^)(void))handler {
   _engine->Draw(timeDeltaMillisec, handler);
-}
-
-- (void)reset {
-  _engine->Reset();
-}
-
-- (void)resetWithCompletionHandler:(void (^)())handler {
-  _engine->Reset(handler);
 }
 
 @end
