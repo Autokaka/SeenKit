@@ -2,8 +2,7 @@
  * Created by Autokaka (qq1909698494@gmail.com) on 2023/01/10.
  */
 
-#import <SeenKit/SeenKit.h>
-#include <objc/NSObjCRuntime.h>
+#import <SeenKit/SeenEngine.h>
 
 #include <memory>
 
@@ -19,34 +18,6 @@
     _view = [[SEEN_OS_VIEW alloc] init];
   }
   return _view;
-}
-
-- (BOOL)paused {
-  return (BOOL)_engine->IsPaused();
-}
-
-- (void)play {
-  _engine->Play();
-}
-
-- (void)playWithCompletionHandler:(void (^)(void))handler {
-  _engine->Play(handler);
-}
-
-- (void)pause {
-  _engine->Pause();
-}
-
-- (void)pauseWithCompletionHandler:(void (^)(void))handler {
-  _engine->Pause(handler);
-}
-
-- (void)reset {
-  _engine->Reset();
-}
-
-- (void)resetWithCompletionHandler:(void (^)())handler {
-  _engine->Reset(handler);
 }
 
 - (void)runPackage:(SEENPackage*)package {
@@ -69,6 +40,14 @@
 
 - (void)draw:(NSTimeInterval)timeDeltaMillisec withCompletionHandler:(void (^)(void))handler {
   _engine->Draw(timeDeltaMillisec, handler);
+}
+
+- (void)reset {
+  _engine->Reset();
+}
+
+- (void)resetWithCompletionHandler:(void (^)())handler {
+  _engine->Reset(handler);
 }
 
 @end
