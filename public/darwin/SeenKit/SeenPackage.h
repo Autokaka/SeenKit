@@ -7,9 +7,8 @@
 #if SEEN_BUILD_DARWIN
 
 #include <Foundation/Foundation.h>
-#include <Foundation/NSObject.h>
 
-@interface SEENPackage : NSObject
+@interface SeenPackage : NSObject
 
 @property(readonly, copy, nullable, nonatomic) NSDictionary* info;
 
@@ -17,7 +16,7 @@
 
 @property(readonly, copy, nonnull, nonatomic) NSData* module;
 
-- (nullable instancetype)initWithContentsOfFile:(nullable NSString*)path;
+- (nullable instancetype)initWithContentsOfFile:(nonnull NSString*)path;
 
 @end
 

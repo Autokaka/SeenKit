@@ -4,11 +4,13 @@
 
 #import <SeenKit/SeenEngine.h>
 
+#if SEEN_BUILD_DARWIN
+
 #include <memory>
 
 #include "engine.h"
 
-@implementation SEENEngine {
+@implementation SeenEngine {
   std::unique_ptr<seen::Engine> _engine;
 
   CGSize _drawableSize;
@@ -80,13 +82,13 @@
   return _depthTexture;
 }
 
-- (void)runPackage:(SEENPackage*)package {
+- (void)runPackage:(SeenPackage*)package {
   // clang-format off
   [self runPackage:package withCompletionHandler:^(void){}];
   // clang-format on
 }
 
-- (void)runPackage:(SEENPackage*)package withCompletionHandler:(void (^)())handler {
+- (void)runPackage:(SeenPackage*)package withCompletionHandler:(void (^)())handler {
   NSUInteger byteLength = package.module.length;
   std::vector<std::byte> bytes;
   bytes.reserve(byteLength);
@@ -111,3 +113,5 @@
 }
 
 @end
+
+#endif
