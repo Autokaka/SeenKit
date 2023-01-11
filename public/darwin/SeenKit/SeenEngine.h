@@ -7,19 +7,15 @@
 #if SEEN_BUILD_DARWIN
 
 #import <Foundation/Foundation.h>
-#import <Foundation/NSObject.h>
+#import <Metal/Metal.h>
 
 #import "SeenPackage.h"
 
-#if SEEN_BUILD_IOS
-#import <UIKit/UIKit.h>
-#define SEEN_OS_VIEW UIView
-#else
-#import <Appkit/Appkit.h>
-#define SEEN_OS_VIEW NSView
-#endif
-
 @interface SEENEngine : NSObject
+
+@property(atomic) CGSize drawableSize;
+@property(nonnull, readonly, atomic, strong) id<MTLTexture> colorTexture;
+@property(nonnull, readonly, atomic, strong) id<MTLTexture> depthTexture;
 
 - (void)runPackage:(nullable SEENPackage*)package;
 - (void)runPackage:(nullable SEENPackage*)package withCompletionHandler:(nonnull void (^)(void))handler;
