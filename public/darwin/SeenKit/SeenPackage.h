@@ -12,11 +12,16 @@
 
 @property(readonly, copy, nullable, nonatomic) NSDictionary* info;
 
-@property(readonly, copy, nonnull, nonatomic) NSString* resourceDirectory;
-
 @property(readonly, copy, nonnull, nonatomic) NSData* module;
 
 - (nullable instancetype)initWithContentsOfFile:(nonnull NSString*)path;
+
+- (void)saveFile:(nonnull NSData*)data toSandbox:(nonnull NSString*)relativePath;
+// clang-format off
+- (void)saveFile:(nonnull NSData*)data
+        toSandbox:(nonnull NSString*)relativePath
+        withCompletionHandler:(nonnull void (^)(BOOL))handler;
+// clang-format on
 
 @end
 

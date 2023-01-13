@@ -7,9 +7,6 @@
 
 #if SEEN_BUILD_DARWIN
 
-#include <memory>
-#include <string>
-
 #include "package.h"
 
 @implementation SeenPackage {
@@ -38,14 +35,23 @@
   return [NSDictionary dictionaryWithDictionary:dict];
 }
 
-- (NSString*)resourceDirectory {
-  return @(_package->GetResourceDirectory().data());
-}
-
 - (NSData*)module {
   auto cpp_module = _package->GetModule();
   NSData* data = [NSData dataWithBytes:cpp_module.data() length:cpp_module.size()];
   return data;
+}
+
+- (void)saveFile:(NSData*)data toSandbox:(NSString*)relativePath {
+  // clang-format off
+  [self saveFile:data toSandbox:relativePath withCompletionHandler:^(BOOL){}];
+  // clang-format on
+}
+
+- (void)saveFile:(NSData*)data toSandbox:(NSString*)relativePath withCompletionHandler:(void (^)(BOOL))handler {
+  std::vector<std::byte> cpp_bytes;
+  cpp_bytes.reserve(data.length);
+  [data getBytes:cpp_bytes.data() length:data.length];
+  _package->SaveFileToSandbox(cpp_bytes, [relativePath UTF8String]).Then(handler);
 }
 
 @end

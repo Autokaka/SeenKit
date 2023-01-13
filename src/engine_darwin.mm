@@ -90,10 +90,10 @@
 
 - (void)runPackage:(SeenPackage*)package withCompletionHandler:(void (^)())handler {
   NSUInteger byteLength = package.module.length;
-  std::vector<std::byte> bytes;
-  bytes.reserve(byteLength);
-  [package.module getBytes:bytes.data() length:byteLength];
-  self.engine->RunModule(bytes, handler);
+  std::vector<std::byte> cpp_bytes;
+  cpp_bytes.reserve(byteLength);
+  [package.module getBytes:cpp_bytes.data() length:byteLength];
+  self.engine->RunModule(cpp_bytes).Then(handler);
 }
 
 - (void)draw:(NSTimeInterval)timeDeltaMillisec {
@@ -101,7 +101,7 @@
 }
 
 - (void)draw:(NSTimeInterval)timeDeltaMillisec withCompletionHandler:(void (^)(void))handler {
-  self.engine->Draw(timeDeltaMillisec, handler);
+  self.engine->Draw(timeDeltaMillisec).Then(handler);
 }
 
 - (void)reset {
@@ -109,7 +109,7 @@
 }
 
 - (void)resetWithCompletionHandler:(void (^)())handler {
-  self.engine->Reset(handler);
+  self.engine->Reset().Then(handler);
 }
 
 @end

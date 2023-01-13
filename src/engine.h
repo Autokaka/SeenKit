@@ -2,22 +2,19 @@
  * Created by Autokaka (qq1909698494@gmail.com) on 2023/01/10.
  */
 
-#include <cstddef>
-#include <functional>
-#include <memory>
-#include <vector>
+#include "foundation/promise.h"
 
 namespace seen {
 
 class Engine {
  public:
-  explicit Engine();
+  Engine();
 
-  void RunModule(const std::vector<std::byte>& module_data, const std::function<void()>& on_complete = nullptr);
+  CFPromise<void> RunModule(const std::vector<std::byte>& module_data);
 
-  void Draw(double timeDeltaMillisec, const std::function<void()>& on_complete = nullptr);
+  CFPromise<void> Draw(double timeDeltaMillisec);
 
-  void Reset(const std::function<void()>& on_complete = nullptr);
+  CFPromise<void> Reset();
 };
 
 }  // namespace seen

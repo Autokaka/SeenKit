@@ -8,12 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
-namespace seen::foundation::path {
+namespace seen::CFPath {
 
 std::string GetSystemTempDirectory() {
   return {NSTemporaryDirectory().UTF8String};
 }
 
-}  // namespace seen::foundation::path
+}  // namespace seen::CFPath
 
 #endif
