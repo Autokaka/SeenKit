@@ -2,10 +2,10 @@
  * Created by Autokaka (qq1909698494@gmail.com) on 2023/01/12.
  */
 
-#include <Foundation/Foundation.h>
-#import <SeenKit/SeenPackage.h>
-
 #if SEEN_BUILD_DARWIN
+
+#import <Foundation/Foundation.h>
+#import <SeenKit/SeenPackage.h>
 
 #include "package.h"
 
@@ -51,7 +51,7 @@
   std::vector<std::byte> cpp_bytes;
   cpp_bytes.reserve(data.length);
   [data getBytes:cpp_bytes.data() length:data.length];
-  _package->SaveFileToSandbox(cpp_bytes, [relativePath UTF8String]).Then(handler);
+  _package->SaveFileToSandbox(cpp_bytes, [relativePath UTF8String], handler);
 }
 
 @end

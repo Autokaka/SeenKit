@@ -3,6 +3,7 @@
  */
 
 #import <SeenKit/SeenEngine.h>
+#include <objc/objc.h>
 
 #if SEEN_BUILD_DARWIN
 
@@ -84,16 +85,16 @@
 
 - (void)runPackage:(SeenPackage*)package {
   // clang-format off
-  [self runPackage:package withCompletionHandler:^(void){}];
+  [self runPackage:package withCompletionHandler:^(BOOL){}];
   // clang-format on
 }
 
-- (void)runPackage:(SeenPackage*)package withCompletionHandler:(void (^)())handler {
+- (void)runPackage:(SeenPackage*)package withCompletionHandler:(void (^)(BOOL))handler {
   NSUInteger byteLength = package.module.length;
   std::vector<std::byte> cpp_bytes;
   cpp_bytes.reserve(byteLength);
   [package.module getBytes:cpp_bytes.data() length:byteLength];
-  self.engine->RunModule(cpp_bytes).Then(handler);
+  self.engine->RunModule(cpp_bytes, handler);
 }
 
 - (void)draw:(NSTimeInterval)timeDeltaMillisec {
@@ -101,15 +102,15 @@
 }
 
 - (void)draw:(NSTimeInterval)timeDeltaMillisec withCompletionHandler:(void (^)(void))handler {
-  self.engine->Draw(timeDeltaMillisec).Then(handler);
+  self.engine->Draw(timeDeltaMillisec, handler);
 }
 
 - (void)reset {
   self.engine->Reset();
 }
 
-- (void)resetWithCompletionHandler:(void (^)())handler {
-  self.engine->Reset().Then(handler);
+- (void)resetWithCompletionHandler:(void (^)(void))handler {
+  self.engine->Reset(handler);
 }
 
 @end
