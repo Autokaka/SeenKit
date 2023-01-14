@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.8.0)
-project(SeenKit VERSION 1.0.0)
+project(SeenKit VERSION 1.0.0 LANGUAGES CXX OBJCXX Swift)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CPM_SOURCE_CACHE .cache/cpm)
+set(CMAKE_Swift_LANGUAGE_VERSION 5)
+set(CPM_SOURCE_CACHE ${PROJECT_SOURCE_DIR}/.cache/cpm)
 
 include(cmake/build_config.cmake)
 include(cmake/cpm.cmake)
@@ -23,7 +24,7 @@ if(${SEEN_BUILD_DARWIN})
     set(CMAKE_XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "11.0")
     set(CMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH NO)
   else()
-    set(CMAKE_OSX_DEPLOYMENT_TARGET "10.13")
+    set(CMAKE_OSX_DEPLOYMENT_TARGET "11.0")
   endif()
 
   file(GLOB_RECURSE PUBLIC_HEADERS
@@ -35,7 +36,7 @@ if(${SEEN_BUILD_DARWIN})
     "src/*.mm"
     "src/*.h"
   )
-  source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${SOURCE})
+  source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCE})
   add_library(SeenKit STATIC ${SOURCE})
   target_include_directories(SeenKit PUBLIC public/darwin)
   target_include_directories(SeenKit PRIVATE src)
@@ -48,5 +49,23 @@ if(${SEEN_BUILD_DARWIN})
     MACOSX_FRAMEWORK_BUNDLE_VERSION "${SEEN_VERSION}"
     MACOSX_FRAMEWORK_SHORT_VERSION_STRING "${PROJECT_VERSION}"
     XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${SEEN_BUNDLE_ID}"
+    XCODE_ATTRIBUTE_CODE_SIGN_STYLE Automatic
+  )
+
+  # example
+  add_subdirectory(example/darwin)
+  file(GLOB_RECURSE EXAMPLE_SOURCE 
+    "${example_SOURCE_DIR}/*.h"
+    "${example_SOURCE_DIR}/*.swift"
+  )
+  source_group(TREE ${example_SOURCE_DIR} FILES ${EXAMPLE_SOURCE})
+  add_executable(example MACOSX_BUNDLE ${EXAMPLE_SOURCE})
+  target_link_libraries(example PRIVATE SeenKit)
+  set_target_properties(example PROPERTIES
+    XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER "${example_SOURCE_DIR}/BridgingHeaders.h"
+    XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${SEEN_BUNDLE_ID}.example"
+    XCODE_ATTRIBUTE_ENABLE_PREVIEWS YES
+    XCODE_ATTRIBUTE_SWIFT_OPTIMIZATION_LEVEL -Onone
+    XCODE_ATTRIBUTE_CODE_SIGN_STYLE Automatic
   )
 endif()
