@@ -12,7 +12,7 @@ CPMAddPackage("https://github.com/bytecodealliance/wasm-micro-runtime.git#WAMR-1
 
 message(STATUS ${SEEN_VERSION})
 
-if (${SEEN_BUILD_DARWIN})
+if(${SEEN_BUILD_DARWIN})
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-aligned-allocation")
   set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "-std=c++20")
   if(IOS)
@@ -31,4 +31,4 @@ if (${SEEN_BUILD_DARWIN})
   target_include_directories(SeenKit PUBLIC public/darwin)
   target_include_directories(SeenKit PRIVATE src)
   target_link_libraries(SeenKit PRIVATE iwasm_static)
-endif ()
+endif()
