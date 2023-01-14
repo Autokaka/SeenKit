@@ -17,7 +17,6 @@ if(${SEEN_BUILD_DARWIN})
     error("You need 3.20.0 or higher version of CMake to build SeenKit on iOS or macOS.")
   endif()
 
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-aligned-allocation")
   set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "-std=c++20")
   set(SEEN_BUNDLE_ID com.github.autokaka.seenkit)
   if(IOS)
