@@ -2,8 +2,9 @@
 .DS_Store
 
 # CMake
-cmake-build*
+cmake-build-*
 build
+build-*
 
 # Gradle
 *.iml

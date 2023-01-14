@@ -1,4 +1,8 @@
-if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+if(NOT CMAKE_BUILD_TYPE)
+  SET(CMAKE_BUILD_TYPE "Release")
+endif()
+
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   set(SEEN_BUILD_TYPE "Debug")
   set(SEEN_BUILD_DEBUG ON)
   add_compile_definitions(SEEN_BUILD_DEBUG=1)
