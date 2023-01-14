@@ -18,11 +18,9 @@
 
 - (void)saveFile:(nonnull NSData*)data toSandbox:(nonnull NSString*)relativePath;
 // clang-format off
-- (void)saveFile:(nonnull NSData*)data
-        toSandbox:(nonnull NSString*)relativePath
-        withCompletionHandler:(nonnull void (^)(BOOL))handler;
+- (void)saveFile:(nonnull NSData*)data toSandbox:(nonnull NSString*)relativePath withCompletionHandler:(nonnull void (^)(BOOL))handler;
+- (void)getFileFromSandbox:(nonnull NSString*)relativePath withCompletionHandler:(nonnull void (^)(NSData* _Nonnull))handler;
 // clang-format on
-- (void)getFileFromSandbox:(nonnull NSString*)relativePath withCompletionHandler:(nonnull void (^)(NSData*))handler;
 
 @end
 
