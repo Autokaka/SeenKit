@@ -7,7 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include(cmake/build_config.cmake)
 include(cmake/cpm.cmake)
 
-CPMUsePackageLock(package-lock.cmake)
 CPMAddPackage("https://github.com/bytecodealliance/wasm-micro-runtime.git#WAMR-1.1.2")
 
 message(STATUS ${SEEN_VERSION})
