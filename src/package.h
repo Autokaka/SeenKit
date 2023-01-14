@@ -8,7 +8,7 @@
 
 namespace seen {
 
-class Package {
+class Package final {
  public:
   using Info = std::unordered_map<std::string, std::string>;
   using ByteArray = std::vector<std::byte>;

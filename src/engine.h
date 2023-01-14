@@ -6,7 +6,7 @@
 
 namespace seen {
 
-class Engine {
+class Engine final {
  public:
   Engine();
 
