@@ -22,6 +22,7 @@
         toSandbox:(nonnull NSString*)relativePath
         withCompletionHandler:(nonnull void (^)(BOOL))handler;
 // clang-format on
+- (void)getFileFromSandbox:(nonnull NSString*)relativePath withCompletionHandler:(nonnull void (^)(NSData*))handler;
 
 @end
 

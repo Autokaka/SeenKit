@@ -23,7 +23,8 @@ class Package {
   void SaveFileToSandbox(const ByteArray& bytes,
                          const std::string& file_path,
                          const std::function<void(bool)>& on_complete = nullptr);
-  void GetFileFromSandbox(const std::string& file_path, const std::function<void(ByteArray)>& on_complete = nullptr);
+  void GetFileFromSandbox(const std::string& file_path,
+                          const std::function<void(const ByteArray&)>& on_complete = nullptr);
 
  private:
   Info info_;

@@ -54,6 +54,13 @@
   _package->SaveFileToSandbox(cpp_bytes, [relativePath UTF8String], handler);
 }
 
+- (void)getFileFromSandbox:(NSString*)relativePath withCompletionHandler:(void (^)(NSData*))handler {
+  _package->GetFileFromSandbox([relativePath UTF8String], [handler](const std::vector<std::byte>& cpp_bytes) {
+    auto data = [NSData dataWithBytes:cpp_bytes.data() length:cpp_bytes.size()];
+    handler(data);
+  });
+}
+
 @end
 
 #endif
