@@ -10,6 +10,7 @@ include(cmake/build_config.cmake)
 include(cmake/cpm.cmake)
 
 CPMAddPackage("https://github.com/bytecodealliance/wasm-micro-runtime.git#WAMR-1.1.2")
+CPMAddPackage("https://github.com/Autokaka/zlib.git#master")
 
 message(STATUS ${SEEN_VERSION})
 
@@ -28,7 +29,7 @@ if(${SEEN_BUILD_DARWIN})
   target_include_directories(seen PUBLIC public/darwin)
   target_include_directories(seen PRIVATE src)
   target_compile_definitions(seen PRIVATE ${SEEN_ENV_DEFS})
-  target_link_libraries(seen PRIVATE iwasm_static)
+  target_link_libraries(seen PRIVATE iwasm_static miniunz)
   set_target_properties(seen PROPERTIES
     FRAMEWORK TRUE
     MACOSX_DEPLOYMENT_TARGET "11.0"
@@ -50,14 +51,14 @@ if(${SEEN_BUILD_DARWIN})
     "${example_SOURCE_DIR}/*.h"
     "${example_SOURCE_DIR}/*.swift"
   )
-  source_group(TREE ${example_SOURCE_DIR} FILES ${EXAMPLE_SOURCE})
-  add_executable(example MACOSX_BUNDLE ${EXAMPLE_SOURCE})
-  target_link_libraries(example PRIVATE seen)
-  set_target_properties(example PROPERTIES
+  source_group(TREE ${seen-example_SOURCE_DIR} FILES ${EXAMPLE_SOURCE})
+  add_executable(seen-example MACOSX_BUNDLE ${EXAMPLE_SOURCE})
+  target_link_libraries(seen-example PRIVATE seen)
+  set_target_properties(seen-example PROPERTIES
     XCODE_ATTRIBUTE_CODE_SIGN_STYLE Automatic
     XCODE_ATTRIBUTE_ENABLE_PREVIEWS YES
     XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${SEEN_BUNDLE_ID}.example"
-    XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER "${example_SOURCE_DIR}/BridgingHeaders.h"
+    XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER "${seen-example_SOURCE_DIR}/BridgingHeaders.h"
     XCODE_ATTRIBUTE_SWIFT_OPTIMIZATION_LEVEL -Onone
   )
 endif()
