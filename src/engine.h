@@ -2,7 +2,7 @@
  * Created by Autokaka (qq1909698494@gmail.com) on 2023/01/10.
  */
 
-#include <functional>
+#include "foundation/promise.h"
 
 namespace seen {
 
@@ -10,11 +10,11 @@ class Engine {
  public:
   Engine();
 
-  void RunModule(const std::vector<std::byte>& module_data, const std::function<void(bool)>& on_complete = nullptr);
+  CFPromise<bool> RunModule(const std::vector<std::byte>& module_data);
 
-  void Draw(double timeDeltaMillisec, const std::function<void()>& on_complete = nullptr);
+  CFPromise<void> Draw(double timeDeltaMillisec);
 
-  void Reset(const std::function<void()>& on_complete = nullptr);
+  CFPromise<void> Reset();
 };
 
 }  // namespace seen

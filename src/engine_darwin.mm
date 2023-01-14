@@ -3,11 +3,8 @@
  */
 
 #import <SeenKit/SeenEngine.h>
-#include <objc/objc.h>
 
 #if SEEN_BUILD_DARWIN
-
-#include <memory>
 
 #include "engine.h"
 
@@ -94,7 +91,7 @@
   std::vector<std::byte> cpp_bytes;
   cpp_bytes.reserve(byteLength);
   [package.module getBytes:cpp_bytes.data() length:byteLength];
-  self.engine->RunModule(cpp_bytes, handler);
+  self.engine->RunModule(cpp_bytes).Then(handler);
 }
 
 - (void)draw:(NSTimeInterval)timeDeltaMillisec {
@@ -102,7 +99,7 @@
 }
 
 - (void)draw:(NSTimeInterval)timeDeltaMillisec withCompletionHandler:(void (^)(void))handler {
-  self.engine->Draw(timeDeltaMillisec, handler);
+  self.engine->Draw(timeDeltaMillisec).Then(handler);
 }
 
 - (void)reset {
@@ -110,7 +107,7 @@
 }
 
 - (void)resetWithCompletionHandler:(void (^)(void))handler {
-  self.engine->Reset(handler);
+  self.engine->Reset().Then(handler);
 }
 
 @end

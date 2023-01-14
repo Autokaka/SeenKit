@@ -2,9 +2,9 @@
  * Created by Autokaka (qq1909698494@gmail.com) on 2023/01/10.
  */
 
-#include <cstddef>
-#include <string>
 #include <unordered_map>
+
+#include "foundation/promise.h"
 
 namespace seen {
 
@@ -20,11 +20,8 @@ class Package {
   [[nodiscard]] std::string GetSandboxDirectory() const { return sandbox_directory_; }
   [[nodiscard]] ByteArray GetModule() const { return module_; }
 
-  void SaveFileToSandbox(const ByteArray& bytes,
-                         const std::string& file_path,
-                         const std::function<void(bool)>& on_complete = nullptr);
-  void GetFileFromSandbox(const std::string& file_path,
-                          const std::function<void(const ByteArray&)>& on_complete = nullptr);
+  CFPromise<bool> SaveFileToSandbox(const ByteArray& bytes, const std::string& file_path);
+  CFPromise<ByteArray> GetFileFromSandbox(const std::string& file_path);
 
  private:
   Info info_;
