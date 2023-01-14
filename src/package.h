@@ -14,7 +14,7 @@ class Package final {
   using Info = std::unordered_map<std::string, std::string>;
   using ByteArray = std::vector<std::byte>;
 
-  static std::unique_ptr<Package> CreateFromFile(const std::string& path);
+  static std::unique_ptr<Package> CreateFromFile(const std::string& absolute_path);
 
   [[nodiscard]] Info GetInfo() const { return info_; }
   [[nodiscard]] std::string GetResourceDirectory() const { return resource_directory_; }

@@ -4,4 +4,10 @@
 
 #include "package.h"
 
-namespace seen {}
+namespace seen {
+
+std::unique_ptr<Package> Package::CreateFromFile(const std::string& absolute_path) {
+  return nullptr;
+}
+
+}  // namespace seen
