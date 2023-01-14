@@ -2,9 +2,11 @@
  * Created by Autokaka (qq1909698494@gmail.com) on 2023/01/10.
  */
 
+#if SEEN_BUILD_DARWIN
+
 #import <SeenKit/SeenEngine.h>
 
-#if SEEN_BUILD_DARWIN
+#include <vector>
 
 #include "engine.h"
 
