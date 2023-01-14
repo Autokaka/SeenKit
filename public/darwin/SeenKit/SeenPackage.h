@@ -4,8 +4,6 @@
 
 #pragma once
 
-#if SEEN_BUILD_DARWIN
-
 #include <Foundation/Foundation.h>
 
 @interface SeenPackage : NSObject
@@ -23,5 +21,3 @@
 // clang-format on
 
 @end
-
-#endif

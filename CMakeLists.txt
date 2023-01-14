@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8.0)
-project(SeenKit VERSION 1.0.0 LANGUAGES CXX OBJCXX Swift)
+project(seen VERSION 1.0.0 LANGUAGES CXX OBJCXX Swift)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -37,11 +37,12 @@ if(${SEEN_BUILD_DARWIN})
     "src/*.h"
   )
   source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCE})
-  add_library(SeenKit STATIC ${SOURCE})
-  target_include_directories(SeenKit PUBLIC public/darwin)
-  target_include_directories(SeenKit PRIVATE src)
-  target_link_libraries(SeenKit PRIVATE iwasm_static)
-  set_target_properties(SeenKit PROPERTIES
+  add_library(seen STATIC ${SOURCE})
+  target_include_directories(seen PUBLIC public/darwin)
+  target_include_directories(seen PRIVATE src)
+  target_compile_definitions(seen PRIVATE ${SEEN_ENV_DEFS})
+  target_link_libraries(seen PRIVATE iwasm_static)
+  set_target_properties(seen PROPERTIES
     OUTPUT_NAME SeenKit
     FRAMEWORK TRUE
     PUBLIC_HEADER "${PUBLIC_HEADERS}"
@@ -60,7 +61,7 @@ if(${SEEN_BUILD_DARWIN})
   )
   source_group(TREE ${example_SOURCE_DIR} FILES ${EXAMPLE_SOURCE})
   add_executable(example MACOSX_BUNDLE ${EXAMPLE_SOURCE})
-  target_link_libraries(example PRIVATE SeenKit)
+  target_link_libraries(example PRIVATE seen)
   set_target_properties(example PROPERTIES
     XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER "${example_SOURCE_DIR}/BridgingHeaders.h"
     XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${SEEN_BUNDLE_ID}.example"

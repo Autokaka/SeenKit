@@ -4,9 +4,5 @@
 
 #pragma once
 
-#if SEEN_BUILD_DARWIN
-
 #import "SeenEngine.h"
 #import "SeenPackage.h"
-
-#endif

@@ -4,8 +4,6 @@
 
 #pragma once
 
-#if SEEN_BUILD_DARWIN
-
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 
@@ -27,5 +25,3 @@
 - (void)resetWithCompletionHandler:(nonnull void (^)(void))handler;
 
 @end
-
-#endif
