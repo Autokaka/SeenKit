@@ -48,8 +48,8 @@ if(${SEEN_BUILD_DARWIN})
   # example
   add_subdirectory(example/darwin)
   file(GLOB_RECURSE EXAMPLE_SOURCE 
-    "${example_SOURCE_DIR}/*.h"
-    "${example_SOURCE_DIR}/*.swift"
+    "${seen-example_SOURCE_DIR}/*.h"
+    "${seen-example_SOURCE_DIR}/*.swift"
   )
   source_group(TREE ${seen-example_SOURCE_DIR} FILES ${EXAMPLE_SOURCE})
   add_executable(seen-example MACOSX_BUNDLE ${EXAMPLE_SOURCE})
