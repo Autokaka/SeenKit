@@ -48,4 +48,8 @@ CFData::Ptr CFData::CreateFromSize(std::size_t size) {
 
 CFData::CFData(std::byte* bytes, std::size_t size) : bytes_(bytes), size_(size) {}
 
+CFData::~CFData() {
+  delete[] bytes_;
+}
+
 }  // namespace seen

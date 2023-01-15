@@ -3,6 +3,8 @@ Checks: "
   -*,
   android-*,
   bugprone-*,
+  -bugprone-easily-swappable-parameters
+  -bugprone-macro-parentheses
   cert-*,
   clang-analyzer-*,
   concurrency-*,

@@ -6,6 +6,8 @@
 #include <memory>
 #include <vector>
 
+#include "class_constraints.h"
+
 namespace seen {
 
 class CFData {
@@ -17,6 +19,7 @@ class CFData {
   static Ptr CreateFromBytesNoCopy(std::byte* bytes, std::size_t size);
   static Ptr CreateFromSize(std::size_t size);
   explicit CFData(std::byte* bytes, std::size_t size);
+  ~CFData();
 
   [[nodiscard]] std::byte* GetBytes() const { return bytes_; }
   [[nodiscard]] std::size_t GetSize() const { return size_; }
@@ -24,6 +27,8 @@ class CFData {
  private:
   std::size_t size_;
   std::byte* bytes_;
+
+  DISALLOW_COPY_ASSIGN_AND_MOVE(CFData);
 };
 
 }  // namespace seen
