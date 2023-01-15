@@ -36,15 +36,9 @@
 }
 
 - (NSData*)module {
-  auto cpp_module = _package->GetModule();
-  NSData* data = [NSData dataWithBytes:cpp_module.data() length:cpp_module.size()];
-  return data;
-}
-
-- (void)saveFile:(NSData*)data toSandbox:(NSString*)relativePath {
-  // clang-format off
-  [self saveFile:data toSandbox:relativePath withCompletionHandler:^(BOOL){}];
-  // clang-format on
+  auto cpp_module = _package->GetModuleCopy();
+  auto size = cpp_module->GetSize();
+  return [NSData dataWithBytesNoCopy:cpp_module->OwnBytes() length:size];
 }
 
 - (void)saveFile:(NSData*)data toSandbox:(NSString*)relativePath withCompletionHandler:(void (^)(BOOL))handler {
@@ -55,9 +49,9 @@
 }
 
 - (void)getFileFromSandbox:(NSString*)relativePath withCompletionHandler:(void (^)(NSData*))handler {
-  _package->GetFileFromSandbox(relativePath.UTF8String).Then([handler](const std::vector<std::byte>& cpp_bytes) {
-    auto data = [NSData dataWithBytes:cpp_bytes.data() length:cpp_bytes.size()];
-    handler(data);
+  _package->GetFileFromSandbox(relativePath.UTF8String).Then([handler](const seen::CFData::Ptr& cpp_data) {
+    auto data_size = cpp_data->GetSize();
+    handler([NSData dataWithBytesNoCopy:cpp_data->OwnBytes() length:data_size]);
   });
 }
 

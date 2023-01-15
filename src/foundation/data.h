@@ -21,8 +21,10 @@ class CFData {
   explicit CFData(std::byte* bytes, std::size_t size);
   ~CFData();
 
+  std::byte* OwnBytes();
   [[nodiscard]] std::byte* GetBytes() const { return bytes_; }
   [[nodiscard]] std::size_t GetSize() const { return size_; }
+  [[nodiscard]] Ptr Copy() const;
 
  private:
   std::size_t size_;

@@ -3,8 +3,9 @@
  */
 
 #include <unordered_map>
-#include <vector>
 
+#include "foundation/class_constraints.h"
+#include "foundation/data.h"
 #include "foundation/promise.h"
 
 namespace seen {
@@ -15,20 +16,23 @@ class Package final {
   using ByteArray = std::vector<std::byte>;
 
   static std::unique_ptr<Package> CreateFromFile(const std::string& absolute_path);
+  Package(Info info, CFData::Ptr module, std::string resource_directory, std::string sandbox_directory);
 
   [[nodiscard]] Info GetInfo() const { return info_; }
   [[nodiscard]] std::string GetResourceDirectory() const { return resource_directory_; }
   [[nodiscard]] std::string GetSandboxDirectory() const { return sandbox_directory_; }
-  [[nodiscard]] ByteArray GetModule() const { return module_; }
+  [[nodiscard]] CFData::Ptr GetModuleCopy() const { return module_->Copy(); }
 
   CFPromise<bool> SaveFileToSandbox(const ByteArray& bytes, const std::string& file_path);
-  CFPromise<ByteArray> GetFileFromSandbox(const std::string& file_path);
+  CFPromise<CFData::Ptr> GetFileFromSandbox(const std::string& file_path);
 
  private:
   Info info_;
+  CFData::Ptr module_;
   std::string resource_directory_;
   std::string sandbox_directory_;
-  ByteArray module_;
+
+  DISALLOW_COPY_ASSIGN_AND_MOVE(Package);
 };
 
 }  // namespace seen

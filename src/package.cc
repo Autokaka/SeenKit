@@ -5,6 +5,7 @@
 #include <chrono>
 #include <filesystem>
 #include <string>
+#include <utility>
 
 #include "foundation/file_system.h"
 #include "package.h"
@@ -54,5 +55,11 @@ std::unique_ptr<Package> Package::CreateFromFile(const std::string& absolute_pat
 
   return nullptr;
 }
+
+Package::Package(Info info, CFData::Ptr module, std::string resource_directory, std::string sandbox_directory)
+    : info_(std::move(info)),
+      module_(std::move(module)),
+      resource_directory_(std::move(resource_directory)),
+      sandbox_directory_(std::move(sandbox_directory)) {}
 
 }  // namespace seen

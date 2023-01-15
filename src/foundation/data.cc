@@ -52,4 +52,15 @@ CFData::~CFData() {
   delete[] bytes_;
 }
 
+std::byte* CFData::OwnBytes() {
+  auto* bytes = bytes_;
+  bytes_ = nullptr;
+  size_ = 0;
+  return bytes;
+}
+
+CFData::Ptr CFData::Copy() const {
+  return CFData::CreateFromBytes(bytes_, size_);
+}
+
 }  // namespace seen
