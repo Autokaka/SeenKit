@@ -3,6 +3,8 @@ project(seen VERSION 1.0.0 LANGUAGES CXX OBJCXX Swift)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_CXX_VISIBILITY_INLINES_HIDDEN YES)
 set(CMAKE_Swift_LANGUAGE_VERSION 5)
 set(CPM_SOURCE_CACHE ${PROJECT_SOURCE_DIR}/.cache/cpm)
 
@@ -10,9 +12,10 @@ include(cmake/build_config.cmake)
 include(cmake/cpm.cmake)
 
 CPMAddPackage("https://github.com/bytecodealliance/wasm-micro-runtime.git#WAMR-1.1.2")
-CPMAddPackage("https://github.com/Autokaka/zlib.git#master")
 
 message(STATUS ${SEEN_VERSION})
+
+add_subdirectory(third-party/miniunz)
 
 if(${SEEN_BUILD_DARWIN})
   file(GLOB_RECURSE PUBLIC_HEADERS
