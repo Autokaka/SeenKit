@@ -7,8 +7,6 @@
 #include <filesystem>
 #include <string>
 
-namespace fs = std::filesystem;
-
 namespace seen::CFFS {
 
 namespace fs = std::filesystem;
