@@ -9,10 +9,10 @@
 
 namespace seen::CFFS {
 
-namespace fs = std::filesystem;
+namespace stdfs = std::filesystem;
 
-fs::path GetTempDirectory();
+stdfs::path GetTempDirectory();
 
-bool Unzip(const fs::path& zip_absolute_path, const fs::path& out_directory);
+bool Unzip(const stdfs::path& zip_absolute_path, const stdfs::path& out_directory);
 
 }  // namespace seen::CFFS

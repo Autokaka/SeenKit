@@ -19,7 +19,7 @@ constexpr int kPkgMaxRetryTimes = 1024;
 }
 
 std::unique_ptr<Package> Package::CreateFromFile(const std::string& absolute_path) {
-  if (!fs::is_regular_file(absolute_path)) {
+  if (!CFFS::stdfs::is_regular_file(absolute_path)) {
     return nullptr;
   }
 
@@ -36,8 +36,8 @@ std::unique_ptr<Package> Package::CreateFromFile(const std::string& absolute_pat
       if (i > 1) {
         try_path += "_" + std::to_string(i);
       }
-      if (fs::is_empty(try_path)) {
-        pkg_tmp_dir_created = fs::create_directory(try_path);
+      if (CFFS::stdfs::is_empty(try_path)) {
+        pkg_tmp_dir_created = CFFS::stdfs::create_directory(try_path);
         pkg_tmp_dir = try_path;
         break;
       }

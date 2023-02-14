@@ -13,7 +13,7 @@ namespace {
 
 constexpr uInt kWriteBufferSize = 1024 * 8;
 
-bool ExtractFile(unzFile file, const fs::path& out_directory) {
+bool ExtractFile(unzFile file, const stdfs::path& out_directory) {
   char path_buffer[PATH_MAX];
   unz_file_info file_info;
   if (unzGetCurrentFileInfo(file, &file_info, path_buffer, sizeof(path_buffer), nullptr, 0, nullptr, 0) != UNZ_OK) {
@@ -27,7 +27,7 @@ bool ExtractFile(unzFile file, const fs::path& out_directory) {
   auto file_absolute_path = out_directory / path_in_zip;
   bool is_directory = (path_in_zip[path_in_zip.size() - 1] == '/');
   if (is_directory) {
-    return fs::create_directory(file_absolute_path);
+    return stdfs::create_directory(file_absolute_path);
   }
 
   if (unzOpenCurrentFile(file) != UNZ_OK) {
@@ -46,7 +46,7 @@ bool ExtractFile(unzFile file, const fs::path& out_directory) {
   if (!ofs) {
     auto directory_name = file_absolute_path.parent_path();
     if (!directory_name.empty()) {
-      fs::create_directory(directory_name);
+      stdfs::create_directory(directory_name);
       ofs.open(file_absolute_path, std::ios::out | std::ios::binary);
       if (!ofs) {
         return false;
@@ -66,7 +66,7 @@ bool ExtractFile(unzFile file, const fs::path& out_directory) {
 
 }  // namespace
 
-bool Unzip(const fs::path& zip_absolute_path, const fs::path& out_directory) {
+bool Unzip(const stdfs::path& zip_absolute_path, const stdfs::path& out_directory) {
   unzFile file = unzOpen(zip_absolute_path.c_str());
   if (file == nullptr) {
     return false;

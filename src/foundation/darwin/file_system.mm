@@ -13,8 +13,8 @@
 
 namespace seen::CFFS {
 
-fs::path GetTempDirectory() {
-  return fs::path(NSTemporaryDirectory().UTF8String) / "seen";
+stdfs::path GetTempDirectory() {
+  return stdfs::path(NSTemporaryDirectory().UTF8String) / "seen";
 }
 
 }  // namespace seen::CFFS
