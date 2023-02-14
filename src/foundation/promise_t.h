@@ -25,7 +25,7 @@ class CFPromise final {
   using Reject = std::function<void(std::string)>;
   using Callback = std::function<void(const Resolve& resolve, const Reject& reject)>;
 
-  explicit CFPromise(const Callback& callback) {
+  explicit CFPromise(const Callback& callback) : future_(std::make_shared<CFFuture>()) {
     // TODO(Autokaka): Save calling thead loop.
     // auto event_loop = EventLoop::GetCurrent();
 
