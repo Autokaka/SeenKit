@@ -59,8 +59,7 @@
 - (void)setDrawableSize:(CGSize)drawableSize {
   auto drawableWidth = (NSUInteger)drawableSize.width;
   auto drawableHeight = (NSUInteger)drawableSize.height;
-  if (_textureDescriptor == nil || _textureDescriptor.width != drawableWidth ||
-      _textureDescriptor.height != drawableHeight) {
+  if (_textureDescriptor.width != drawableWidth || _textureDescriptor.height != drawableHeight) {
     _drawableSize = drawableSize;
     [self resetTextures];
   }
