@@ -18,7 +18,7 @@ using Delegate = std::function<void(const Level& level, const char* file_name, i
 Delegate gDelegates[kLogLevelCount] = {nullptr};
 std::mutex gDelegatesMutex;
 
-void Print(const std::string& message);
+void Print(const std::string& message);  // Implemented on each platform.
 
 void SetDelegate(const Level& level, const Delegate& delegate) {
   std::scoped_lock lock(gDelegatesMutex);
