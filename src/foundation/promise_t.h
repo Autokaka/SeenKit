@@ -10,26 +10,26 @@
 #include <string>
 #include <type_traits>
 
+#include "latch.h"
+
 namespace seen {
 
 enum class CFPromiseState {
   kPending,
   kFulfilled,
-  kRejected,
 };
 
 template <typename ReturnType>
 class CFPromise final {
  public:
   using Resolve = std::function<void(ReturnType)>;
-  using Reject = std::function<void(std::string)>;
-  using Callback = std::function<void(const Resolve& resolve, const Reject& reject)>;
+  using Callback = std::function<void(const Resolve& resolve)>;
 
   explicit CFPromise(const Callback& callback) : future_(std::make_shared<CFFuture>()) {
     // TODO(Autokaka): Save calling thead loop.
     // auto event_loop = EventLoop::GetCurrent();
 
-    Resolve resolve = [future = future_](ReturnType value) {
+    callback([future = future_](ReturnType value) {
       // TODO(Autokaka): Resume callback on calling thead.
       std::scoped_lock lock(future->mutex);
       future->state = CFPromiseState::kFulfilled;
@@ -38,48 +38,37 @@ class CFPromise final {
       if (resolve) {
         resolve(value);
       }
-    };
-    Reject reject = [future = future_](const std::string& reason) {
-      // TODO(Autokaka): Resume callback on calling thead.
-      std::scoped_lock lock(future->mutex);
-      future->state = CFPromiseState::kRejected;
-      future->reason = reason;
-      auto reject = future->reject;
-      if (reject) {
-        reject(reason);
-      }
-    };
-    callback(resolve, reject);
+    });
   }
 
-  CFPromise& Then(const Resolve& resolve) {
+  void Then(const Resolve& resolve) {
     std::scoped_lock lock(future_->mutex);
 
     if (future_->state == CFPromiseState::kFulfilled) {
-      resolve(future_->value);
+      if (resolve) {
+        resolve(future_->value);
+      }
     } else {
       future_->resolve = resolve;
     }
-    return *this;
   }
 
-  CFPromise& Catch(const Reject& reject) {
-    std::scoped_lock lock(future_->mutex);
-
-    if (future_->state == CFPromiseState::kRejected) {
-      reject(future_->reason);
-    } else {
-      future_->reject = reject;
-    }
-    return *this;
+  void Wait(const Resolve& resolve) {
+    // FIXME(Autokaka): We should consider threading deadlock.
+    CFLatch latch;
+    Then([resolve, &latch, future = future_]() {
+      if (resolve) {
+        resolve(future->value);
+      }
+      latch.Signal();
+    });
+    latch.Wait();
   }
 
  private:
   struct CFFuture : std::enable_shared_from_this<CFFuture> {
     Resolve resolve;
-    Reject reject;
     ReturnType value;
-    std::string reason;
     CFPromiseState state = CFPromiseState::kPending;
     std::mutex mutex;
   };
