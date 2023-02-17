@@ -11,7 +11,7 @@
 
 #include "promise.h"
 
-namespace seen::platform {
+namespace seen::CFPlatform {
 
 namespace stdfs = std::filesystem;
 
@@ -22,4 +22,4 @@ stdfs::path CFFSGetTempDirectory();
 CFPromise<void> CFLooperDispatchAsync(const std::function<void()>& task);
 CFPromise<void> CFLooperDispatchMicro(const std::function<void()>& task);
 
-}  // namespace seen::platform
+}  // namespace seen::CFPlatform

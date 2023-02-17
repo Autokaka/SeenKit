@@ -6,10 +6,10 @@
 
 #include "foundation/platform.h"
 
-namespace seen::platform {
+namespace seen::CFPlatform {
 
 void CFLogPrint(const std::string& message) {
   NSLog(@"%@", [NSString stringWithUTF8String:message.c_str()]);
 }
 
-}  // namespace seen::platform
+}  // namespace seen::CFPlatform

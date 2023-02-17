@@ -42,7 +42,7 @@ void Print(const std::string& tag, const Level& level, const char* file, int lin
     delegate(level, file, line, fmt_msg.data());
   } else {
     auto msg = "@SeenKit["s + file + ":" + std::to_string(line) + "]<" + tag + "> " + fmt_msg;
-    platform::CFLogPrint(msg);
+    CFPlatform::CFLogPrint(msg);
   }
   if (level >= Level::kFatal) {
     abort();

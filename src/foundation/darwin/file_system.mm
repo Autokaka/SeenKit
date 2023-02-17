@@ -8,12 +8,12 @@
 
 #include "foundation/platform.h"
 
-namespace seen::platform {
+namespace seen::CFPlatform {
 
 stdfs::path CFFSGetTempDirectory() {
   return stdfs::path(NSTemporaryDirectory().UTF8String) / "seen";
 }
 
-}  // namespace seen::platform
+}  // namespace seen::CFPlatform
 
 #endif

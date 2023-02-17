@@ -27,7 +27,7 @@ std::unique_ptr<Package> Package::CreateFromFile(const std::string& absolute_pat
   auto now = std::chrono::system_clock::now();
   auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now).time_since_epoch().count();
   auto pkg_tmp_dir_name = "pkg_" + std::to_string(now_ms);
-  auto pkg_tmp_dir = platform::CFFSGetTempDirectory() / pkg_tmp_dir_name;
+  auto pkg_tmp_dir = CFPlatform::CFFSGetTempDirectory() / pkg_tmp_dir_name;
   bool pkg_tmp_dir_created = false;
   static std::mutex mutex;
   {
