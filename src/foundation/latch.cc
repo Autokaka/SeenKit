@@ -9,7 +9,7 @@ namespace seen {
 CFLatch::CFLatch() : signaled_{false} {}
 
 void CFLatch::Wait() {
-  std::unique_lock<std::mutex> lock(mutex_);
+  std::unique_lock lock(mutex_);
   while (!signaled_) {
     cv_.wait(lock);
   }

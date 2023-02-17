@@ -26,13 +26,25 @@ using CFLooperPtr = std::shared_ptr<CFAbstractLooper>;
 
 class CFLooper : public CFAbstractLooper {
  public:
+  CFLooper();
+  ~CFLooper();
   bool IsCurrentThreadLooper() const override;
 
   CFPromise<void> DispatchAsync(const Closure& macro_task) override;
   CFPromise<void> DispatchMicro(const Closure& micro_task) override;
 
  private:
+  bool is_running_;
+  std::vector<Closure> macro_tasks_;
+  std::vector<Closure> micro_tasks_;
   std::thread thread_;
+  std::mutex mutex_;
+  std::condition_variable cv_;
+
+  void Run();
+  void ConsumeMicroTasks();
+
+  DISALLOW_COPY_ASSIGN_AND_MOVE(CFLooper);
 };
 CFLooperPtr CFCreateLooper();
 
@@ -44,8 +56,5 @@ class CFPlatformLooper : public CFAbstractLooper {
   CFPromise<void> DispatchMicro(const Closure& micro_task) override;
 };
 CFLooperPtr CFGetPlatformLooper();
-
-CFPromise<void> CFPlatformLooperDispatchAsync(const std::function<void()>& task);  // Implemented on each platform.
-CFPromise<void> CFPlatformLooperDispatchMicro(const std::function<void()>& task);  // Implemented on each platform.
 
 }  // namespace seen

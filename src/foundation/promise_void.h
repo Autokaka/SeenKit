@@ -15,6 +15,8 @@ class CFPromise<void> {
   using Callback = std::function<void(const Resolve& resolve)>;
 
   explicit CFPromise(const Callback& callback) : future_(std::make_shared<CFFuture>()) {
+    // NOTE(Autokaka): The callback registered in `CFPromise::Then` could be called many times.
+
     // TODO(Autokaka): Save calling thead loop.
     // auto event_loop = EventLoop::GetCurrent();
 
