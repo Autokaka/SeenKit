@@ -4,7 +4,7 @@
 
 #if SEEN_BUILD_DARWIN
 
-#import <Foundation/Foundation.h>
+#import <Foundation/NSPathUtilities.h>
 
 #include "seen/foundation/file_system.h"
 
