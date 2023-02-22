@@ -18,20 +18,31 @@ message(STATUS ${SEEN_VERSION})
 add_subdirectory(third-party/miniunz)
 
 if(${SEEN_BUILD_DARWIN})
-  file(GLOB_RECURSE PUBLIC_HEADERS
-    "public/darwin/*.h"
+  file(GLOB_RECURSE PUB_HEADERS
+    "${PROJECT_SOURCE_DIR}/public/darwin/*.h"
+  )
+  file(GLOB_RECURSE ARC_SOURCE
+    "${PROJECT_SOURCE_DIR}/src/*.h"
+    "${PROJECT_SOURCE_DIR}/src/*.cc"
+    "${PROJECT_SOURCE_DIR}/src/*.mm"
+  )
+  file(GLOB_RECURSE MRC_SOURCE
+    "${PROJECT_SOURCE_DIR}/seen/*.h"
+    "${PROJECT_SOURCE_DIR}/seen/*.cc"
+    "${PROJECT_SOURCE_DIR}/seen/*.mm"
   )
   file(GLOB_RECURSE SOURCE
-    ${PUBLIC_HEADERS}
-    "src/*.cc"
-    "src/*.mm"
-    "src/*.h"
+    ${PUB_HEADERS}
+    ${ARC_SOURCE}
+    ${MRC_SOURCE}
   )
+  set_source_files_properties(${ARC_SOURCE} PROPERTIES COMPILE_FLAGS -fobjc-arc)
+  set_source_files_properties(${MRC_SOURCE} PROPERTIES COMPILE_FLAGS -fno-objc-arc)
   source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCE})
   add_library(seen STATIC ${SOURCE})
   target_include_directories(seen PUBLIC public/darwin)
-  target_include_directories(seen PRIVATE src)
-  target_compile_definitions(seen PRIVATE ${SEEN_ENV_DEFS})
+  target_include_directories(seen PRIVATE ${PROJECT_SOURCE_DIR})
+  target_compile_definitions(seen PRIVATE ${SEEN_COMPILE_FLAGS})
   target_link_libraries(seen PRIVATE iwasm_static miniunz)
   set_target_properties(seen PROPERTIES
     FRAMEWORK TRUE
@@ -54,6 +65,7 @@ if(${SEEN_BUILD_DARWIN})
     "${seen-example_SOURCE_DIR}/*.h"
     "${seen-example_SOURCE_DIR}/*.swift"
   )
+  set_source_files_properties(${EXAMPLE_SOURCE} PROPERTIES COMPILE_FLAGS -fobjc-arc)
   source_group(TREE ${seen-example_SOURCE_DIR} FILES ${EXAMPLE_SOURCE})
   add_executable(seen-example MACOSX_BUNDLE ${EXAMPLE_SOURCE})
   target_link_libraries(seen-example PRIVATE seen)

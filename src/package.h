@@ -4,9 +4,9 @@
 
 #include <unordered_map>
 
-#include "foundation/class_constraints.h"
-#include "foundation/data.h"
-#include "foundation/promise.h"
+#include "seen/foundation/class_constraints.h"
+#include "seen/foundation/data.h"
+#include "seen/foundation/promise.h"
 
 namespace seen {
 

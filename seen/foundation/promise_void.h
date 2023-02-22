@@ -4,25 +4,14 @@
 
 #pragma once
 
-#include <functional>
-#include <memory>
-#include <mutex>
-#include <string>
-#include <type_traits>
-
-#include "latch.h"
+#include "seen/foundation/promise_any.h"
 
 namespace seen {
 
-enum class CFPromiseState {
-  kPending,
-  kFulfilled,
-};
-
-template <typename ReturnType>
-class CFPromise final {
+template <>
+class CFPromise<void> {
  public:
-  using Resolve = std::function<void(ReturnType)>;
+  using Resolve = std::function<void()>;
   using Callback = std::function<void(const Resolve& resolve)>;
 
   explicit CFPromise(const Callback& callback) : future_(std::make_shared<CFFuture>()) {
@@ -31,36 +20,35 @@ class CFPromise final {
     // TODO(Autokaka): Save calling thead loop.
     // auto event_loop = EventLoop::GetCurrent();
 
-    callback([future = future_](ReturnType value) {
+    callback([future = future_]() {
       // TODO(Autokaka): Resume callback on calling thead.
       std::scoped_lock lock(future->mutex);
       future->state = CFPromiseState::kFulfilled;
-      future->value = value;
       auto resolve = future->resolve;
       if (resolve) {
-        resolve(value);
+        resolve();
       }
     });
   }
 
-  void Then(const Resolve& resolve) {
+  void Then(const Resolve& resolve = nullptr) {
     std::scoped_lock lock(future_->mutex);
 
     if (future_->state == CFPromiseState::kFulfilled) {
       if (resolve) {
-        resolve(future_->value);
+        resolve();
       }
     } else {
       future_->resolve = resolve;
     }
   }
 
-  void Wait(const Resolve& resolve) {
+  void Wait(const Resolve& resolve = nullptr) {
     // FIXME(Autokaka): We should consider threading deadlock.
     CFLatch latch;
-    Then([resolve, &latch, future = future_]() {
+    Then([resolve, &latch]() {
       if (resolve) {
-        resolve(future->value);
+        resolve();
       }
       latch.Signal();
     });
@@ -70,7 +58,6 @@ class CFPromise final {
  private:
   struct CFFuture : std::enable_shared_from_this<CFFuture> {
     Resolve resolve;
-    ReturnType value;
     CFPromiseState state = CFPromiseState::kPending;
     std::mutex mutex;
   };

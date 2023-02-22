@@ -8,7 +8,7 @@
 
 #import <Foundation/NSObject.h>
 
-#include "foundation/class_constraints.h"
+#include "seen/foundation/class_constraints.h"
 
 @class NSAutoreleasePool;
 

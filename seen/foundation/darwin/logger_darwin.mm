@@ -4,7 +4,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "foundation/platform.h"
+#include "seen/foundation/platform.h"
 
 namespace seen::CFPlatform {
 

@@ -8,7 +8,7 @@
 #include <mutex>
 #include <string>
 
-#include "platform.h"
+#include "seen/foundation/platform.h"
 
 namespace seen::CFLog {
 

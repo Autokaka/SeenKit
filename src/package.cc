@@ -7,9 +7,9 @@
 #include <string>
 #include <utility>
 
-#include "foundation/file_system.h"
-#include "foundation/platform.h"
-#include "package.h"
+#include "./package.h"
+#include "seen/foundation/file_system.h"
+#include "seen/foundation/platform.h"
 
 namespace seen {
 

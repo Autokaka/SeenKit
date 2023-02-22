@@ -6,7 +6,7 @@
 
 #include <mutex>
 
-#include "foundation/class_constraints.h"
+#include "seen/foundation/class_constraints.h"
 
 namespace seen {
 

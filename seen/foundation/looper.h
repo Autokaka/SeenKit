@@ -7,9 +7,10 @@
 #include <functional>
 #include <memory>
 #include <thread>
+#include <vector>
 
-#include "foundation/class_constraints.h"
-#include "foundation/promise.h"
+#include "seen/foundation/class_constraints.h"
+#include "seen/foundation/promise.h"
 
 namespace seen {
 
