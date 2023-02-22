@@ -6,14 +6,14 @@
 
 #import <Foundation/Foundation.h>
 
-#include "seen/foundation/platform.h"
+#include "seen/foundation/file_system.h"
 
-namespace seen::CFPlatform {
+namespace seen::CFFS {
 
-stdfs::path CFFSGetTempDirectory() {
+stdfs::path GetTempDirectory() {
   return stdfs::path(NSTemporaryDirectory().UTF8String) / "seen";
 }
 
-}  // namespace seen::CFPlatform
+}  // namespace seen::CFFS
 
 #endif

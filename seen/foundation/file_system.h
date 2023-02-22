@@ -13,4 +13,6 @@ namespace stdfs = std::filesystem;
 
 bool Unzip(const stdfs::path& zip_absolute_path, const stdfs::path& out_directory);
 
+stdfs::path GetTempDirectory();  // Implemented on each platform.
+
 }  // namespace seen::CFFS

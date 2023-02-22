@@ -4,12 +4,13 @@
 
 #import <Foundation/Foundation.h>
 
-#include "seen/foundation/platform.h"
+#include <syslog.h>
+#include <string>
 
-namespace seen::CFPlatform {
+namespace seen::CFLog {
 
 void CFLogPrint(const std::string& message) {
-  NSLog(@"%@", [NSString stringWithUTF8String:message.c_str()]);
+  syslog(LOG_ALERT, "%s", message.c_str());
 }
 
-}  // namespace seen::CFPlatform
+}  // namespace seen::CFLog

@@ -47,15 +47,8 @@ class CFLooper : public CFAbstractLooper {
 
   DISALLOW_COPY_ASSIGN_AND_MOVE(CFLooper);
 };
+
 CFLooperPtr CFCreateLooper();
-
-class CFPlatformLooper : public CFAbstractLooper {
- public:
-  bool IsCurrentThreadLooper() const override;
-
-  CFPromise<void> DispatchAsync(const Closure& macro_task) override;
-  CFPromise<void> DispatchMicro(const Closure& micro_task) override;
-};
-CFLooperPtr CFGetPlatformLooper();
+CFLooperPtr CFGetPlatformLooper();  // Implemented on each platform.
 
 }  // namespace seen

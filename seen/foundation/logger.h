@@ -8,8 +8,6 @@
 #include <mutex>
 #include <string>
 
-#include "seen/foundation/platform.h"
-
 namespace seen::CFLog {
 
 constexpr int kLogLevelCount = 4;
@@ -24,6 +22,8 @@ void SetDelegate(const Level& level, const Delegate& delegate) {
   std::scoped_lock lock(gDelegatesMutex);
   gDelegates[static_cast<int>(level)] = delegate;
 }
+
+void CFLogPrint(const std::string& message);  // Implemented on each platform.
 
 template <typename... Args>
 void Print(const std::string& tag, const Level& level, const char* file, int line, const char* fmt = "", Args... args) {
@@ -42,7 +42,7 @@ void Print(const std::string& tag, const Level& level, const char* file, int lin
     delegate(level, file, line, fmt_msg.data());
   } else {
     auto msg = "@SeenKit["s + file + ":" + std::to_string(line) + "]<" + tag + "> " + fmt_msg;
-    CFPlatform::CFLogPrint(msg);
+    CFLogPrint(msg);
   }
   if (level >= Level::kFatal) {
     abort();
