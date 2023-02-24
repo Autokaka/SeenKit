@@ -7,7 +7,7 @@
 #include <string>
 #include <utility>
 
-#include "./package.h"
+#include "package.h"
 #include "seen/foundation/file_system.h"
 
 namespace seen {

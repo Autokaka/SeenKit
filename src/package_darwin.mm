@@ -7,7 +7,7 @@
 #import <Foundation/Foundation.h>
 #import <SeenKit/SeenPackage.h>
 
-#include "./package.h"
+#include "package.h"
 
 @implementation SeenPackage {
   std::unique_ptr<seen::Package> _package;

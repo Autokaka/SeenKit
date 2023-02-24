@@ -21,15 +21,15 @@ if(${SEEN_BUILD_DARWIN})
   file(GLOB_RECURSE PUB_HEADERS
     "${PROJECT_SOURCE_DIR}/public/darwin/*.h"
   )
-  file(GLOB_RECURSE ARC_SOURCE
+  file(GLOB ARC_SOURCE
     "${PROJECT_SOURCE_DIR}/src/*.h"
     "${PROJECT_SOURCE_DIR}/src/*.cc"
     "${PROJECT_SOURCE_DIR}/src/*.mm"
   )
   file(GLOB_RECURSE MRC_SOURCE
-    "${PROJECT_SOURCE_DIR}/seen/*.h"
-    "${PROJECT_SOURCE_DIR}/seen/*.cc"
-    "${PROJECT_SOURCE_DIR}/seen/*.mm"
+    "${PROJECT_SOURCE_DIR}/src/seen/*.h"
+    "${PROJECT_SOURCE_DIR}/src/seen/*.cc"
+    "${PROJECT_SOURCE_DIR}/src/seen/*.mm"
   )
   file(GLOB_RECURSE SOURCE
     ${PUB_HEADERS}
@@ -41,7 +41,7 @@ if(${SEEN_BUILD_DARWIN})
   source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCE})
   add_library(seen STATIC ${SOURCE})
   target_include_directories(seen PUBLIC public/darwin)
-  target_include_directories(seen PRIVATE ${PROJECT_SOURCE_DIR})
+  target_include_directories(seen PRIVATE src)
   target_compile_definitions(seen PRIVATE ${SEEN_COMPILE_FLAGS})
   target_link_libraries(seen PRIVATE iwasm_static miniunz)
   set_target_properties(seen PROPERTIES

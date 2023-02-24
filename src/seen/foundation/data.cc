@@ -2,10 +2,9 @@
  * Created by Autokaka (qq1909698494@gmail.com) on 2023/01/15.
  */
 
-#include "data.h"
-
 #include <fstream>
-#include <string>
+
+#include "seen/foundation/data.h"
 
 namespace seen {
 

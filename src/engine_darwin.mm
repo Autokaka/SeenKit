@@ -8,7 +8,7 @@
 
 #include <vector>
 
-#include "./engine.h"
+#include "engine.h"
 
 @implementation SeenEngine {
   std::unique_ptr<seen::Engine> _engine;
