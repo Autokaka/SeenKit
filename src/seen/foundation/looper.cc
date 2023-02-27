@@ -75,12 +75,16 @@ void CFLooper::Run() {
 
     ConsumeMicroTasks();
 
-    for (const Closure& macro_task : macro_tasks) {
-      ConsumeMicroTasks();
-      macro_task();
-    }
+    ConsumeMacroTasks(macro_tasks);
 
     macro_tasks.clear();
+  }
+}
+
+void CFLooper::ConsumeMacroTasks(const std::vector<Closure>& macro_tasks) {
+  for (const Closure& macro_task : macro_tasks) {
+    ConsumeMicroTasks();
+    macro_task();
   }
 }
 

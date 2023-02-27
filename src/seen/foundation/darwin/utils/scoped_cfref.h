@@ -13,7 +13,8 @@ class scoped_cfref {
  public:
   scoped_cfref() : instance_(nullptr) {}
 
-  explicit scoped_cfref(T instance) : instance_(instance) {}
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  scoped_cfref(T instance) : instance_(instance) {}
 
   scoped_cfref(const scoped_cfref& other) : instance_(other.instance_) {
     if (instance_) {
@@ -51,7 +52,8 @@ class scoped_cfref {
     return instance;
   }
 
-  explicit operator T() const { return instance_; }
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  operator T() const { return instance_; }
 
   explicit operator bool() const { return instance_ != nullptr; }
 

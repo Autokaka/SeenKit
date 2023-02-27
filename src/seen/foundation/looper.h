@@ -28,11 +28,15 @@ using CFLooperPtr = std::shared_ptr<CFAbstractLooper>;
 class CFLooper : public CFAbstractLooper {
  public:
   CFLooper();
-  ~CFLooper();
-  bool IsCurrentThreadLooper() const override;
+  virtual ~CFLooper();
+  virtual bool IsCurrentThreadLooper() const override;
 
   CFPromise<void> DispatchAsync(const Closure& macro_task) override;
   CFPromise<void> DispatchMicro(const Closure& micro_task) override;
+
+ protected:
+  virtual void ConsumeMacroTasks(const std::vector<Closure>& macro_tasks);  // Implemented on each platform.
+  void ConsumeMicroTasks();
 
  private:
   bool is_running_;
@@ -43,7 +47,6 @@ class CFLooper : public CFAbstractLooper {
   std::condition_variable cv_;
 
   void Run();
-  void ConsumeMicroTasks();
 
   DISALLOW_COPY_ASSIGN_AND_MOVE(CFLooper);
 };

@@ -26,7 +26,7 @@ void SetDelegate(const Level& level, const Delegate& delegate) {
 void CFLogPrint(const std::string& message);  // Implemented on each platform.
 
 template <typename... Args>
-void Print(const std::string& tag, const Level& level, const char* file, int line, const char* fmt = "", Args... args) {
+void Print(const char* tag, const Level& level, const char* file, int line, const char* fmt = "", Args... args) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wformat-security"
   using namespace std::string_literals;
@@ -54,7 +54,7 @@ void Print(const std::string& tag, const Level& level, const char* file, int lin
 #define SEEN_ERROR(...) seen::CFLog::Print("ERROR", seen::CFLog::Level::kError, __FILE_NAME__, __LINE__, __VA_ARGS__)
 #define SEEN_FATAL(...) seen::CFLog::Print("FATAL", seen::CFLog::Level::kFatal, __FILE_NAME__, __LINE__, __VA_ARGS__)
 
-#define SEEN_ASSERT_WITH_MESSAGE(Condition, ...) Condition ? static_cast<void>(0) : SEEN_LOG_FATAL(__VA_ARGS__)
-#define SEEN_ASSERT(Condition) Condition ? static_cast<void>(0) : SEEN_LOG_FATAL("Assert `%s` failed.", #Condition)
+#define SEEN_ASSERT_WITH_MESSAGE(Condition, ...) (Condition) ? static_cast<void>(0) : SEEN_LOG_FATAL(__VA_ARGS__)
+#define SEEN_ASSERT(Condition) (Condition) ? static_cast<void>(0) : SEEN_FATAL("Assert `%s` failed.", #Condition)
 
 }  // namespace seen::CFLog
