@@ -10,18 +10,17 @@
 #include <vector>
 
 #include "seen/foundation/class_constraints.h"
-#include "seen/foundation/promise.h"
 
 namespace seen {
 
-class CFAbstractLooper : std::enable_shared_from_this<CFAbstractLooper> {
+class CFAbstractLooper : public std::enable_shared_from_this<CFAbstractLooper> {
  public:
   using Closure = std::function<void()>;
 
   virtual bool IsCurrentThreadLooper() const = 0;
 
-  virtual CFPromise<void> DispatchAsync(const Closure& macro_task) = 0;
-  virtual CFPromise<void> DispatchMicro(const Closure& micro_task) = 0;
+  virtual void DispatchAsync(const Closure& macro_task) = 0;
+  virtual void DispatchMicro(const Closure& micro_task) = 0;
 };
 using CFLooperPtr = std::shared_ptr<CFAbstractLooper>;
 
@@ -31,10 +30,11 @@ class CFLooper : public CFAbstractLooper {
   virtual ~CFLooper();
   virtual bool IsCurrentThreadLooper() const override;
 
-  CFPromise<void> DispatchAsync(const Closure& macro_task) override;
-  CFPromise<void> DispatchMicro(const Closure& micro_task) override;
+  void DispatchAsync(const Closure& macro_task) override;
+  void DispatchMicro(const Closure& micro_task) override;
 
  protected:
+  virtual void MakeThreadLocalLooper();                                     // Implemented on each platform.
   virtual void ConsumeMacroTasks(const std::vector<Closure>& macro_tasks);  // Implemented on each platform.
   void ConsumeMicroTasks();
 
@@ -46,11 +46,13 @@ class CFLooper : public CFAbstractLooper {
   std::mutex mutex_;
   std::condition_variable cv_;
 
-  void Run();
+  void Start();
+  void Stop();
 
   DISALLOW_COPY_ASSIGN_AND_MOVE(CFLooper);
 };
 
+CFLooperPtr CFLooperGetCurrent();
 CFLooperPtr CFCreateLooper();
 CFLooperPtr CFGetPlatformLooper();  // Implemented on each platform.
 

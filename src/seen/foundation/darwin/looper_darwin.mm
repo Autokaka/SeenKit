@@ -18,6 +18,10 @@ class CFPlatformLooper : public CFLooper {
 
   bool IsCurrentThreadLooper() const override { return [NSThread isMainThread]; }
 
+  void MakeThreadLocalLooper() override {
+    dispatch_async_f(main_queue_, this, reinterpret_cast<dispatch_function_t>(StoreThreadLocalLooper));
+  }
+
   void ConsumeMacroTasks(const std::vector<Closure>& macro_tasks) override {
     TaskContext* context = new TaskContext();
     context->looper = this;
@@ -39,6 +43,10 @@ class CFPlatformLooper : public CFLooper {
       macro_task();
     }
     delete context;
+  }
+
+  static void StoreThreadLocalLooper(CFPlatformLooper* self) {
+    thread_local CFLooperPtr looper = self->shared_from_this();
   }
 
   DISALLOW_COPY_ASSIGN_AND_MOVE(CFPlatformLooper);

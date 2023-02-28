@@ -8,9 +8,9 @@
 #include <memory>
 #include <mutex>
 #include <string>
-#include <type_traits>
 
 #include "seen/foundation/latch.h"
+#include "seen/foundation/looper.h"
 
 namespace seen {
 
@@ -28,18 +28,18 @@ class CFPromise final {
   explicit CFPromise(const Callback& callback) : future_(std::make_shared<CFFuture>()) {
     // NOTE(Autokaka): The callback registered in `CFPromise::Then` could be called many times.
 
-    // TODO(Autokaka): Save calling thead loop.
-    // auto event_loop = EventLoop::GetCurrent();
+    auto looper = CFLooperGetCurrent();
 
-    callback([future = future_](ReturnType value) {
-      // TODO(Autokaka): Resume callback on calling thead.
+    callback([future = future_, looper](ReturnType value) {
       std::scoped_lock lock(future->mutex);
       future->state = CFPromiseState::kFulfilled;
       future->value = value;
-      auto resolve = future->resolve;
-      if (resolve) {
-        resolve(value);
-      }
+      looper->DispatchMicro([future]() {
+        auto resolve = future->resolve;
+        if (resolve) {
+          resolve(future->value);
+        }
+      });
     });
   }
 

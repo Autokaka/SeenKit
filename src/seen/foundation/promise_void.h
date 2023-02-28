@@ -17,17 +17,17 @@ class CFPromise<void> {
   explicit CFPromise(const Callback& callback) : future_(std::make_shared<CFFuture>()) {
     // NOTE(Autokaka): The callback registered in `CFPromise::Then` could be called many times.
 
-    // TODO(Autokaka): Save calling thead loop.
-    // auto event_loop = EventLoop::GetCurrent();
+    auto looper = CFLooperGetCurrent();
 
-    callback([future = future_]() {
-      // TODO(Autokaka): Resume callback on calling thead.
+    callback([future = future_, looper]() {
       std::scoped_lock lock(future->mutex);
       future->state = CFPromiseState::kFulfilled;
-      auto resolve = future->resolve;
-      if (resolve) {
-        resolve();
-      }
+      looper->DispatchMicro([future]() {
+        auto resolve = future->resolve;
+        if (resolve) {
+          resolve();
+        }
+      });
     });
   }
 

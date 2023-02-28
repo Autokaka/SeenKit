@@ -2,14 +2,18 @@
  * Created by Autokaka (qq1909698494@gmail.com) on 2023/02/15.
  */
 
+#include <mutex>
+
+#include "seen/foundation/latch.h"
+#include "seen/foundation/logger.h"
 #include "seen/foundation/looper.h"
 
 namespace seen {
 
-CFLooper::CFLooper() : is_running_(true), thread_(&CFLooper::Run, this) {}
+CFLooper::CFLooper() : is_running_(true), thread_(&CFLooper::Start, this) {}
 
 CFLooper::~CFLooper() {
-  DispatchAsync([this]() { is_running_ = false; }).Wait();
+  Stop();
   thread_.join();
 }
 
@@ -17,53 +21,35 @@ bool CFLooper::IsCurrentThreadLooper() const {
   return std::this_thread::get_id() == thread_.get_id();
 }
 
-CFPromise<void> CFLooper::DispatchAsync(const Closure& macro_task) {
-  return CFPromise<void>([this, macro_task](auto resolve) {
-    CFLatch latch;
+void CFLooper::DispatchAsync(const Closure& macro_task) {
+  if (IsCurrentThreadLooper()) {
+    macro_task();
+    return;
+  }
 
-    if (IsCurrentThreadLooper()) {
-      macro_task();
-      latch.Signal();
-      resolve();
-      return;
-    }
-
-    {
-      std::scoped_lock lock(mutex_);
-      macro_tasks_.emplace_back([macro_task, &latch]() {
-        macro_task();
-        latch.Signal();
-      });
-    }
-    cv_.notify_one();
-    resolve();
-  });
+  {
+    std::scoped_lock lock(mutex_);
+    macro_tasks_.emplace_back(macro_task);
+  }
+  cv_.notify_one();
 }
 
-CFPromise<void> CFLooper::DispatchMicro(const Closure& micro_task) {
-  return CFPromise<void>([this, micro_task](auto resolve) {
-    CFLatch latch;
+void CFLooper::DispatchMicro(const Closure& micro_task) {
+  if (IsCurrentThreadLooper()) {
+    micro_task();
+    return;
+  }
 
-    if (IsCurrentThreadLooper()) {
-      micro_task();
-      latch.Signal();
-      resolve();
-      return;
-    }
-
-    {
-      std::scoped_lock lock(mutex_);
-      micro_tasks_.emplace_back([micro_task, &latch]() {
-        micro_task();
-        latch.Signal();
-      });
-    }
-    cv_.notify_one();
-    resolve();
-  });
+  {
+    std::scoped_lock lock(mutex_);
+    micro_tasks_.emplace_back(micro_task);
+  }
+  cv_.notify_one();
 }
 
-void CFLooper::Run() {
+void CFLooper::Start() {
+  MakeThreadLocalLooper();
+
   std::vector<Closure> macro_tasks;
 
   while (is_running_) {
@@ -79,6 +65,19 @@ void CFLooper::Run() {
 
     macro_tasks.clear();
   }
+}
+
+void CFLooper::Stop() {
+  CFLatch latch;
+  DispatchAsync([this, &latch]() {
+    is_running_ = false;
+    latch.Signal();
+  });
+  latch.Wait();
+}
+
+void CFLooper::MakeThreadLocalLooper() {
+  thread_local CFLooperPtr looper = shared_from_this();
 }
 
 void CFLooper::ConsumeMacroTasks(const std::vector<Closure>& macro_tasks) {
@@ -98,6 +97,16 @@ void CFLooper::ConsumeMicroTasks() {
     micro_task();
   }
   micro_tasks.clear();
+}
+
+CFLooperPtr CFLooperGetCurrent() {
+  thread_local CFLooperPtr thread_local_looper;
+  SEEN_ASSERT(thread_local_looper != nullptr);
+  return thread_local_looper;
+}
+
+CFLooperPtr CFCreateLooper() {
+  return std::make_shared<CFLooper>();
 }
 
 }  // namespace seen
