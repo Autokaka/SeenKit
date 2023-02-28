@@ -61,7 +61,9 @@
   auto drawableHeight = (NSUInteger)drawableSize.height;
   if (_textureDescriptor.width != drawableWidth || _textureDescriptor.height != drawableHeight) {
     _drawableSize = drawableSize;
-    [self resetTextures];
+    if (_textureDescriptor != nil) {
+      [self resetTextures];
+    }
   }
 }
 
