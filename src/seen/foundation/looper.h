@@ -28,15 +28,14 @@ class CFLooper : public CFAbstractLooper {
  public:
   CFLooper();
   virtual ~CFLooper();
-  virtual bool IsCurrentThreadLooper() const override;
+  virtual bool IsCurrentThreadLooper() const override;  // Implemented on each platform.
 
   void DispatchAsync(const Closure& macro_task) override;
   void DispatchMicro(const Closure& micro_task) override;
 
  protected:
-  virtual void MakeThreadLocalLooper();                                     // Implemented on each platform.
-  virtual void ConsumeMacroTasks(const std::vector<Closure>& macro_tasks);  // Implemented on each platform.
-  void ConsumeMicroTasks();
+  virtual void MakeThreadLocalLooper();                // Implemented on each platform.
+  virtual void ConsumeTasks(const Closure& consumer);  // Implemented on each platform.
 
  private:
   bool is_running_;
@@ -48,6 +47,7 @@ class CFLooper : public CFAbstractLooper {
 
   void Start();
   void Stop();
+  void ConsumeMicroTasks();
 
   DISALLOW_COPY_ASSIGN_AND_MOVE(CFLooper);
 };

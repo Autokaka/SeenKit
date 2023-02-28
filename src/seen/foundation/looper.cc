@@ -59,10 +59,17 @@ void CFLooper::Start() {
       std::swap(macro_tasks, macro_tasks_);
     }
 
-    ConsumeMicroTasks();
+    CFLatch latch;
+    ConsumeTasks([this, &macro_tasks, &latch]() {
+      ConsumeMicroTasks();
 
-    ConsumeMacroTasks(macro_tasks);
-
+      for (const Closure& macro_task : macro_tasks) {
+        ConsumeMicroTasks();
+        macro_task();
+      }
+      latch.Signal();
+    });
+    latch.Wait();
     macro_tasks.clear();
   }
 }
@@ -80,11 +87,8 @@ void CFLooper::MakeThreadLocalLooper() {
   thread_local CFLooperPtr looper = shared_from_this();
 }
 
-void CFLooper::ConsumeMacroTasks(const std::vector<Closure>& macro_tasks) {
-  for (const Closure& macro_task : macro_tasks) {
-    ConsumeMicroTasks();
-    macro_task();
-  }
+void CFLooper::ConsumeTasks(const Closure& consumer) {
+  consumer();
 }
 
 void CFLooper::ConsumeMicroTasks() {

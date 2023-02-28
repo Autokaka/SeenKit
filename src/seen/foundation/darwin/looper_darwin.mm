@@ -22,32 +22,27 @@ class CFPlatformLooper : public CFLooper {
     dispatch_async_f(main_queue_, this, reinterpret_cast<dispatch_function_t>(StoreThreadLocalLooper));
   }
 
-  void ConsumeMacroTasks(const std::vector<Closure>& macro_tasks) override {
+  void ConsumeTasks(const Closure& consumer) override {
     TaskContext* context = new TaskContext();
-    context->looper = this;
-    context->tasks = std::move(macro_tasks);
-    dispatch_async_f(main_queue_, context, reinterpret_cast<dispatch_function_t>(DoMacroTasks));
+    context->task_consumer = std::move(consumer);
+    dispatch_async_f(main_queue_, context, reinterpret_cast<dispatch_function_t>(DoConsumeTasks));
   }
 
  private:
   struct TaskContext {
-    CFPlatformLooper* looper;
-    std::vector<Closure> tasks;
+    Closure task_consumer;
   };
 
-  dispatch_queue_main_t main_queue_;
-
-  static void DoMacroTasks(TaskContext* context) {
-    for (auto macro_task : context->tasks) {
-      context->looper->ConsumeMicroTasks();
-      macro_task();
-    }
+  static void DoConsumeTasks(TaskContext* context) {
+    context->task_consumer();
     delete context;
   }
 
   static void StoreThreadLocalLooper(CFPlatformLooper* self) {
     thread_local CFLooperPtr looper = self->shared_from_this();
   }
+
+  dispatch_queue_main_t main_queue_;
 
   DISALLOW_COPY_ASSIGN_AND_MOVE(CFPlatformLooper);
 };
