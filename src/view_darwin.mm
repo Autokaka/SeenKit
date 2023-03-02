@@ -22,6 +22,7 @@ CVReturn DispatchRenderLoop(CVDisplayLinkRef displayLink,
 }
 
 constexpr auto kSeenViewRefreshRate = 60;
+constexpr auto kMillisecPerSec = 1000;
 
 }  // namespace
 
@@ -54,7 +55,7 @@ constexpr auto kSeenViewRefreshRate = 60;
   if (_displaySource == nil || _displayLink == nil) {
     return YES;
   }
-  return static_cast<BOOL>(!CVDisplayLinkIsRunning(_displayLink));
+  return static_cast<BOOL>(CVDisplayLinkIsRunning(_displayLink) == NO);
 }
 
 - (void)setPaused:(BOOL)paused {
@@ -97,8 +98,8 @@ constexpr auto kSeenViewRefreshRate = 60;
   return (CAMetalLayer*)self.layer;
 }
 
-- (void)drawFrame {
-  [_engine draw:1.0F / kSeenViewRefreshRate];
+- (void)engineDrawFrame {
+  [_engine draw:1.0F / kSeenViewRefreshRate * kMillisecPerSec];
 }
 
 - (void)resizeDrawable:(CGFloat)scaleFactor {
@@ -155,7 +156,7 @@ constexpr auto kSeenViewRefreshRate = 60;
   __weak SeenView* weakSelf = self;
   dispatch_source_set_event_handler(_displaySource, ^() {
     @autoreleasepool {
-      [weakSelf drawFrame];
+      [weakSelf engineDrawFrame];
     }
   });
   CVReturn cvReturn = CVDisplayLinkCreateWithActiveCGDisplays(&_displayLink);
