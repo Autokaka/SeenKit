@@ -28,13 +28,6 @@
   return _device;
 }
 
-- (seen::Engine*)engine {
-  if (!_engine) {
-    _engine = std::make_unique<seen::Engine>();
-  }
-  return _engine.get();
-}
-
 - (MTLTextureDescriptor*)textureDescriptor {
   if (_textureDescriptor == nil) {
     _textureDescriptor = [[MTLTextureDescriptor alloc] init];
@@ -83,6 +76,12 @@
   return _depthTexture;
 }
 
+- (instancetype)init {
+  self = [super init];
+  _engine = std::make_unique<seen::Engine>();
+  return self;
+}
+
 - (void)runPackage:(SeenPackage*)package {
   // clang-format off
   [self runPackage:package withCompletionHandler:^(BOOL){}];
@@ -94,23 +93,23 @@
   std::vector<std::byte> cppBytes;
   cppBytes.reserve(byteLength);
   [package.scriptData getBytes:cppBytes.data() length:byteLength];
-  self.engine->RunModule(cppBytes).Then(handler);
+  _engine->RunModule(cppBytes).Then(handler);
 }
 
 - (void)draw:(NSTimeInterval)timeDeltaMillisec {
-  self.engine->Draw(timeDeltaMillisec);
+  _engine->Draw(timeDeltaMillisec);
 }
 
 - (void)draw:(NSTimeInterval)timeDeltaMillisec withCompletionHandler:(void (^)(void))handler {
-  self.engine->Draw(timeDeltaMillisec).Then(handler);
+  _engine->Draw(timeDeltaMillisec).Then(handler);
 }
 
 - (void)reset {
-  self.engine->Reset();
+  _engine->Reset();
 }
 
 - (void)resetWithCompletionHandler:(void (^)(void))handler {
-  self.engine->Reset().Then(handler);
+  _engine->Reset().Then(handler);
 }
 
 - (void)dealloc {
