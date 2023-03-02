@@ -6,3 +6,4 @@
 
 #import "SeenEngine.h"
 #import "SeenPackage.h"
+#import "SeenView.h"

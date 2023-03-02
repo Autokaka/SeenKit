@@ -90,11 +90,11 @@
 }
 
 - (void)runPackage:(SeenPackage*)package withCompletionHandler:(void (^)(BOOL))handler {
-  NSUInteger byteLength = package.module.length;
-  std::vector<std::byte> cpp_bytes;
-  cpp_bytes.reserve(byteLength);
-  [package.module getBytes:cpp_bytes.data() length:byteLength];
-  self.engine->RunModule(cpp_bytes).Then(handler);
+  NSUInteger byteLength = package.scriptData.length;
+  std::vector<std::byte> cppBytes;
+  cppBytes.reserve(byteLength);
+  [package.scriptData getBytes:cppBytes.data() length:byteLength];
+  self.engine->RunModule(cppBytes).Then(handler);
 }
 
 - (void)draw:(NSTimeInterval)timeDeltaMillisec {
@@ -111,6 +111,10 @@
 
 - (void)resetWithCompletionHandler:(void (^)(void))handler {
   self.engine->Reset().Then(handler);
+}
+
+- (void)dealloc {
+  [self reset];
 }
 
 @end

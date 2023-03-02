@@ -9,7 +9,9 @@
 
 #import "SeenPackage.h"
 
-@interface SeenEngine : NSObject
+#include "SeenBuildConfig.h"
+
+SEEN_EXPORT @interface SeenEngine : NSObject
 
 @property(atomic) CGSize drawableSize;
 @property(nonnull, readonly, atomic, strong) id<MTLTexture> colorTexture;

@@ -6,11 +6,13 @@
 
 #include <Foundation/Foundation.h>
 
-@interface SeenPackage : NSObject
+#include "SeenBuildConfig.h"
+
+SEEN_EXPORT @interface SeenPackage : NSObject
 
 @property(readonly, copy, nullable, nonatomic) NSDictionary* info;
 
-@property(readonly, copy, nonnull, nonatomic) NSData* module;
+@property(readonly, copy, nonnull, nonatomic) NSData* scriptData;
 
 - (nullable instancetype)initWithContentsOfFile:(nonnull NSString*)path;
 
