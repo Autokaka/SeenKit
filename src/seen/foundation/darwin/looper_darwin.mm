@@ -18,9 +18,7 @@ class CFPlatformLooper : public CFLooper {
 
   bool IsCurrentThreadLooper() const override { return [NSThread isMainThread]; }
 
-  void MakeThreadLocalLooper() override {
-    dispatch_async_f(main_queue_, this, reinterpret_cast<dispatch_function_t>(StoreThreadLocalLooper));
-  }
+  void MakeThreadLocalLooper() override {}
 
   void ConsumeTasks(const Closure& consumer) override {
     TaskContext* context = new TaskContext();
@@ -36,10 +34,6 @@ class CFPlatformLooper : public CFLooper {
   static void DoConsumeTasks(TaskContext* context) {
     context->task_consumer();
     delete context;
-  }
-
-  static void StoreThreadLocalLooper(CFPlatformLooper* self) {
-    thread_local CFLooperPtr looper = self->shared_from_this();
   }
 
   dispatch_queue_main_t main_queue_;

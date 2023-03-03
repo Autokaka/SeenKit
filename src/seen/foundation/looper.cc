@@ -10,6 +10,8 @@
 
 namespace seen {
 
+thread_local CFLooperPtr tls_looper;
+
 CFLooper::CFLooper() : is_running_(true), thread_(&CFLooper::Start, this) {}
 
 CFLooper::~CFLooper() {
@@ -84,7 +86,7 @@ void CFLooper::Stop() {
 }
 
 void CFLooper::MakeThreadLocalLooper() {
-  thread_local CFLooperPtr looper = shared_from_this();
+  tls_looper = shared_from_this();
 }
 
 void CFLooper::ConsumeTasks(const Closure& consumer) {
@@ -104,9 +106,13 @@ void CFLooper::ConsumeMicroTasks() {
 }
 
 CFLooperPtr CFLooperGetCurrent() {
-  thread_local CFLooperPtr thread_local_looper;
-  SEEN_ASSERT(thread_local_looper != nullptr);
-  return thread_local_looper;
+  auto platform_looper = CFGetPlatformLooper();
+  SEEN_ASSERT(platform_looper != nullptr);
+  if (platform_looper->IsCurrentThreadLooper()) {
+    return platform_looper;
+  }
+  SEEN_ASSERT(tls_looper != nullptr);
+  return tls_looper;
 }
 
 CFLooperPtr CFCreateLooper() {
