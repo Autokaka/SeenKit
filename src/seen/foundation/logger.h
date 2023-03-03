@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <array>
 #include <functional>
 #include <mutex>
 #include <string>
@@ -15,13 +16,10 @@ constexpr int kLogLevelCount = 4;
 enum class Level { kInfo, kWarn, kError, kFatal };
 
 using Delegate = std::function<void(const Level& level, const char* file_name, int line, const char* msg)>;
-Delegate gDelegates[kLogLevelCount] = {nullptr};
-std::mutex gDelegatesMutex;
+extern std::array<Delegate, kLogLevelCount> gDelegates;
+extern std::mutex gDelegatesMutex;
 
-void SetDelegate(const Level& level, const Delegate& delegate) {
-  std::scoped_lock lock(gDelegatesMutex);
-  gDelegates[static_cast<int>(level)] = delegate;
-}
+void SetDelegate(const Level& level, const Delegate& delegate);
 
 void CFLogPrint(const std::string& message);  // Implemented on each platform.
 
