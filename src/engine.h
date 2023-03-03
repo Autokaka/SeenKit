@@ -15,6 +15,10 @@ class Engine final {
   CFPromise<void> Draw(double timeDeltaMillisec);
 
   CFPromise<void> Reset();
+
+ private:
+  CFLooperPtr main_looper_;
+  CFLooperPtr platform_looper_;
 };
 
 }  // namespace seen

@@ -6,12 +6,18 @@
 
 namespace seen {
 
-Engine::Engine() {}
+Engine::Engine() : main_looper_(CFCreateLooper()), platform_looper_(CFGetPlatformLooper()) {}
 
-CFPromise<bool> Engine::RunModule(const std::vector<std::byte>& module_data) {}
+CFPromise<bool> Engine::RunModule(const std::vector<std::byte>& module_data) {
+  return CFPromise<bool>([](auto resolve) { resolve(false); });
+}
 
-CFPromise<void> Engine::Draw(double timeDeltaMillisec) {}
+CFPromise<void> Engine::Draw(double timeDeltaMillisec) {
+  return CFPromise<void>([](auto resolve) { resolve(); });
+}
 
-CFPromise<void> Engine::Reset() {}
+CFPromise<void> Engine::Reset() {
+  return CFPromise<void>([](auto resolve) { resolve(); });
+}
 
 }  // namespace seen
