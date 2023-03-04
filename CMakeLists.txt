@@ -11,11 +11,11 @@ set(CPM_SOURCE_CACHE ${PROJECT_SOURCE_DIR}/.cache/cpm)
 include(cmake/build_config.cmake)
 include(cmake/cpm.cmake)
 
-CPMAddPackage("https://github.com/bytecodealliance/wasm-micro-runtime.git#WAMR-1.1.2")
-
 message(STATUS ${SEEN_VERSION})
 
+add_subdirectory(third-party/glm)
 add_subdirectory(third-party/miniunz)
+add_subdirectory(third-party/wamr)
 
 if(${SEEN_BUILD_DARWIN})
   file(GLOB_RECURSE PUB_HEADERS
@@ -43,7 +43,7 @@ if(${SEEN_BUILD_DARWIN})
   target_include_directories(seen PUBLIC public/darwin)
   target_include_directories(seen PRIVATE src)
   target_compile_definitions(seen PRIVATE ${SEEN_COMPILE_FLAGS})
-  target_link_libraries(seen PRIVATE iwasm_static miniunz)
+  target_link_libraries(seen PRIVATE glm miniunz wamr)
   set_target_properties(seen PROPERTIES
     FRAMEWORK TRUE
     MACOSX_DEPLOYMENT_TARGET "11.0"
