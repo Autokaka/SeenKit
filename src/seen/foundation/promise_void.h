@@ -11,8 +11,12 @@ namespace seen {
 template <>
 class CFPromise<void> {
  public:
-  using Resolve = std::function<void()>;
-  using Callback = std::function<void(const Resolve& resolve)>;
+  using ResolveCallback = std::function<void()>;
+  using Callback = std::function<void(const ResolveCallback& resolve)>;
+
+  static CFPromise Resolve() {
+    return CFPromise([](auto resolve) { resolve(); });
+  }
 
   explicit CFPromise(const Callback& callback) : future_(std::make_shared<CFFuture>()) {
     // NOTE(Autokaka): The callback registered in `CFPromise::Then` could be called many times.
@@ -31,7 +35,7 @@ class CFPromise<void> {
     });
   }
 
-  void Then(const Resolve& resolve = nullptr) {
+  void Then(const ResolveCallback& resolve = nullptr) {
     std::scoped_lock lock(future_->mutex);
 
     if (future_->state == CFPromiseState::kFulfilled) {
@@ -43,7 +47,7 @@ class CFPromise<void> {
     }
   }
 
-  void Wait(const Resolve& resolve = nullptr) {
+  void Wait(const ResolveCallback& resolve = nullptr) {
     // FIXME(Autokaka): We should consider threading deadlock.
     CFLatch latch;
     Then([resolve, &latch]() {
@@ -57,7 +61,7 @@ class CFPromise<void> {
 
  private:
   struct CFFuture : std::enable_shared_from_this<CFFuture> {
-    Resolve resolve;
+    ResolveCallback resolve;
     CFPromiseState state = CFPromiseState::kPending;
     std::mutex mutex;
   };

@@ -22,8 +22,12 @@ enum class CFPromiseState {
 template <typename ReturnType>
 class CFPromise final {
  public:
-  using Resolve = std::function<void(ReturnType)>;
-  using Callback = std::function<void(const Resolve& resolve)>;
+  using ResolveCallback = std::function<void(ReturnType)>;
+  using Callback = std::function<void(const ResolveCallback& resolve)>;
+
+  static CFPromise Resolve(ReturnType value) {
+    return CFPromise([&value](auto resolve) { resolve(value); });
+  }
 
   explicit CFPromise(const Callback& callback) : future_(std::make_shared<CFFuture>()) {
     // NOTE(Autokaka): The callback registered in `CFPromise::Then` could be called many times.
@@ -43,7 +47,7 @@ class CFPromise final {
     });
   }
 
-  void Then(const Resolve& resolve) {
+  void Then(const ResolveCallback& resolve) {
     std::scoped_lock lock(future_->mutex);
 
     if (future_->state == CFPromiseState::kFulfilled) {
@@ -55,7 +59,7 @@ class CFPromise final {
     }
   }
 
-  void Wait(const Resolve& resolve) {
+  void Wait(const ResolveCallback& resolve) {
     // FIXME(Autokaka): We should consider threading deadlock.
     CFLatch latch;
     Then([resolve, &latch, future = future_]() {
@@ -69,7 +73,7 @@ class CFPromise final {
 
  private:
   struct CFFuture : std::enable_shared_from_this<CFFuture> {
-    Resolve resolve;
+    ResolveCallback resolve;
     ReturnType value;
     CFPromiseState state = CFPromiseState::kPending;
     std::mutex mutex;

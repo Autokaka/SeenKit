@@ -112,10 +112,6 @@
   _engine->Reset().Then(handler);
 }
 
-- (void)dealloc {
-  [self reset];
-}
-
 @end
 
 #endif
