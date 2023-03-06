@@ -8,27 +8,37 @@
 #include <optional>
 #include <string>
 
-namespace seen::g2d {
+#include "seen/framework/g2d/core/renderer.h"
+#include "seen/framework/g2d/math/shapes/rectangle.h"
+
+namespace seen::framework::g2d {
 
 class Application {
  public:
-  struct Options {
-    bool antialias;
-    float background_alpha = 1;
-    std::string background_color = "#000000";
-    bool premultiplied_alpha = true;
-    glm::vec2 size;
-    bool auto_resize = false;
-    bool shared_ticker = false;
-  };
+  using Options = core::IRenderer::Options;
 
   Application(std::optional<Options> options = std::nullopt);
 
-  void GetRenderer();
-  void ResizeTo(Window window);
+  const core::RendererPtr& GetRenderer();
+  void SetRenderer(const core::RendererPtr& renderer);
+
+  math::Rectangle GetScreen();
+  void GetSize();
+  void SetSize(glm::vec2 size);
+
+  void GetStage();
+  void SetStage();
+
+  void GetTicker();
+  void SetTicker();
+
+  void Render();
+  void Start();
+  void Stop();
+  void Destroy(Container::Options stage_options);
 
  private:
   Options options_;
 };
 
-}  // namespace seen::g2d
+}  // namespace seen::framework::g2d

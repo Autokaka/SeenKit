@@ -2,9 +2,9 @@
  * Created by Autokaka (qq1909698494@gmail.com) on 2023/01/10.
  */
 
-#include "seen/2d/app/application.h"
+#include "seen/framework/g2d/app/application.h"
 
-namespace seen::g2d {
+namespace seen::framework::g2d {
 
 Application::Application(std::optional<Options> options) {
   if (options) {
@@ -12,4 +12,4 @@ Application::Application(std::optional<Options> options) {
   }
 }
 
-}  // namespace seen::g2d
+}  // namespace seen::framework::g2d
