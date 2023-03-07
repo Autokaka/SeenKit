@@ -13,16 +13,16 @@
 
 namespace seen::framework::g2d {
 
+using ApplicationOptions = core::IRendererOptions;
+
 class Application {
  public:
-  using Options = core::IRenderer::Options;
-
-  Application(std::optional<Options> options = std::nullopt);
+  Application(std::optional<ApplicationOptions> options = std::nullopt);
 
   const core::RendererPtr& GetRenderer();
   void SetRenderer(const core::RendererPtr& renderer);
 
-  math::Rectangle GetScreen();
+  math::RectanglePtr GetScreen();
   void GetSize();
   void SetSize(glm::vec2 size);
 
@@ -35,10 +35,7 @@ class Application {
   void Render();
   void Start();
   void Stop();
-  void Destroy(Container::Options stage_options);
-
- private:
-  Options options_;
+  void Destroy(ContainerOptions stage_options);
 };
 
 }  // namespace seen::framework::g2d
