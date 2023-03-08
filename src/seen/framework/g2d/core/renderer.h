@@ -10,6 +10,7 @@
 #include <string>
 
 #include "seen/framework/g2d/constants/constants.h"
+#include "seen/framework/g2d/core/plugin/plugin_system.h"
 #include "seen/framework/g2d/core/render_texture/generate_texture_system.h"
 #include "seen/framework/g2d/core/render_texture/render_texture.h"
 #include "seen/framework/g2d/core/system/system_manager.h"
@@ -20,28 +21,25 @@
 namespace seen::framework::g2d::core {
 
 class IRenderableContainer;
-using IRenderableContainerPtr = std::shared_ptr<IRenderableContainer>;
 
 class IRenderer;
-using IRendererPtr = std::shared_ptr<IRenderer>;
 
 class IRenderableObject {
-  virtual IRenderableContainerPtr GetParent() const = 0;
-  virtual void SetParent(IRenderableContainerPtr parent) = 0;
-  virtual math::TransformPtr GetTransform() const = 0;
-  virtual void SetTransform(math::TransformPtr transform) = 0;
+  virtual IRenderableContainer GetParent() const = 0;
+  virtual void SetParent(IRenderableContainer parent) = 0;
+  virtual math::Transform GetTransform() const = 0;
+  virtual void SetTransform(math::Transform transform) = 0;
 
-  virtual IRenderableContainerPtr EnableTempParent() const = 0;
-  virtual void DisableTempParent(IRenderableContainerPtr parent) = 0;
+  virtual IRenderableContainer EnableTempParent() const = 0;
+  virtual void DisableTempParent(IRenderableContainer parent) = 0;
   virtual void UpdateTransform() = 0;
 
-  virtual void Render(IRendererPtr renderer) = 0;
+  virtual void Render(IRenderer renderer) = 0;
 };
-using IRenderableObjectPtr = std::shared_ptr<IRenderableObject>;
 
 class IRenderableContainer : public IRenderableObject {
-  virtual math::RectanglePtr GetLocalBounds(std::optional<math::RectanglePtr> rectangle = std::nullopt,
-                                            std::optional<bool> skipChildrenUpdate = std::nullopt) = 0;
+  virtual math::Rectangle GetLocalBounds(std::optional<math::Rectangle> rectangle = std::nullopt,
+                                         std::optional<bool> skipChildrenUpdate = std::nullopt) = 0;
 };
 
 struct IRendererOptions {
@@ -60,10 +58,10 @@ struct IRendererOptions {
 };
 
 struct IRendererRenderOptions {
-  std::optional<RenderTexturePtr> renderTexture;
+  std::optional<RenderTexture> renderTexture;
   std::optional<bool> blit;
   std::optional<bool> clear;
-  std::optional<math::MatrixPtr> transform;
+  std::optional<math::Matrix> transform;
   std::optional<bool> skipUpdateTransform;
 };
 
@@ -75,15 +73,15 @@ class IRenderer {
   virtual bool RenderToScreen() = 0;
   virtual float GetResolution() const = 0;
   virtual void SetResolution(float resolution) = 0;
-  virtual IRenderableObjectPtr GetLastObjectRendered() const = 0;
-  virtual void GetPlugins() const = 0;
+  virtual IRenderableObject GetLastObjectRendered() const = 0;
+  virtual IRendererPlugins GetPlugins() const = 0;
 
   virtual glm::vec2 GetSize() const = 0;
   virtual void SetSize(const glm::vec2& size) = 0;
 
-  virtual void Render(IRenderableObjectPtr displayObject,
+  virtual void Render(IRenderableObject displayObject,
                       std::optional<IRendererRenderOptions> options = std::nullopt) = 0;
-  virtual void GenerateTexture(IRenderableObjectPtr displayObject,
+  virtual void GenerateTexture(IRenderableObject displayObject,
                                std::optional<IGenerateTextureOptions> options = std::nullopt) = 0;
 
   virtual void Destroy() = 0;
@@ -94,7 +92,5 @@ class IRenderer {
 class Renderer : public SystemManager, IRenderer {
  public:
 };
-
-using RendererPtr = std::shared_ptr<Renderer>;
 
 }  // namespace seen::framework::g2d::core

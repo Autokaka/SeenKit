@@ -9,6 +9,5 @@ namespace seen::framework::g2d::math {
 class Rectangle {
   // TODO(Autokaka): Implement this
 };
-using RectanglePtr = std::shared_ptr<Rectangle>;
 
 }  // namespace seen::framework::g2d::math

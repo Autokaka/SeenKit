@@ -19,10 +19,10 @@ class Application {
  public:
   Application(std::optional<ApplicationOptions> options = std::nullopt);
 
-  const core::RendererPtr& GetRenderer();
-  void SetRenderer(const core::RendererPtr& renderer);
+  const core::Renderer& GetRenderer();
+  void SetRenderer(const core::Renderer& renderer);
 
-  math::RectanglePtr GetScreen();
+  math::Rectangle GetScreen();
   void GetSize();
   void SetSize(glm::vec2 size);
 

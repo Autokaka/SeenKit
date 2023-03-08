@@ -7,6 +7,5 @@
 namespace seen::framework::g2d::math {
 
 class Transform {};
-using TransformPtr = std::shared_ptr<Transform>;
 
 }  // namespace seen::framework::g2d::math
