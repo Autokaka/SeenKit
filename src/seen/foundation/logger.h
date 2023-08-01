@@ -1,58 +1,41 @@
-/*
- * Created by Autokaka (qq1909698494@gmail.com) on 2023/01/16.
- */
+// Created by Autokaka (qq1909698494@gmail.com) on 2023/01/16.
 
 #pragma once
 
-#include <array>
-#include <functional>
-#include <mutex>
+#include <fmt/core.h>
+#include <memory>
 #include <string>
 
-namespace seen::CFLog {
+namespace seen {
 
-constexpr int kLogLevelCount = 4;
+class CFLog {
+ public:
+  enum class Level { kInfo, kWarn, kError, kFatal };
 
-enum class Level { kInfo, kWarn, kError, kFatal };
-
-using Delegate = std::function<void(const Level& level, const char* file_name, int line, const char* msg)>;
-extern std::array<Delegate, kLogLevelCount> gDelegates;
-extern std::mutex gDelegatesMutex;
-
-void SetDelegate(const Level& level, const Delegate& delegate);
-
-void CFLogPrint(const std::string& message);  // Implemented on each platform.
-
-template <typename... Args>
-void Print(const char* tag, const Level& level, const char* file, int line, const char* fmt = "", Args... args) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wformat-security"
-  using namespace std::string_literals;
-  int size_s = std::snprintf(nullptr, 0, fmt, args...) + 1;
-  auto size = static_cast<size_t>(size_s);
-  auto buf = std::make_unique<char[]>(size);
-  size_s = std::snprintf(buf.get(), size, fmt, args...);
-  std::string fmt_msg(buf.get(), buf.get() + size - 1);
-#pragma clang diagnostic pop
-
-  std::scoped_lock lock(gDelegatesMutex);
-  if (auto delegate = gDelegates[static_cast<int>(level)]) {
-    delegate(level, file, line, fmt_msg.data());
-  } else {
-    auto msg = "@SeenKit["s + file + ":" + std::to_string(line) + "]<" + tag + "> " + fmt_msg;
-    CFLogPrint(msg);
+  template <typename... Args>
+  static void Print(const Level& level, const char* file_name, int line, const char* fmt = "", Args... args) {
+    using namespace std::string_literals;
+    GetInstance()(level, "@SeenKit["s.append(file_name)
+                             .append(":")
+                             .append(std::to_string(line))
+                             .append("] ")
+                             .append(fmt::format(fmt, args...)));
+    if (level >= Level::kFatal) {
+      abort();
+    }
   }
-  if (level >= Level::kFatal) {
-    abort();
-  }
-}
 
-#define SEEN_INFO(...) seen::CFLog::Print("INFO", seen::CFLog::Level::kInfo, __FILE_NAME__, __LINE__, __VA_ARGS__)
-#define SEEN_WARN(...) seen::CFLog::Print("WARN", seen::CFLog::Level::kWarn, __FILE_NAME__, __LINE__, __VA_ARGS__)
-#define SEEN_ERROR(...) seen::CFLog::Print("ERROR", seen::CFLog::Level::kError, __FILE_NAME__, __LINE__, __VA_ARGS__)
-#define SEEN_FATAL(...) seen::CFLog::Print("FATAL", seen::CFLog::Level::kFatal, __FILE_NAME__, __LINE__, __VA_ARGS__)
+ protected:
+  static std::shared_ptr<CFLog> GetInstance();
+  virtual void operator()(const Level& level, const std::string& message) = 0;
+};
+
+#define SEEN_INFO(...) seen::CFLog::Print(seen::CFLog::Level::kInfo, __FILE_NAME__, __LINE__, __VA_ARGS__)
+#define SEEN_WARN(...) seen::CFLog::Print(seen::CFLog::Level::kWarn, __FILE_NAME__, __LINE__, __VA_ARGS__)
+#define SEEN_ERROR(...) seen::CFLog::Print(seen::CFLog::Level::kError, __FILE_NAME__, __LINE__, __VA_ARGS__)
+#define SEEN_FATAL(...) seen::CFLog::Print(seen::CFLog::Level::kFatal, __FILE_NAME__, __LINE__, __VA_ARGS__)
 
 #define SEEN_ASSERT_WITH_MESSAGE(Condition, ...) (Condition) ? static_cast<void>(0) : SEEN_LOG_FATAL(__VA_ARGS__)
 #define SEEN_ASSERT(Condition) (Condition) ? static_cast<void>(0) : SEEN_FATAL("Assert `%s` failed.", #Condition)
 
-}  // namespace seen::CFLog
+}  // namespace seen

@@ -1,24 +1,31 @@
-/*
- * Created by Autokaka (qq1909698494@gmail.com) on 2023/01/10.
- */
+// Created by Autokaka (qq1909698494@gmail.com) on 2023/01/10.
 
-#include "seen/foundation/promise.h"
+#pragma once
+
+#include "app.h"
 
 namespace seen {
 
-class Engine final {
+class Engine final : public std::enable_shared_from_this<Engine> {
  public:
-  Engine();
+  DISALLOW_COPY_ASSIGN_AND_MOVE(Engine);
+  using Ptr = std::shared_ptr<Engine>;
+  struct Delegate {
+    void EngineDidCreateAppSession(const Ptr& engine, const AppSession* app_session);
+    void EngineWillDisposeAppSession(const Ptr& engine, const AppSession* app_session);
+  };
 
-  CFPromise<bool> RunModule(const std::vector<std::byte>& module_data);
+  explicit Engine();
 
-  CFPromise<void> Draw(double timeDeltaMillisec);
+  void RunApp(App&& app);
+  void Update(double time_delta_millis);
 
-  CFPromise<void> Reset();
+  [[nodiscard]] std::shared_ptr<Delegate> GetDelegate() const;
+  void SetDelegate(const std::shared_ptr<Delegate>& delegate);
 
  private:
-  CFLooperPtr main_looper_;
-  CFLooperPtr platform_looper_;
+  std::weak_ptr<Delegate> delegate_;
+  App app_;
 };
 
 }  // namespace seen
