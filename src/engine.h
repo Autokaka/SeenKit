@@ -17,7 +17,7 @@ class Engine final : public std::enable_shared_from_this<Engine> {
 
   explicit Engine();
 
-  void RunApp(App&& app);
+  void LaunchApp(App&& app);
   void Update(double time_delta_millis);
 
   [[nodiscard]] std::shared_ptr<Delegate> GetDelegate() const;
