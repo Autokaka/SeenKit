@@ -13,10 +13,10 @@ include(cmake/cpm.cmake)
 
 message(STATUS ${SEEN_VERSION})
 
-add_subdirectory(third-party/fmt)
-add_subdirectory(third-party/glm)
-add_subdirectory(third-party/miniunz)
-add_subdirectory(third-party/wamr)
+add_subdirectory(vendor/fmt)
+add_subdirectory(vendor/glm)
+add_subdirectory(vendor/miniunz)
+add_subdirectory(vendor/wamr)
 
 if(${SEEN_BUILD_DARWIN})
   file(GLOB_RECURSE PUB_HEADERS
