@@ -2,30 +2,29 @@
 
 #pragma once
 
-#include "app.h"
+#include <LLGL/Texture.h>
+#include <functional>
+
+#include "seen/foundation/class_constraints.h"
+#include "seen/foundation/data_channel.h"
+#include "seen/foundation/time_delta.h"
+#include "seen/foundation/worker.h"
 
 namespace seen {
 
-class Engine final : public std::enable_shared_from_this<Engine> {
+class Engine final {
  public:
   DISALLOW_COPY_ASSIGN_AND_MOVE(Engine);
-  using Ptr = std::shared_ptr<Engine>;
-  struct Delegate {
-    void EngineDidCreateAppSession(const Ptr& engine, const AppSession* app_session);
-    void EngineWillDisposeAppSession(const Ptr& engine, const AppSession* app_session);
-  };
+  using Ptr = std::unique_ptr<Engine>;
+  using EngineDidUpdateCallback = std::function<void(const Engine&, const LLGL::Texture&)>;
 
-  explicit Engine();
-
-  void LaunchApp(App&& app);
-  void Update(double time_delta_millis);
-
-  [[nodiscard]] std::shared_ptr<Delegate> GetDelegate() const;
-  void SetDelegate(const std::shared_ptr<Delegate>& delegate);
+  explicit Engine(const CFData::Ptr& bundle_data);
+  void Update(const TimeDelta& time_delta, const EngineDidUpdateCallback& callback = nullptr);
+  [[nodiscard]] CFDataChannel::Ptr CreateChannel() const;
 
  private:
-  std::weak_ptr<Delegate> delegate_;
-  App app_;
+  static const char* kMainWorkerName;
+  CFWorker::Ptr worker_;
 };
 
 }  // namespace seen

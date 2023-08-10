@@ -1,6 +1,4 @@
-/*
- * Created by Autokaka (qq1909698494@gmail.com) on 2023/01/10.
- */
+// Created by Autokaka (qq1909698494@gmail.com) on 2023/03/02.
 
 import SwiftUI
 
@@ -8,13 +6,14 @@ import SwiftUI
 #else
 struct SeenSwiftUIView: NSViewRepresentable {
 
-  typealias NSViewType = SeenView
+  typealias NSViewType = NSView
 
-  func makeNSView(context: Context) -> SeenView {
-    SeenView()
+  func makeNSView(context: Context) -> NSViewType {
+    SeenEngine()
+    return NSView()
   }
   
-  func updateNSView(_ nsView: SeenView, context: Context) {
+  func updateNSView(_ nsView: NSViewType, context: Context) {
   }
 }
 #endif

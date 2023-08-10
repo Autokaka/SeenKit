@@ -49,15 +49,15 @@ CFData::~CFData() {
   delete[] bytes_;
 }
 
-std::byte* CFData::OwnBytes() {
-  auto* bytes = bytes_;
-  bytes_ = nullptr;
-  size_ = 0;
-  return bytes;
-}
-
 CFData::Ptr CFData::Copy() const {
   return CFData::CreateFromBytes(bytes_, size_);
+}
+
+CFData::Ptr CFData::Move() {
+  auto data = CreateFromBytesNoCopy(bytes_, size_);
+  bytes_ = nullptr;
+  size_ = 0;
+  return data;
 }
 
 }  // namespace seen

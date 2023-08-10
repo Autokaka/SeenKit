@@ -2,4 +2,8 @@
 
 #pragma once
 
-#import "SeenEngine.h"
+namespace seen::fw {
+
+class Scene {};
+
+}  // namespace seen::fw

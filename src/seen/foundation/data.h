@@ -1,6 +1,6 @@
-/*
- * Created by Autokaka (qq1909698494@gmail.com) on 2023/01/15.
- */
+// Created by Autokaka (qq1909698494@gmail.com) on 2023/01/15.
+
+#pragma once
 
 #include <cstddef>
 #include <memory>
@@ -21,10 +21,10 @@ class CFData {
   explicit CFData(std::byte* bytes, std::size_t size);
   ~CFData();
 
-  std::byte* OwnBytes();
   [[nodiscard]] std::byte* GetBytes() const { return bytes_; }
   [[nodiscard]] std::size_t GetSize() const { return size_; }
   [[nodiscard]] Ptr Copy() const;
+  [[nodiscard]] Ptr Move();
 
  private:
   std::size_t size_;

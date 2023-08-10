@@ -25,56 +25,31 @@ void CFWorker::DispatchAsync(const Closure& macro_task, const TimeDelta& time_de
 }
 
 void CFWorker::DispatchAsync(const Closure& macro_task, const TimePoint& time_point) {
-  std::scoped_lock lock(macro_tasks_mutex_);
-  macro_tasks_.push({.task = macro_task, .target_time = time_point});
+  std::scoped_lock lock(tasks_mutex_);
+  tasks_.push({.task = macro_task, .target_time = time_point});
   impl_->SetWakeup(time_point, RunExpiredTasksNow, this);
-}
-
-void CFWorker::DispatchMicro(const Closure& micro_task) {
-  if (IsHost()) {
-    micro_task();
-    return;
-  }
-  std::scoped_lock lock(micro_tasks_mutex_);
-  micro_tasks_.emplace_back(micro_task);
-  impl_->SetWakeup(TimePoint::Now(), RunExpiredTasksNow, this);
 }
 
 void CFWorker::RunExpiredTasksNow(void* worker) {
   static_cast<CFWorker*>(worker)->RunExpiredTasksNow();
 }
 
-void CFWorker::ConsumeMicroTasks() {
-  std::vector<Closure> micro_tasks;
-  {
-    std::scoped_lock lock(micro_tasks_mutex_);
-    std::swap(micro_tasks, micro_tasks_);
-  }
-  for (const auto& task : micro_tasks) {
-    task();
-  }
-  micro_tasks.clear();
-}
-
 void CFWorker::RunExpiredTasksNow() {
-  ConsumeMicroTasks();
-
   std::vector<Closure> macro_tasks;
   {
-    std::scoped_lock lock(macro_tasks_mutex_);
+    std::scoped_lock lock(tasks_mutex_);
     auto now = TimePoint::Now();
-    while (!macro_tasks_.empty()) {
-      auto nearest_task = macro_tasks_.top();
+    while (!tasks_.empty()) {
+      auto nearest_task = tasks_.top();
       if (nearest_task.target_time > now) {
         break;
       }
-      macro_tasks_.pop();
+      tasks_.pop();
       macro_tasks.emplace_back(nearest_task.task);
     }
   }
 
   for (const auto& task : macro_tasks) {
-    ConsumeMicroTasks();
     task();
   }
 }
