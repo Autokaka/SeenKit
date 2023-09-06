@@ -8,9 +8,11 @@
 
 namespace seen {
 
+std::shared_ptr<class CFLog> GetLog();
 class CFLog {
  public:
   enum class Level { kInfo, kWarn, kError, kFatal };
+  using Ptr = std::shared_ptr<CFLog>;
 
   explicit CFLog() = default;
   virtual ~CFLog() = default;
@@ -18,20 +20,18 @@ class CFLog {
   template <typename... T>
   static void Print(const Level& level, const char* fname, int line, fmt::format_string<T...> fmt = "", T&&... args) {
     using namespace std::string_literals;
-    auto instance = GetInstance();
-    (*instance)(level, "@SeenKit["s.append(fname)
-                           .append(":")
-                           .append(std::to_string(line))
-                           .append("] ")
-                           .append(fmt::format(fmt, args...)));
+    GetLog()->Print(level, "@SeenKit["s.append(fname)
+                               .append(":")
+                               .append(std::to_string(line))
+                               .append("] ")
+                               .append(fmt::format(fmt, args...)));
     if (level >= Level::kFatal) {
       abort();
     }
   }
 
  protected:
-  static std::shared_ptr<CFLog> GetInstance();
-  virtual void operator()(const Level& level, const std::string& message) = 0;
+  virtual void Print(const Level& level, const std::string& message) = 0;
 };
 
 #define SEEN_INFO(...) seen::CFLog::Print(seen::CFLog::Level::kInfo, __FILE_NAME__, __LINE__, __VA_ARGS__)

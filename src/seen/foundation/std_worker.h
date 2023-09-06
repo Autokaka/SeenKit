@@ -9,7 +9,7 @@
 
 namespace seen {
 
-class CFWorkerStd final : public CFWorkerTrait {
+class CFStdWorker final : public CFWorkerTrait {
  public:
   void Start() override;
   void Stop() override;
@@ -21,8 +21,13 @@ class CFWorkerStd final : public CFWorkerTrait {
     void (*task)(void*);
     void* user_data;
     TimePoint target_time;
-    bool operator()(const WakeupTask& ws1, const WakeupTask& ws2) const { return ws1.target_time > ws2.target_time; }
+    bool operator()(const WakeupTask& wt1, const WakeupTask& wt2) { return wt1.target_time > wt2.target_time; }
   };
+  struct WakeupTaskCompare {
+    bool operator()(const WakeupTask& ti1, const WakeupTask& ti2) { return ti1.target_time > ti2.target_time; }
+  };
+  using WakeupTaskQueue = std::priority_queue<WakeupTask, std::deque<WakeupTask>, WakeupTaskCompare>;
+
   void WaitForNextWakeup();
   void ConsumeWakeupTasksNoLock();
 
@@ -33,7 +38,7 @@ class CFWorkerStd final : public CFWorkerTrait {
   bool signaled_ = false;
   bool running_ = false;
 
-  std::priority_queue<WakeupTask> wakeup_tasks_;
+  WakeupTaskQueue wakeup_tasks_;
 };
 
 }  // namespace seen

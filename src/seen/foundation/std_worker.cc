@@ -1,20 +1,20 @@
 // Created by Autokaka (qq1909698494@gmail.com) on 2023/07/29.
 
-#include "seen/foundation/worker_std.h"
+#include "seen/foundation/std_worker.h"
 #include "seen/foundation/waitable_event.h"
 
 namespace seen {
 
-void CFWorkerStd::Start() {
+void CFStdWorker::Start() {
   std::scoped_lock lock(mutex_);
   running_ = true;
   thread_ = std::make_unique<std::thread>([this]() { WaitForNextWakeup(); });
 }
 
-void CFWorkerStd::Stop() {
+void CFStdWorker::Stop() {
   struct StopContext {
     CFAutoResetWaitableEvent latch;
-    CFWorkerStd* self;
+    CFStdWorker* self;
   } context{.self = this};
   auto stop = [](void* user_data) {
     auto* context = static_cast<StopContext*>(user_data);
@@ -27,11 +27,11 @@ void CFWorkerStd::Stop() {
   thread_->detach();
 }
 
-bool CFWorkerStd::IsHost() const {
+bool CFStdWorker::IsHost() const {
   return std::this_thread::get_id() == thread_->get_id();
 }
 
-void CFWorkerStd::SetWakeup(const TimePoint& time_point, void (*on_wake_up)(void*), void* user_data) {
+void CFStdWorker::SetWakeup(const TimePoint& time_point, void (*on_wake_up)(void*), void* user_data) {
   std::scoped_lock lock(mutex_);
   if (!running_) {
     return;
@@ -46,7 +46,7 @@ void CFWorkerStd::SetWakeup(const TimePoint& time_point, void (*on_wake_up)(void
   }
 }
 
-void CFWorkerStd::WaitForNextWakeup() {
+void CFStdWorker::WaitForNextWakeup() {
   {
     std::unique_lock lock(mutex_);
     auto nearest_time = wakeup_tasks_.empty() ? TimePoint::Max() : wakeup_tasks_.top().target_time;
@@ -63,7 +63,7 @@ void CFWorkerStd::WaitForNextWakeup() {
   WaitForNextWakeup();
 }
 
-void CFWorkerStd::ConsumeWakeupTasksNoLock() {
+void CFStdWorker::ConsumeWakeupTasksNoLock() {
   while (!wakeup_tasks_.empty()) {
     auto task = wakeup_tasks_.top();
     auto timeout = task.target_time <= TimePoint::Now();
@@ -77,7 +77,7 @@ void CFWorkerStd::ConsumeWakeupTasksNoLock() {
 }
 
 std::shared_ptr<CFWorker> CreateWorker(const std::string& name) {
-  auto worker_impl = std::make_unique<CFWorkerStd>();
+  auto worker_impl = std::make_unique<CFStdWorker>();
   auto worker = std::make_shared<CFWorker>(std::move(worker_impl));
   return worker;
 }

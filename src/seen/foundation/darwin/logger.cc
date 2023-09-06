@@ -8,7 +8,12 @@
 
 namespace seen {
 
-void CFLogDarwin::operator()(const Level& level, const std::string& message) {
+CFLog::Ptr GetLog() {
+  static auto log = std::make_shared<CFLogDarwin>();
+  return log;
+}
+
+void CFLogDarwin::Print(const Level& level, const std::string& message) {
   switch (level) {
     case Level::kInfo:
       return syslog(LOG_INFO, "%s", message.c_str());

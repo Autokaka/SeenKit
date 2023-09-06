@@ -8,7 +8,7 @@ namespace seen {
 
 class CFLogDarwin final : public CFLog {
  protected:
-  void operator()(const Level& level, const std::string& message) override;
+  void Print(const Level& level, const std::string& message) override;
 };
 
 }  // namespace seen

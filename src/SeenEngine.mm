@@ -5,14 +5,14 @@
 #include "engine.h"
 
 @implementation SeenEngine {
-  seen::Engine::Ptr cpp_engine_;
+  seen::Engine::Ptr cppEngine_;
 }
 
 - (instancetype)initWithBundleData:(NSData*)bundleData {
   self = [super init];
   if (self != nil) {
     auto cppData = seen::CFData::CreateFromBytes((std::byte*)bundleData.bytes, bundleData.length);
-    cpp_engine_ = std::make_unique<seen::Engine>(cppData);
+    cppEngine_ = std::make_unique<seen::Engine>(cppData);
   }
   return self;
 }

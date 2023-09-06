@@ -30,6 +30,7 @@ if(${SEEN_BUILD_DARWIN})
   )
   file(GLOB_RECURSE MRC_SOURCE
     "${PROJECT_SOURCE_DIR}/src/seen/*.h"
+    "${PROJECT_SOURCE_DIR}/src/seen/*.cc"
     "${PROJECT_SOURCE_DIR}/src/seen/*.mm"
   )
   file(GLOB_RECURSE SOURCE

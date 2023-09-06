@@ -38,20 +38,24 @@ class CFWorker final {
   void DispatchAsync(const Closure& macro_task, const TimePoint& time_point);
 
  private:
-  static void RunExpiredTasksNow(void* worker);
-  void RunExpiredTasksNow();
-
   struct TaskInfo {
     Closure task;
     TimePoint target_time;
-    bool operator()(const TaskInfo& ti1, const TaskInfo& ti2) const { return ti1.target_time > ti2.target_time; }
   };
-  std::priority_queue<TaskInfo> tasks_;
+  struct TaskInfoCompare {
+    bool operator()(const TaskInfo& ti1, const TaskInfo& ti2) { return ti1.target_time > ti2.target_time; }
+  };
+  using TaskInfoQueue = std::priority_queue<TaskInfo, std::deque<TaskInfo>, TaskInfoCompare>;
+
+  static void RunExpiredTasksNow(void* worker);
+  void RunExpiredTasksNow();
+
+  TaskInfoQueue tasks_;
   std::mutex tasks_mutex_;
   std::unique_ptr<CFWorkerTrait> impl_;
 };
 
-CFWorker::Ptr GetPlatformWorker();
 CFWorker::Ptr CreateWorker(const std::string& name);
+CFWorker::Ptr GetPlatformWorker();
 
 }  // namespace seen

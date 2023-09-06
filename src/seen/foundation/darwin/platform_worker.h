@@ -8,9 +8,9 @@
 
 namespace seen {
 
-class CFWorkerDarwin final : public CFWorkerTrait {
+class PlatformWorkerDarwin final : public CFWorkerTrait {
  public:
-  explicit CFWorkerDarwin();
+  explicit PlatformWorkerDarwin();
   void Start() override;
   void Stop() override;
   [[nodiscard]] bool IsHost() const override;
