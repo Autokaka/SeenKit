@@ -6,7 +6,7 @@
 #include <memory>
 #include <mutex>
 
-#include "seen/foundation/class_constraints.h"
+#include "seen/foundation/class_ext.h"
 #include "seen/foundation/data.h"
 #include "seen/foundation/worker.h"
 

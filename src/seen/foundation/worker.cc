@@ -1,57 +1,42 @@
 // Created by Autokaka (qq1909698494@gmail.com) on 2023/02/15.
 
 #include "seen/foundation/worker.h"
+#include "seen/foundation/worker_driver.h"
 
 namespace seen {
 
-CFWorker::CFWorker(std::unique_ptr<CFWorkerTrait>&& impl) : impl_(std::move(impl)) {
-  impl_->Start();
+thread_local CFWorker::Weak thread_local_worker;
+
+CFWorker::Ptr CFWorker::GetCurrent() {
+  return thread_local_worker.lock();
+}
+
+CFWorker::CFWorker(std::unique_ptr<CFWorkerDriver> driver) : driver_(std::move(driver)) {
+  driver_->Start([](const CFWorker::Ptr& worker) { thread_local_worker = worker; }, shared_from_this());
 }
 
 CFWorker::~CFWorker() {
-  impl_->Stop();
+  driver_->Stop();
 }
 
-bool CFWorker::IsHost() const {
-  return impl_->IsHost();
+bool CFWorker::IsCurrent() const {
+  return driver_->IsCurrent();
 }
 
-void CFWorker::DispatchAsync(const Closure& macro_task) {
-  return DispatchAsync(macro_task, TimePoint::Now());
+void CFWorker::DispatchAsync(CFClosure macro_task) {
+  return DispatchAsync(std::move(macro_task), TimePoint::Now());
 }
 
-void CFWorker::DispatchAsync(const Closure& macro_task, const TimeDelta& time_delta) {
-  return DispatchAsync(macro_task, TimePoint::Now() + time_delta);
+void CFWorker::DispatchAsync(CFClosure macro_task, const TimeDelta& time_delta) {
+  return DispatchAsync(std::move(macro_task), TimePoint::Now() + time_delta);
 }
 
-void CFWorker::DispatchAsync(const Closure& macro_task, const TimePoint& time_point) {
-  std::scoped_lock lock(tasks_mutex_);
-  tasks_.push({.task = macro_task, .target_time = time_point});
-  impl_->SetWakeup(time_point, RunExpiredTasksNow, this);
+void CFWorker::DispatchAsync(CFClosure macro_task, const TimePoint& time_point) {
+  driver_->SetWakeup(time_point, std::move(macro_task));
 }
 
-void CFWorker::RunExpiredTasksNow(void* worker) {
-  static_cast<CFWorker*>(worker)->RunExpiredTasksNow();
-}
-
-void CFWorker::RunExpiredTasksNow() {
-  std::vector<Closure> macro_tasks;
-  {
-    std::scoped_lock lock(tasks_mutex_);
-    auto now = TimePoint::Now();
-    while (!tasks_.empty()) {
-      auto nearest_task = tasks_.top();
-      if (nearest_task.target_time > now) {
-        break;
-      }
-      tasks_.pop();
-      macro_tasks.emplace_back(nearest_task.task);
-    }
-  }
-
-  for (const auto& task : macro_tasks) {
-    task();
-  }
+CFWorker::Ptr CreateWorker(const char* name) {
+  return std::make_shared<CFWorker>(std::make_unique<CFWorkerDriverImpl>(name));
 }
 
 }  // namespace seen

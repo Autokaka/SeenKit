@@ -2,10 +2,11 @@
 
 #pragma once
 
+#include <condition_variable>
 #include <mutex>
 
-#include "seen/foundation/class_constraints.h"
-#include "seen/foundation/time_delta.h"
+#include "seen/foundation/class_ext.h"
+#include "seen/foundation/time_point.h"
 
 namespace seen {
 
@@ -15,11 +16,12 @@ class CFAutoResetWaitableEvent final {
 
   void Signal();
   void Wait();
+  bool WaitUntil(const TimePoint& time_point);
 
  private:
   std::condition_variable cv_;
-  std::mutex mutex_;
-  bool signaled_;
+  std::mutex cv_mutex_;
+  bool stop_waiting_;
 
   DISALLOW_COPY_ASSIGN_AND_MOVE(CFAutoResetWaitableEvent);
 };

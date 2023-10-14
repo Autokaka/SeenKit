@@ -26,4 +26,10 @@ namespace seen {
   TypeName() = delete;                           \
   DISALLOW_COPY_ASSIGN_AND_MOVE(TypeName)
 
+#define PROTOCOL(FunctionSignature) virtual FunctionSignature = 0
+
+#define interface class
+
+#define abstract
+
 }  // namespace seen

@@ -2,60 +2,37 @@
 
 #pragma once
 
-#include <functional>
 #include <memory>
-#include <mutex>
-#include <queue>
 
-#include "seen/foundation/class_constraints.h"
+#include "seen/foundation/class_ext.h"
 #include "seen/foundation/time_point.h"
+#include "seen/foundation/types.h"
 
 namespace seen {
 
-class CFWorkerTrait {
- public:
-  explicit CFWorkerTrait() = default;
-  virtual ~CFWorkerTrait() = default;
-  virtual void Start() = 0;
-  virtual void Stop() = 0;
-  [[nodiscard]] virtual bool IsHost() const = 0;
-  virtual void SetWakeup(const TimePoint& time_point, void (*on_wake_up)(void*), void* user_data) = 0;
-};
+class CFWorkerDriver;
 
-class CFWorker final {
+class CFWorker final : public std::enable_shared_from_this<CFWorker> {
  public:
-  DISALLOW_COPY_ASSIGN_AND_MOVE(CFWorker);
-  using Closure = std::function<void()>;
   using Ptr = std::shared_ptr<CFWorker>;
   using Weak = std::weak_ptr<CFWorker>;
 
-  explicit CFWorker(std::unique_ptr<CFWorkerTrait>&& impl);
+  static Ptr GetCurrent();
+  explicit CFWorker(std::unique_ptr<CFWorkerDriver> driver);
   virtual ~CFWorker();
-  [[nodiscard]] bool IsHost() const;
+  [[nodiscard]] bool IsCurrent() const;
 
-  void DispatchAsync(const Closure& macro_task);
-  void DispatchAsync(const Closure& macro_task, const TimeDelta& time_delta);
-  void DispatchAsync(const Closure& macro_task, const TimePoint& time_point);
+  void DispatchAsync(CFClosure macro_task);
+  void DispatchAsync(CFClosure macro_task, const TimeDelta& time_delta);
+  void DispatchAsync(CFClosure macro_task, const TimePoint& time_point);
 
  private:
-  struct TaskInfo {
-    Closure task;
-    TimePoint target_time;
-  };
-  struct TaskInfoCompare {
-    bool operator()(const TaskInfo& ti1, const TaskInfo& ti2) { return ti1.target_time > ti2.target_time; }
-  };
-  using TaskInfoQueue = std::priority_queue<TaskInfo, std::deque<TaskInfo>, TaskInfoCompare>;
+  std::unique_ptr<CFWorkerDriver> driver_;
 
-  static void RunExpiredTasksNow(void* worker);
-  void RunExpiredTasksNow();
-
-  TaskInfoQueue tasks_;
-  std::mutex tasks_mutex_;
-  std::unique_ptr<CFWorkerTrait> impl_;
+  DISALLOW_COPY_ASSIGN_AND_MOVE(CFWorker);
 };
 
-CFWorker::Ptr CreateWorker(const std::string& name);
+CFWorker::Ptr CreateWorker(const char* name);
 CFWorker::Ptr GetPlatformWorker();
 
 }  // namespace seen

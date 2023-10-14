@@ -6,7 +6,7 @@
 #include <memory>
 #include <vector>
 
-#include "seen/foundation/class_constraints.h"
+#include "seen/foundation/class_ext.h"
 
 namespace seen {
 
