@@ -4,9 +4,8 @@
 
 #include <chrono>
 #include <cstdint>
-#include <iosfwd>
 
-#include "seen/foundation/time_delta.h"
+#include "seen/base/time_delta.h"
 
 namespace seen {
 

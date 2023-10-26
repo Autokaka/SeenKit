@@ -5,8 +5,8 @@
 #include <condition_variable>
 #include <mutex>
 
-#include "seen/foundation/class_ext.h"
-#include "seen/foundation/time_point.h"
+#include "seen/base/class_ext.h"
+#include "seen/base/time_point.h"
 
 namespace seen {
 

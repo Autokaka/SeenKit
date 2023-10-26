@@ -4,12 +4,12 @@
 #include <dispatch/dispatch.h>
 #include <sys/syslog.h>
 
-#include "seen/foundation/logger.h"
+#include "seen/base/logger.h"
 #include "seen/pal/pal.h"
 
 namespace seen::pal {
 
-#pragma mark - seen/foundation/logger.h
+#pragma mark - seen/base/logger.h
 void log(int level, const char* message) {
   switch (static_cast<CFLogLevel>(level)) {
     case CFLogLevel::kInfo:
@@ -23,7 +23,7 @@ void log(int level, const char* message) {
   }
 }
 
-#pragma mark - seen/foundation/worker_driver.h
+#pragma mark - seen/base/worker_driver.h
 bool worker_driver_is_platform_driver() {
   return NSThread.isMainThread == YES;
 }

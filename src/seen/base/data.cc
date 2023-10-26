@@ -2,7 +2,7 @@
 
 #include <fstream>
 
-#include "seen/foundation/data.h"
+#include "seen/base/data.h"
 
 namespace seen {
 
@@ -13,9 +13,9 @@ CFData::Ptr CFData::CreateFromAbsolutePath(const std::string& absolute_path) {
     return nullptr;
   }
 
-  ifs.seekg(0, ifs.end);
+  ifs.seekg(0, std::ifstream::end);
   auto length = ifs.tellg();
-  ifs.seekg(0, ifs.beg);
+  ifs.seekg(0, std::ifstream::beg);
 
   auto* buffer = new char[length];
   ifs.read(buffer, length);

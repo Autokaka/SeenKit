@@ -6,6 +6,6 @@
 
 SEEN_EXPORT @interface SeenEngine : NSObject
 
-- (instancetype)initWithBundleData:(NSData*)bundleData;
+- (void)updateWithTimeDelta:(NSInteger)timeDeltaMillis completionBlock:(nullable void (^)(void))onCompleteBlock;
 
 @end

@@ -5,10 +5,10 @@
 #include <queue>
 #include <thread>
 
-#include "seen/foundation/class_ext.h"
-#include "seen/foundation/time_point.h"
-#include "seen/foundation/types.h"
-#include "seen/foundation/waitable_event.h"
+#include "seen/base/class_ext.h"
+#include "seen/base/time_point.h"
+#include "seen/base/types.h"
+#include "seen/base/waitable_event.h"
 
 namespace seen {
 
@@ -16,13 +16,11 @@ class CFWorker;
 
 interface CFWorkerDriver {
  public:
-  using OnStartedCallback = void (*)(const std::shared_ptr<CFWorker>&);
-
   explicit CFWorkerDriver() = default;
   virtual ~CFWorkerDriver() = default;
-  PROTOCOL(void Start(OnStartedCallback on_started, const std::shared_ptr<CFWorker>& worker));
+  PROTOCOL(void Start(CFClosure on_started));
   PROTOCOL(void Stop());
-  PROTOCOL(bool IsCurrent() const);
+  PROTOCOL(bool IsCurrent());
   PROTOCOL(void SetWakeup(const TimePoint& time_point, CFClosure task));
 
   DISALLOW_COPY_ASSIGN_AND_MOVE(CFWorkerDriver);
@@ -32,9 +30,9 @@ class CFWorkerDriverImpl final : public CFWorkerDriver {
  public:
   explicit CFWorkerDriverImpl(const char* name);
   ~CFWorkerDriverImpl() override;
-  void Start(OnStartedCallback on_started, const std::shared_ptr<CFWorker>& worker) override;
+  void Start(CFClosure on_started) override;
   void Stop() override;
-  [[nodiscard]] bool IsCurrent() const override;
+  bool IsCurrent() override;
   void SetWakeup(const TimePoint& time_point, CFClosure task) override;
 
  private:
@@ -50,7 +48,7 @@ class CFWorkerDriverImpl final : public CFWorkerDriver {
   using WakeupTaskQueue = std::priority_queue<WakeupTask, std::deque<WakeupTask>, WakeupTaskCompare>;
 
   struct Context {
-    bool is_running;
+    std::optional<bool> is_stopped;
     CFAutoResetWaitableEvent latch;
     std::recursive_mutex mutex;
     WakeupTaskQueue wakeup_tasks;
@@ -68,9 +66,9 @@ class CFPlatformWorkerDriver final : public CFWorkerDriver {
  public:
   explicit CFPlatformWorkerDriver();
   ~CFPlatformWorkerDriver() override;
-  void Start(OnStartedCallback on_started, const std::shared_ptr<CFWorker>& worker) override;
+  void Start(CFClosure on_started) override;
   void Stop() override;
-  [[nodiscard]] bool IsCurrent() const override;
+  bool IsCurrent() override;
   void SetWakeup(const TimePoint& time_point, CFClosure task) override;
 };
 

@@ -3,15 +3,15 @@
 
 #pragma once
 
-#include "seen/foundation/time_point.h"
-#include "seen/foundation/types.h"
+#include "seen/base/time_point.h"
+#include "seen/base/types.h"
 
 namespace seen::pal {
 
-#pragma mark - seen/foundation/logger.h
+#pragma mark - seen/base/logger.h
 void log(int level, const char* message);
 
-#pragma mark - seen/foundation/worker_driver.h
+#pragma mark - seen/base/worker_driver.h
 bool worker_driver_is_platform_driver();
 void platform_worker_driver_dispatch_async(const TimePoint& time_point, CFClosure task);
 

@@ -4,9 +4,9 @@
 
 #include <memory>
 
-#include "seen/foundation/class_ext.h"
-#include "seen/foundation/time_point.h"
-#include "seen/foundation/types.h"
+#include "seen/base/class_ext.h"
+#include "seen/base/time_point.h"
+#include "seen/base/types.h"
 
 namespace seen {
 
@@ -17,6 +17,7 @@ class CFWorker final : public std::enable_shared_from_this<CFWorker> {
   using Ptr = std::shared_ptr<CFWorker>;
   using Weak = std::weak_ptr<CFWorker>;
 
+  static Ptr Create(const char* name);
   static Ptr GetCurrent();
   explicit CFWorker(std::unique_ptr<CFWorkerDriver> driver);
   virtual ~CFWorker();
@@ -32,7 +33,6 @@ class CFWorker final : public std::enable_shared_from_this<CFWorker> {
   DISALLOW_COPY_ASSIGN_AND_MOVE(CFWorker);
 };
 
-CFWorker::Ptr CreateWorker(const char* name);
 CFWorker::Ptr GetPlatformWorker();
 
 }  // namespace seen

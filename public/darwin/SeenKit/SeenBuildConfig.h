@@ -5,10 +5,12 @@
 #include <TargetConditionals.h>
 
 #ifdef __cplusplus
-#define SEEN_EXPORT extern "C" __attribute__((visibility("default")))
+#define SEEN_EXTERN extern "C"
 #else
-#define SEEN_EXPORT extern __attribute__((visibility("default")))
+#define SEEN_EXTERN extern
 #endif
+
+#define SEEN_EXPORT SEEN_EXTERN __attribute__((visibility("default")))
 
 #if TARGET_OS_IOS || TARGET_OS_TV
 #define SEEN_BUILD_IOS 1

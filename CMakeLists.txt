@@ -15,8 +15,7 @@ message(STATUS ${SEEN_VERSION})
 
 add_subdirectory(vendor/fmt)
 add_subdirectory(vendor/glm)
-add_subdirectory(vendor/llgl)
-add_subdirectory(vendor/miniunz)
+add_subdirectory(vendor/miniz)
 add_subdirectory(vendor/wamr)
 
 if(${SEEN_BUILD_DARWIN})
@@ -45,7 +44,7 @@ if(${SEEN_BUILD_DARWIN})
   target_include_directories(seen PUBLIC public/darwin)
   target_include_directories(seen PRIVATE src)
   target_compile_definitions(seen PRIVATE ${SEEN_COMPILE_FLAGS})
-  target_link_libraries(seen PRIVATE fmt glm llgl miniunz wamr)
+  target_link_libraries(seen PRIVATE fmt glm miniz wamr)
   set_target_properties(seen PROPERTIES
     FRAMEWORK TRUE
     MACOSX_DEPLOYMENT_TARGET "11.0"
