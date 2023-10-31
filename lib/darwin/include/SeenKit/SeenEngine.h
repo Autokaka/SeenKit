@@ -2,7 +2,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "SeenBuildConfig.h"
+#import "SeenMacros.h"
 
 SEEN_EXPORT @interface SeenEngine : NSObject
 

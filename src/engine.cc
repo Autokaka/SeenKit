@@ -16,11 +16,15 @@ CFDataChannel::Ptr Engine::GetChannel() const {
   return platform_channel_;
 }
 
-void Engine::Update(const TimeDelta& time_delta, const CFClosure& on_complete) {
+void Engine::Update(const TimeDelta& time_delta, CFClosure on_complete) {
   auto begin_time = TimePoint::Now();
-  main_worker_->DispatchAsync([begin_time]() {
+  main_worker_->DispatchAsync([begin_time, on_complete = std::move(on_complete)]() {
     auto end_time = TimePoint::Now();
-    SEEN_INFO("Update, time_delta is {}ms", (end_time - begin_time).ToMilliseconds());
+    SEEN_INFO("Update, end_time:{}, begin_time:{},time_delta is {}ms", end_time.ToEpochDelta().ToMilliseconds(),
+              begin_time.ToEpochDelta().ToMilliseconds(), (end_time - begin_time).ToMilliseconds());
+    if (on_complete) {
+      on_complete();
+    }
   });
 }
 

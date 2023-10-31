@@ -4,15 +4,13 @@ import SwiftUI
 
 #if os(iOS) || os(tvOS) || os(watchOS)
 #else
-struct SeenView: NSViewRepresentable {
-  private let _engine: SeenEngine = SeenEngine()
-
+struct SeenSwiftUIView: NSViewRepresentable {
   func makeNSView(context: Context) -> NSView {
-    _engine.update(withTimeDelta: 16)
-    return NSView()
+    return SeenNSView()
   }
   
-  func updateNSView(_ nsView: NSView, context: Context) {
+  func updateNSView(_ view: NSView, context: Context) {
+      
   }
 }
 #endif

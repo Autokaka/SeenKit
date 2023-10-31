@@ -30,7 +30,7 @@ bool worker_driver_is_platform_driver() {
 
 void platform_worker_driver_dispatch_async(const TimePoint& time_point, CFClosure task) {
   auto delay = time_point - TimePoint::Now();
-  __block CFClosure task_block(std::move(task));
+  __block auto task_block = std::move(task);
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delay.ToNanoseconds()), dispatch_get_main_queue(), ^{
     task_block();
   });

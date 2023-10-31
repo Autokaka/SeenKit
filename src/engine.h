@@ -14,7 +14,7 @@ class Engine final {
   using Ptr = std::unique_ptr<Engine>;
 
   explicit Engine();
-  void Update(const TimeDelta& time_delta, const CFClosure& on_complete = nullptr);
+  void Update(const TimeDelta& time_delta, CFClosure on_complete = nullptr);
   [[nodiscard]] CFDataChannel::Ptr GetChannel() const;
 
  private:

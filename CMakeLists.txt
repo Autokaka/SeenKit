@@ -19,21 +19,21 @@ add_subdirectory(vendor/miniz)
 add_subdirectory(vendor/wamr)
 
 if(${SEEN_BUILD_DARWIN})
-  file(GLOB_RECURSE PUB_HEADERS
-    "${PROJECT_SOURCE_DIR}/public/darwin/*.h"
+  add_subdirectory(lib/darwin)
+  file(GLOB_RECURSE PUB_HEADER 
+    "${darwin_SOURCE_DIR}/include/*.h"
   )
-  file(GLOB ARC_SOURCE
+  file(GLOB_RECURSE ARC_SOURCE
+    "${darwin_SOURCE_DIR}/*.h"
+    "${darwin_SOURCE_DIR}/*.mm"
+  )
+  file(GLOB_RECURSE MRC_SOURCE
     "${PROJECT_SOURCE_DIR}/src/*.h"
     "${PROJECT_SOURCE_DIR}/src/*.cc"
     "${PROJECT_SOURCE_DIR}/src/*.mm"
   )
-  file(GLOB_RECURSE MRC_SOURCE
-    "${PROJECT_SOURCE_DIR}/src/seen/*.h"
-    "${PROJECT_SOURCE_DIR}/src/seen/*.cc"
-    "${PROJECT_SOURCE_DIR}/src/seen/*.mm"
-  )
   file(GLOB_RECURSE SOURCE
-    ${PUB_HEADERS}
+    ${PUB_HEADER}
     ${ARC_SOURCE}
     ${MRC_SOURCE}
   )
@@ -41,9 +41,9 @@ if(${SEEN_BUILD_DARWIN})
   set_source_files_properties(${MRC_SOURCE} PROPERTIES COMPILE_FLAGS -fno-objc-arc)
   source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCE})
   add_library(seen STATIC ${SOURCE})
-  target_include_directories(seen PUBLIC public/darwin)
+  target_include_directories(seen PUBLIC ${darwin_SOURCE_DIR}/include)
   target_include_directories(seen PRIVATE src)
-  target_compile_definitions(seen PRIVATE ${SEEN_COMPILE_FLAGS})
+  target_compile_definitions(seen PUBLIC ${SEEN_COMPILE_FLAGS})
   target_link_libraries(seen PRIVATE fmt glm miniz wamr)
   set_target_properties(seen PROPERTIES
     FRAMEWORK TRUE
@@ -52,7 +52,7 @@ if(${SEEN_BUILD_DARWIN})
     MACOSX_FRAMEWORK_BUNDLE_VERSION "${SEEN_VERSION}"
     MACOSX_FRAMEWORK_SHORT_VERSION_STRING "${PROJECT_VERSION}"
     OUTPUT_NAME SeenKit
-    PUBLIC_HEADER "${PUBLIC_HEADERS}"
+    PUBLIC_HEADER "${PUB_HEADER}"
     XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "-std=c++20"
     XCODE_ATTRIBUTE_CODE_SIGN_STYLE Automatic
     XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "11.0"
