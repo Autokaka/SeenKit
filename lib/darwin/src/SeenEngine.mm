@@ -1,7 +1,9 @@
 // Created by Autokaka (qq1909698494@gmail.com) on 2023/08/11.
 
+#import <Metal/Metal.h>
 #import <SeenKit/SeenEngine.h>
 
+#import "SeenWeakProxy.h"
 #include "engine.h"
 
 @implementation SeenEngine {
@@ -12,10 +14,11 @@
   return _cppEngine.get();
 }
 
-- (instancetype)init {
+- (instancetype)initWithLayer:(CAMetalLayer*)layer {
   self = [super init];
   if (self != nil) {
-    _cppEngine = std::make_unique<seen::Engine>();
+    SeenWeakProxy* layerProxy = [[SeenWeakProxy alloc] initWithId:layer];
+    _cppEngine = std::make_unique<seen::Engine>((__bridge_retained void*)layerProxy);
   }
   return self;
 }

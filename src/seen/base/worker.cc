@@ -5,12 +5,12 @@
 
 namespace seen {
 
-thread_local CFWorker::Weak thread_local_worker;
+thread_local CFWorker::WeakPtr thread_local_worker;
 
 CFWorker::Ptr CFWorker::Create(const char* name) {
   auto worker_driver = std::make_unique<CFWorkerDriverImpl>(name);
   auto worker = std::make_shared<CFWorker>(std::move(worker_driver));
-  CFWorker::Weak weak_worker = worker;
+  CFWorker::WeakPtr weak_worker = worker;
   worker->driver_->Start([weak_worker]() { thread_local_worker = weak_worker; });
   return worker;
 }

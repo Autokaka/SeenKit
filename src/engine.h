@@ -13,14 +13,17 @@ class Engine final {
  public:
   using Ptr = std::unique_ptr<Engine>;
 
-  explicit Engine();
+  explicit Engine(void* context);
+  ~Engine();
   void Update(const TimeDelta& time_delta, CFClosure on_complete = nullptr);
   [[nodiscard]] CFDataChannel::Ptr GetChannel() const;
 
  private:
+  std::shared_ptr<void> context_;
   CFWorker::Ptr main_worker_;
   CFDataChannel::Ptr main_channel_;
   CFDataChannel::Ptr platform_channel_;
+
   DISALLOW_COPY_ASSIGN_AND_MOVE(Engine);
 };
 

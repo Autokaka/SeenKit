@@ -15,7 +15,7 @@ namespace seen {
 class CFDataChannel final : public std::enable_shared_from_this<CFDataChannel> {
  public:
   using Ptr = std::shared_ptr<CFDataChannel>;
-  using Weak = std::weak_ptr<CFDataChannel>;
+  using WeakPtr = std::weak_ptr<CFDataChannel>;
   using DataHandler = std::function<void(const CFData::Ptr&)>;
 
   explicit CFDataChannel(const CFWorker::Ptr& worker, const CFDataChannel::Ptr& paired_channel);
@@ -27,9 +27,9 @@ class CFDataChannel final : public std::enable_shared_from_this<CFDataChannel> {
   void ReceiveData(const CFData::Ptr& data);
 
   std::mutex mutex_;
-  CFWorker::Weak weak_worker_;
+  CFWorker::WeakPtr weak_worker_;
   DataHandler data_handler_;
-  CFDataChannel::Weak paired_channel_;
+  CFDataChannel::WeakPtr paired_channel_;
 
   DISALLOW_COPY_ASSIGN_AND_MOVE(CFDataChannel);
 };

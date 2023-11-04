@@ -42,7 +42,7 @@ if(${SEEN_BUILD_DARWIN})
   source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCE})
   add_library(seen STATIC ${SOURCE})
   target_include_directories(seen PUBLIC ${darwin_SOURCE_DIR}/include)
-  target_include_directories(seen PRIVATE src)
+  target_include_directories(seen PRIVATE src ${darwin_SOURCE_DIR}/src)
   target_compile_definitions(seen PUBLIC ${SEEN_COMPILE_FLAGS})
   target_link_libraries(seen PRIVATE fmt glm miniz wamr)
   set_target_properties(seen PROPERTIES

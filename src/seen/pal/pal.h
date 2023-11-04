@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include "seen/base/time_point.h"
 #include "seen/base/types.h"
 
@@ -14,5 +16,11 @@ void log(int level, const char* message);
 #pragma mark - seen/base/worker_driver.h
 bool worker_driver_is_platform_driver();
 void platform_worker_driver_dispatch_async(const TimePoint& time_point, CFClosure task);
+
+#pragma mark - seen/engine.h
+void engine_release(void* context);
+
+#pragma mark - renderer
+glm::vec2 renderer_get_drawable_size(const std::shared_ptr<void>& context);
 
 }  // namespace seen::pal

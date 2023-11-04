@@ -2,8 +2,33 @@
 
 #pragma once
 
-namespace seen::fw {
+#include <functional>
+#include <glm/glm.hpp>
 
-class Scene {};
+#include "seen/base/time_delta.h"
 
-}  // namespace seen::fw
+namespace seen {
+
+class Scene {
+ public:
+  using Ptr = std::unique_ptr<Scene>;
+  using OnSizeChangedCallback = std::function<void(const glm::vec2&)>;
+
+  static Scene* GetCurrent();
+
+  // Size
+  [[nodiscard]] glm::vec2 GetSize() const;
+  OnSizeChangedCallback on_size_changed;
+
+  [[nodiscard]] bool IsDirty() const;
+
+  void Draw(const TimeDelta& time_delta, const glm::vec2& size);
+
+ private:
+  friend class Engine;
+
+  bool is_dirty_;
+  glm::vec2 size_;
+};
+
+}  // namespace seen

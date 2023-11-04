@@ -15,7 +15,7 @@ class CFWorkerDriver;
 class CFWorker final : public std::enable_shared_from_this<CFWorker> {
  public:
   using Ptr = std::shared_ptr<CFWorker>;
-  using Weak = std::weak_ptr<CFWorker>;
+  using WeakPtr = std::weak_ptr<CFWorker>;
 
   static Ptr Create(const char* name);
   static Ptr GetCurrent();

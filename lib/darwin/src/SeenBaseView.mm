@@ -1,3 +1,5 @@
+#import <Metal/Metal.h>
+
 #import "SeenBaseView+Private.h"
 #import "ViewMacros.h"
 
@@ -8,7 +10,7 @@
 }
 
 SEEN_VIEW_INIT_COMMON_IMPL {
-  _engine = [[SeenEngine alloc] init];
+  _engine = [[SeenEngine alloc] initWithLayer:self.metalLayer];
 }
 
 - (void)resizeDrawable:(CGFloat)scaleFactor {
