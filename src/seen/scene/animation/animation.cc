@@ -8,7 +8,7 @@
 
 namespace seen::scene {
 
-thread_local std::list<Animation::Ptr> thread_local_animations_;
+thread_local std::list<Animation::Ptr> tls_animations_;
 
 ValueAnimation Animation::Value(double from_value, double to_value, const TimeDelta& duration) {
   return ValueAnimation{from_value, to_value, duration};
@@ -41,7 +41,7 @@ MultiChildAnimation Animation::Sequence(const std::vector<Ptr>& animations) {
 }
 
 void Animation::Cancel(Animation::Token token) {
-  thread_local_animations_.remove_if([token](const Ptr& animation) {
+  tls_animations_.remove_if([token](const Ptr& animation) {
     if (reinterpret_cast<Token>(&animation) == token) {
       animation->Update(TimeDelta::Zero(), true);
       return true;
@@ -59,15 +59,15 @@ Animation::Type Animation::GetType() const {
 }
 
 Animation::Token Animation::Register(const Ptr& animation) {
-  thread_local_animations_.emplace_back(std::move(animation));
-  return &thread_local_animations_.back();
+  tls_animations_.emplace_back(animation);
+  return &tls_animations_.back();
 }
 
 void Animation::UpdateAll(const TimeDelta& time_delta) {
-  for (const auto& animation : thread_local_animations_) {
-    auto state = animation->Update(time_delta);
+  for (const auto& animation : tls_animations_) {
+    auto state = animation->Update(time_delta, false);
     if (state == Animation::State::kFinished) {
-      thread_local_animations_.remove(animation);
+      tls_animations_.remove(animation);
     }
   }
 }

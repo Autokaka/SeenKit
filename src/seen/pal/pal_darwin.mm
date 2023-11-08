@@ -14,6 +14,7 @@
 namespace seen::pal {
 
 #pragma mark - seen/base/logger.h
+
 void log(int level, const char* message) {
   switch (static_cast<CFLogLevel>(level)) {
     case CFLogLevel::kInfo:
@@ -28,6 +29,7 @@ void log(int level, const char* message) {
 }
 
 #pragma mark - seen/base/worker_driver.h
+
 bool worker_driver_is_platform_driver() {
   return NSThread.isMainThread == YES;
 }
@@ -40,14 +42,18 @@ void platform_worker_driver_dispatch_async(const TimePoint& time_point, CFClosur
   });
 }
 
-#pragma mark - seen/engine.h
-void engine_release(void* context) {
-  CFRelease(static_cast<CFTypeRef>(context));
+#pragma mark - renderer
+
+void renderer_release(void* renderer_handle) {
+  CFRelease(renderer_handle);
 }
 
-#pragma mark - renderer
-glm::vec2 renderer_get_drawable_size(const std::shared_ptr<void>& context) {
-  auto* layer = static_cast<CAMetalLayer*>([static_cast<SeenWeakProxy*>(context.get()) lock]);
+const void* renderer_drawable_lock(const std::shared_ptr<void>& renderer) {
+  return [static_cast<SeenWeakProxy*>(renderer.get()) lock];
+}
+
+glm::vec2 renderer_get_drawable_size(const void* drawable_handle) {
+  auto* layer = static_cast<CAMetalLayer*>(drawable_handle);
   if (layer == nullptr) {
     return {0, 0};
   }

@@ -5,8 +5,6 @@
 #include <functional>
 #include <glm/glm.hpp>
 
-#include "seen/base/time_delta.h"
-
 namespace seen {
 
 class Scene {
@@ -18,14 +16,14 @@ class Scene {
 
   // Size
   [[nodiscard]] glm::vec2 GetSize() const;
-  OnSizeChangedCallback on_size_changed;
+  OnSizeChangedCallback on_size_changed_callback;
 
-  [[nodiscard]] bool IsDirty() const;
-
-  void Draw(const TimeDelta& time_delta, const glm::vec2& size);
+  void Draw(const glm::vec2& size);
 
  private:
   friend class Engine;
+
+  void UpdateSizeIfNeeded(const glm::vec2& size);
 
   bool is_dirty_;
   glm::vec2 size_;

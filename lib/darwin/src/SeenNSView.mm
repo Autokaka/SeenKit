@@ -5,7 +5,6 @@
 #import "SeenBaseView+Private.h"
 
 #import <CoreVideo/CVDisplayLink.h>
-#import <SeenKit/SeenView.h>
 #import <dispatch/dispatch.h>
 
 @implementation SeenNSView {

@@ -14,7 +14,7 @@ namespace seen::scene {
 template <typename T, Animation::Type AnimationType>
 class TypedAnimation : public Animation {
  public:
-  using OnUpdateCallback = std::function<void(const TweenAnimation*, const State&, const T&)>;
+  using OnUpdateCallback = std::function<void(const TypedAnimation*, const State&, T)>;
 
   explicit TypedAnimation(const T& from_value, const T& to_value, const TimeDelta& duration)
       : Animation(AnimationType), from_(from_value), to_(to_value), duration_(std::max(TimeDelta::Zero(), duration)) {}
@@ -57,7 +57,8 @@ class TypedAnimation : public Animation {
       *current = to_;
       return State::kFinished;
     }
-    *current = from_ + (to_ - from_) * (current_time_ - begin_time_) / duration_;
+    auto percent = static_cast<float>((current_time_ - begin_time_) / duration_);
+    *current = from_ + (to_ - from_) * percent;
     return State::kRunning;
   }
 

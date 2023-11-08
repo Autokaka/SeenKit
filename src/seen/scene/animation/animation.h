@@ -18,7 +18,7 @@ class MultiChildAnimation;
 
 class Animation {
  public:
-  using Ptr = std::unique_ptr<Animation>;
+  using Ptr = std::shared_ptr<Animation>;
   using Token = const void*;
   enum class Type { kValue, kTween, kMultiChild };
   enum class State { kIdle, kRunning, kFinished, kCancelled };

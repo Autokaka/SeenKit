@@ -5,6 +5,8 @@
 
 #import "SeenMacros.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 SEEN_EXPORT @interface SeenEngine : NSObject
 
 - (instancetype)initWithLayer:(CAMetalLayer*)layer NS_DESIGNATED_INITIALIZER;
@@ -12,3 +14,5 @@ SEEN_EXPORT @interface SeenEngine : NSObject
 - (void)updateWithTimeDelta:(NSInteger)timeDeltaMillis completionBlock:(nullable void (^)(void))onCompleteBlock;
 
 @end
+
+NS_ASSUME_NONNULL_END

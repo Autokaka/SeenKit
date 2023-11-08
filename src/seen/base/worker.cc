@@ -5,18 +5,18 @@
 
 namespace seen {
 
-thread_local CFWorker::WeakPtr thread_local_worker;
+thread_local CFWorker::WeakPtr tls_worker;
 
 CFWorker::Ptr CFWorker::Create(const char* name) {
   auto worker_driver = std::make_unique<CFWorkerDriverImpl>(name);
   auto worker = std::make_shared<CFWorker>(std::move(worker_driver));
   CFWorker::WeakPtr weak_worker = worker;
-  worker->driver_->Start([weak_worker]() { thread_local_worker = weak_worker; });
+  worker->driver_->Start([weak_worker]() { tls_worker = weak_worker; });
   return worker;
 }
 
 CFWorker::Ptr CFWorker::GetCurrent() {
-  return thread_local_worker.lock();
+  return tls_worker.lock();
 }
 
 CFWorker::CFWorker(std::unique_ptr<CFWorkerDriver> driver) : driver_(std::move(driver)) {}

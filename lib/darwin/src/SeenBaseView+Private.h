@@ -6,6 +6,8 @@
 #import <SeenKit/SeenEngine.h>
 #import <SeenKit/SeenView.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SeenBaseView ()
 
 SEEN_VIEW_INIT_COMMON_DECL;
@@ -16,3 +18,5 @@ SEEN_VIEW_INIT_COMMON_DECL;
 - (void)resizeDrawable:(CGFloat)scaleFactor;
 
 @end
+
+NS_ASSUME_NONNULL_END

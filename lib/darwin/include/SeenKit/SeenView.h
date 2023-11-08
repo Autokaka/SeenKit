@@ -10,6 +10,8 @@
 #define SEEN_OS_VIEW UIView
 #endif
 
+NS_ASSUME_NONNULL_BEGIN
+
 SEEN_EXPORT @interface SeenBaseView : SEEN_OS_VIEW
 
 @property(nonatomic, getter=isPaused) BOOL paused;
@@ -25,3 +27,5 @@ SEEN_EXPORT @interface SeenUIView : SeenBaseView
 @end
 #define SeenView SeenUIView
 #endif  // SEEN_BUILD_MACOS
+
+NS_ASSUME_NONNULL_END
