@@ -2,31 +2,34 @@
 
 #pragma once
 
-#include <functional>
 #include <glm/glm.hpp>
+
+#include "seen/base/class_ext.h"
+#include "seen/base/rx_value.h"
+#include "seen/base/time_delta.h"
 
 namespace seen {
 
 class Scene {
  public:
   using Ptr = std::unique_ptr<Scene>;
-  using OnSizeChangedCallback = std::function<void(const glm::vec2&)>;
 
-  static Scene* GetCurrent();
+  explicit Scene();
+  static Scene* GetTLS();
 
-  // Size
-  [[nodiscard]] glm::vec2 GetSize() const;
-  OnSizeChangedCallback on_size_changed_callback;
-
-  void Draw(const glm::vec2& size);
+  const rx::View<TimeDelta> elapsed_time;
+  const rx::View<glm::vec2> size;
+  const rx::View<glm::vec2> scale;
+  rx::Value<glm::vec4> background_color;
 
  private:
   friend class Engine;
 
-  void UpdateSizeIfNeeded(const glm::vec2& size);
+  rx::Value<glm::vec2> size_;
+  rx::Value<glm::vec2> scale_;
+  rx::Value<TimeDelta> elapsed_time_;
 
-  bool is_dirty_;
-  glm::vec2 size_;
+  DISALLOW_COPY_ASSIGN_AND_MOVE(Scene);
 };
 
 }  // namespace seen

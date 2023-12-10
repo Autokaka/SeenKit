@@ -1,9 +1,6 @@
 // Created by Autokaka (qq1909698494@gmail.com) on 2023/10/13.
 
 #import <Foundation/Foundation.h>
-#import <QuartzCore/CAMetalLayer.h>
-
-#import "SeenWeakProxy.h"
 
 #include <dispatch/dispatch.h>
 #include <sys/syslog.h>
@@ -43,22 +40,6 @@ void platform_worker_driver_dispatch_async(const TimePoint& time_point, CFClosur
 }
 
 #pragma mark - renderer
-
-void renderer_release(void* renderer_handle) {
-  CFRelease(renderer_handle);
-}
-
-const void* renderer_drawable_lock(const std::shared_ptr<void>& renderer) {
-  return [static_cast<SeenWeakProxy*>(renderer.get()) lock];
-}
-
-glm::vec2 renderer_get_drawable_size(const void* drawable_handle) {
-  auto* layer = static_cast<CAMetalLayer*>(drawable_handle);
-  if (layer == nullptr) {
-    return {0, 0};
-  }
-  auto drawable_size = layer.drawableSize;
-  return {drawable_size.width, drawable_size.height};
-}
+// TODO(Autokaka):
 
 }  // namespace seen::pal

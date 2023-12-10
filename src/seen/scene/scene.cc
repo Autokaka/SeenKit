@@ -4,29 +4,11 @@
 
 namespace seen {
 
-Scene* Scene::GetCurrent() {
-  static auto scene = std::make_unique<Scene>();
+Scene* Scene::GetTLS() {
+  thread_local auto scene = std::make_unique<Scene>();
   return scene.get();
 }
 
-glm::vec2 Scene::GetSize() const {
-  return size_;
-}
-
-void Scene::Draw(const glm::vec2& size) {
-  UpdateSizeIfNeeded(size);
-  if (is_dirty_) {
-  }
-}
-
-void Scene::UpdateSizeIfNeeded(const glm::vec2& size) {
-  if (size_ != size) {
-    size_ = size;
-    is_dirty_ = true;
-    if (on_size_changed_callback) {
-      on_size_changed_callback(size);
-    }
-  }
-}
+Scene::Scene() : size(&size_), scale(&scale_), elapsed_time(&elapsed_time_), background_color({0, 0, 0, 0}) {}
 
 }  // namespace seen

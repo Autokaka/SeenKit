@@ -15,12 +15,13 @@ class Engine final {
  public:
   using Ptr = std::unique_ptr<Engine>;
 
-  explicit Engine(void* handle);
+  explicit Engine(void* renderer);
+  ~Engine();
   void Update(const TimeDelta& time_delta, CFClosure on_complete = nullptr);
   [[nodiscard]] CFDataChannel::Ptr GetChannel() const;
 
  private:
-  std::shared_ptr<void> renderer_;
+  void* renderer_;
   CFWorker::Ptr main_worker_;
   CFDataChannel::Ptr main_channel_;
   CFDataChannel::Ptr platform_channel_;
