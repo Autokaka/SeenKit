@@ -6,14 +6,26 @@
 #include <memory>
 #include <vector>
 
+#include "engine.h"
 #include "seen/base/class_ext.h"
 #include "seen/base/rect.h"
 #include "seen/base/rx_value.h"
 
 namespace seen::scene {
 
-class Node : public std::enable_shared_from_this<Node> {
+class NodeComponent {
  public:
+  using Ptr = std::shared_ptr<NodeComponent>;
+
+  explicit NodeComponent(const char* class_name);
+
+  const char* class_name;
+};
+
+class Node final : public std::enable_shared_from_this<Node> {
+ public:
+  friend class seen::Engine;
+
   using Ptr = std::shared_ptr<Node>;
   using WeakPtr = std::weak_ptr<Node>;
 
@@ -23,6 +35,8 @@ class Node : public std::enable_shared_from_this<Node> {
   rx::Value<glm::vec2> scale;
   rx::Value<float> rotation_z;
   rx::Value<glm::vec2> position;
+
+  rx::Value<NodeComponent::Ptr> component;
 
   const rx::View<glm::mat3> parent_transform;
   const rx::View<glm::mat3> world_transform;

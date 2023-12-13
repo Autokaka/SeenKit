@@ -17,12 +17,9 @@ SEEN_VIEW_INIT_COMMON_IMPL {
   CGSize newSize = self.bounds.size;
   newSize.width *= scaleFactor;
   newSize.height *= scaleFactor;
-  if (newSize.width <= 0 || newSize.width <= 0) {
-    return;
-  }
-  if (CGSizeEqualToSize(newSize, self.metalLayer.drawableSize)) {
-    return;
-  }
+  newSize.width = MAX(0, newSize.width);
+  newSize.height = MAX(0, newSize.height);
+  self.metalLayer.contentsScale = scaleFactor;
   self.metalLayer.drawableSize = newSize;
 }
 

@@ -8,6 +8,19 @@
 
 namespace seen {
 
+namespace {
+
+std::vector<scene::Node::Ptr> FlattenNodes(const scene::Node::Ptr& node) {
+  std::vector<scene::Node::Ptr> nodes = {node};
+  for (auto& child : node->GetChildren()) {
+    auto flatten_nodes = FlattenNodes(child);
+    nodes.insert(nodes.end(), flatten_nodes.begin(), flatten_nodes.end());
+  }
+  return nodes;
+}
+
+}  // namespace
+
 const char* const kMainWorkerName = "Seen.Main";
 
 Engine::Engine(void* renderer)
@@ -39,7 +52,15 @@ void Engine::Update(const TimeDelta& time_delta, CFClosure on_complete) {
     auto* scene = Scene::GetTLS();
     scene->elapsed_time_ = scene->elapsed_time_.Get() + time_delta;
     scene->size_ = pal::renderer_get_drawable_size(renderer);
-    pal::renderer_draw_scene(renderer, scene);
+    if (scene->is_dirty_.Get()) {
+      pal::renderer_draw_scene(renderer, scene);
+      if (auto root_node = scene->root_node.Get()) {
+        auto flatten_nodes = FlattenNodes(root_node);
+        for (const auto& child : flatten_nodes) {
+          pal::renderer_draw_node(renderer, child);
+        }
+      }
+    }
     if (on_complete) {
       on_complete();
     }

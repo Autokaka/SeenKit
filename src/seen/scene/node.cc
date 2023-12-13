@@ -6,8 +6,10 @@
 
 namespace seen::scene {
 
+NodeComponent::NodeComponent(const char* class_name) : class_name(class_name) {}
+
 Node::Node() : parent_transform(&parent_transform_), world_transform(&world_transform_) {
-  bounds.OnUpdate([this](auto) { is_dirty_ = true; });
+  rx::LinkWithValues([this]() { is_dirty_ = true; }, bounds, component);
   // clang-format off
   rx::LinkWithValues([this]() {
     glm::mat3 mat(1.0F);

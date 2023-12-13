@@ -9,6 +9,8 @@ Scene* Scene::GetTLS() {
   return scene.get();
 }
 
-Scene::Scene() : size(&size_), scale(&scale_), elapsed_time(&elapsed_time_), background_color({0, 0, 0, 0}) {}
+Scene::Scene() : size(&size_), scale(&scale_), elapsed_time(&elapsed_time_), background_color({0, 0, 0, 0}) {
+  rx::LinkWithValues([this]() { is_dirty_ = true; }, size_, scale_, elapsed_time_, background_color, root_node);
+}
 
 }  // namespace seen

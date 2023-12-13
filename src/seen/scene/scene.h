@@ -4,14 +4,18 @@
 
 #include <glm/glm.hpp>
 
+#include "engine.h"
 #include "seen/base/class_ext.h"
 #include "seen/base/rx_value.h"
 #include "seen/base/time_delta.h"
+#include "seen/scene/node.h"
 
 namespace seen {
 
-class Scene {
+class Scene final {
  public:
+  friend class Engine;
+
   using Ptr = std::unique_ptr<Scene>;
 
   explicit Scene();
@@ -21,10 +25,10 @@ class Scene {
   const rx::View<glm::vec2> size;
   const rx::View<glm::vec2> scale;
   rx::Value<glm::vec4> background_color;
+  rx::Value<scene::Node::Ptr> root_node;
 
  private:
-  friend class Engine;
-
+  rx::Value<bool> is_dirty_;
   rx::Value<glm::vec2> size_;
   rx::Value<glm::vec2> scale_;
   rx::Value<TimeDelta> elapsed_time_;

@@ -7,12 +7,8 @@
 
 #include "seen/base/time_point.h"
 #include "seen/base/types.h"
-
-namespace seen {
-
-class Scene;
-
-}
+#include "seen/scene/node.h"
+#include "seen/scene/scene.h"
 
 namespace seen::pal {
 
@@ -26,6 +22,7 @@ void platform_worker_driver_dispatch_async(const TimePoint& time_point, CFClosur
 #pragma mark - renderer
 glm::vec2 renderer_get_drawable_size(void* renderer_handle);
 void renderer_draw_scene(void* renderer_handle, const Scene* scene);
+void renderer_draw_node(void* renderer_handle, const scene::Node::Ptr& node);
 void renderer_release(void* renderer_handle);
 
 }  // namespace seen::pal
