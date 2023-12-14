@@ -44,25 +44,19 @@ void platform_worker_driver_dispatch_async(const TimePoint& time_point, CFClosur
 #pragma mark - renderer
 glm::vec2 renderer_get_drawable_size(void* renderer_handle) {
   auto* renderer = reinterpret_cast<SeenRenderer*>(renderer_handle);
-  auto* layer = [renderer lockLayer];
-  if (layer == nullptr) {
-    return {0, 0};
-  }
-  CFDeferredTask defer_layer([layer] { [layer release]; });
-  auto drawable_size = layer.drawableSize;
+  auto drawable_size = renderer.drawableSize;
   return {drawable_size.width, drawable_size.height};
 }
 
 void renderer_draw_scene(void* renderer_handle, const Scene* scene) {
   auto* renderer = reinterpret_cast<SeenRenderer*>(renderer_handle);
-  auto* layer = [renderer lockLayer];
-  if (layer == nullptr) {
-    return;
-  }
-  CFDeferredTask defer_layer([layer] { [layer release]; });
+  // TODO(Autokaka):
 }
 
-void renderer_draw_node(void* renderer_handle, const scene::Node::Ptr& node) {}
+void renderer_draw_node(void* renderer_handle, const scene::Node::Ptr& node) {
+  auto* renderer = reinterpret_cast<SeenRenderer*>(renderer_handle);
+  // TODO(Autokaka):
+}
 
 void renderer_release(void* renderer_handle) {
   CFRelease(renderer_handle);

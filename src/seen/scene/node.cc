@@ -3,12 +3,22 @@
 #include <glm/gtx/matrix_transform_2d.hpp>
 
 #include "seen/scene/node.h"
+#include "seen/scene/scene.h"
 
 namespace seen::scene {
 
 NodeComponent::NodeComponent(const char* class_name) : class_name(class_name) {}
 
+Node::Ptr Node::Create() {
+  return std::make_shared<Node>();
+}
+
 Node::Node() : parent_transform(&parent_transform_), world_transform(&world_transform_) {
+  is_dirty_.OnUpdate([](bool is_dirty) {
+    if (is_dirty) {
+      Scene::GetTLS()->needs_repaint_ = true;
+    }
+  });
   rx::LinkWithValues([this]() { is_dirty_ = true; }, bounds, component);
   // clang-format off
   rx::LinkWithValues([this]() {

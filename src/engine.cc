@@ -30,10 +30,12 @@ Engine::Engine(void* renderer)
       platform_channel_(std::make_shared<CFDataChannel>(GetPlatformWorker(), main_channel_)) {
   SEEN_ASSERT(GetPlatformWorker()->IsCurrent());
   // TODO(Autokaka): Remove it after tests.
-  main_worker_->DispatchAsync([renderer = renderer_]() {
+  main_worker_->DispatchAsync([]() {
     auto* scene = Scene::GetTLS();
-    // const auto* handle = pal::renderer_drawable_lock(renderer);
-    // scene->Draw(pal::renderer_get_drawable_size(handle));
+    auto root_node = scene::Node::Create();
+    auto test_node = scene::Node::Create();
+    root_node->AddChild(test_node);
+    scene->root_node = root_node;
   });
 }
 
@@ -52,14 +54,16 @@ void Engine::Update(const TimeDelta& time_delta, CFClosure on_complete) {
     auto* scene = Scene::GetTLS();
     scene->elapsed_time_ = scene->elapsed_time_.Get() + time_delta;
     scene->size_ = pal::renderer_get_drawable_size(renderer);
-    if (scene->is_dirty_.Get()) {
+    if (scene->needs_repaint_.Get()) {
       pal::renderer_draw_scene(renderer, scene);
       if (auto root_node = scene->root_node.Get()) {
         auto flatten_nodes = FlattenNodes(root_node);
         for (const auto& child : flatten_nodes) {
           pal::renderer_draw_node(renderer, child);
+          child->is_dirty_ = false;
         }
       }
+      scene->needs_repaint_ = false;
     }
     if (on_complete) {
       on_complete();

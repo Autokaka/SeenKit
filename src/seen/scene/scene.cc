@@ -9,8 +9,16 @@ Scene* Scene::GetTLS() {
   return scene.get();
 }
 
-Scene::Scene() : size(&size_), scale(&scale_), elapsed_time(&elapsed_time_), background_color({0, 0, 0, 0}) {
-  rx::LinkWithValues([this]() { is_dirty_ = true; }, size_, scale_, elapsed_time_, background_color, root_node);
+Scene::Scene() : size(&size_), scale(&scale_), elapsed_time(&elapsed_time_) {
+  Reset();
+  rx::LinkWithValues([this]() { needs_repaint_ = true; }, size_, scale_, elapsed_time_, background_color, root_node);
+}
+
+void Scene::Reset() {
+  root_node = nullptr;
+  elapsed_time_ = TimeDelta::Zero();
+  background_color = {0, 0, 0, 0};
+  needs_repaint_ = true;
 }
 
 }  // namespace seen

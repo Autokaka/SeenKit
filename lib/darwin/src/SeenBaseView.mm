@@ -10,6 +10,8 @@
 }
 
 SEEN_VIEW_INIT_COMMON_IMPL {
+  self.metalLayer.device = MTLCreateSystemDefaultDevice();
+  self.metalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
   _engine = [[SeenEngine alloc] initWithLayer:self.metalLayer];
 }
 

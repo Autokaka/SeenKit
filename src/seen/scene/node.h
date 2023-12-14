@@ -29,6 +29,7 @@ class Node final : public std::enable_shared_from_this<Node> {
   using Ptr = std::shared_ptr<Node>;
   using WeakPtr = std::weak_ptr<Node>;
 
+  static Ptr Create();
   explicit Node();
 
   rx::Value<Rect> bounds;

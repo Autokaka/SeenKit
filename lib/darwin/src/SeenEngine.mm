@@ -12,8 +12,7 @@
 - (instancetype)initWithLayer:(CAMetalLayer*)layer {
   self = [super init];
   if (self != nil) {
-    SeenRenderer* renderer = [[SeenRenderer alloc] init];
-    renderer.layer = layer;
+    SeenRenderer* renderer = [[SeenRenderer alloc] initWithLayer:layer];
     _cppEngine = std::make_unique<seen::Engine>((__bridge_retained void*)renderer);
   }
   return self;

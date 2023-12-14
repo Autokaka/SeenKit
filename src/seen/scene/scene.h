@@ -15,6 +15,7 @@ namespace seen {
 class Scene final {
  public:
   friend class Engine;
+  friend class scene::Node;
 
   using Ptr = std::unique_ptr<Scene>;
 
@@ -28,7 +29,9 @@ class Scene final {
   rx::Value<scene::Node::Ptr> root_node;
 
  private:
-  rx::Value<bool> is_dirty_;
+  void Reset();
+
+  rx::Value<bool> needs_repaint_;
   rx::Value<glm::vec2> size_;
   rx::Value<glm::vec2> scale_;
   rx::Value<TimeDelta> elapsed_time_;
