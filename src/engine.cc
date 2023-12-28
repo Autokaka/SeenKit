@@ -34,14 +34,14 @@ Engine::Engine(void* renderer)
   main_worker_->DispatchAsync([]() {
     auto* scene = Scene::GetTLS();
     scene->background_color = {1, 0, 0, 1};
-    // auto root_node = scene::Node::Create();
-    // auto sprite = scene::Sprite::Create();
-    // sprite->color = {0, 1, 0, 1};
-    // sprite->bounds = Rect::CreateFromOriginAndSize({0, 0}, {10, 10});
-    // root_node->component = sprite;
-    // auto test_node = scene::Node::Create();
-    // root_node->AddChild(test_node);
-    // scene->root_node = root_node;
+    auto root_node = scene::Node::Create();
+    auto sprite = scene::Sprite::Create();
+    sprite->color = {0, 1, 0, 1};
+    sprite->bounds = Rect::CreateFromOriginAndSize({0, 0}, {10, 10});
+    root_node->component = sprite;
+    auto test_node = scene::Node::Create();
+    root_node->AddChild(test_node);
+    scene->root_node = root_node;
   });
 }
 

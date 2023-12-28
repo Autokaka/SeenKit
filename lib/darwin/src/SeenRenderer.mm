@@ -58,13 +58,13 @@ vertex VertexOutput vertexFunction(uint vertexID [[vertex_id]],
                                  constant VertexInput* vertices [[buffer(0)]],
                                  constant UniformInput& uniforms [[buffer(1)]]) {
     VertexOutput out;
-    float2 pixelSpacePosition = vertexArray[vertexID].position.xy;
+    float2 pixelSpacePosition = vertices[vertexID].position.xy;
     pixelSpacePosition *= uniforms.scale;
     float2 viewportSize = float2(uniforms.viewportSize);
     out.clipSpacePosition.xy = pixelSpacePosition / (viewportSize / 2.0);
     out.clipSpacePosition.z = 0.0;
     out.clipSpacePosition.w = 1.0;
-    out.color = vertexArray[vertexID].color;
+    out.color = vertices[vertexID].color;
     return out;
 }
 
@@ -100,9 +100,9 @@ fragment float4 fragmentFunction(VertexOutput in [[stage_in]]) {
     return;
   }
   self.sceneDescriptor.colorAttachments[0].texture = drawable.texture;
-  // auto renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:self.sceneDescriptor];
-  // [renderEncoder setRenderPipelineState:self.defaultPipelineState];
-  // [renderEncoder endEncoding];
+  auto renderEncoder = [self.commandBuffer renderCommandEncoderWithDescriptor:self.sceneDescriptor];
+  [renderEncoder setRenderPipelineState:self.defaultPipelineState];
+  [renderEncoder endEncoding];
   [self.commandBuffer presentDrawable:drawable];
   [self.commandBuffer commit];
 }
