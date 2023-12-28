@@ -23,6 +23,7 @@ void platform_worker_driver_dispatch_async(const TimePoint& time_point, CFClosur
 glm::vec2 renderer_get_drawable_size(void* renderer_handle);
 void renderer_draw_scene(void* renderer_handle, const Scene* scene);
 void renderer_draw_node(void* renderer_handle, const scene::Node::Ptr& node);
+void renderer_present_drawable(void* renderer_handle);
 void renderer_release(void* renderer_handle);
 
 }  // namespace seen::pal

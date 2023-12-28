@@ -30,6 +30,4 @@ namespace seen {
 
 #define interface class
 
-#define abstract
-
 }  // namespace seen

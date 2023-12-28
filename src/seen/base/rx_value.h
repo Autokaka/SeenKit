@@ -5,6 +5,7 @@
 #include <functional>
 
 #include "seen/base/class_ext.h"
+#include "seen/base/deferred_task.h"
 #include "seen/base/types.h"
 
 namespace seen::rx {
@@ -45,20 +46,20 @@ class Value final {
     if (value_ == new_value) {
       return;
     }
-    value_ = new_value;
+    CFDeferredTask apply_new_value([this, &new_value]() { value_ = new_value; });
     if (callbacks_.empty()) {
       return;
     }
     std::vector<OnUpdateCallback> callbacks;
     std::swap(callbacks, callbacks_);
     for (const auto& callback : callbacks) {
-      callback(value_);
+      callback(new_value);
     }
     std::swap(callbacks_, callbacks);
   }
   [[nodiscard]] T Get() const { return value_; }
 
-  void OnUpdate(const OnUpdateCallback& callback) {
+  void OnNext(const OnUpdateCallback& callback) {
     callbacks_.emplace_back(callback);
     callback(value_);
   }
@@ -78,8 +79,8 @@ template <typename T>
 inline constexpr bool kIsValueV = IsValue<T>::value;
 
 template <typename... V, std::enable_if_t<kIsValueV<V>>...>
-inline void LinkWithValues(const CFClosure& callback, V&... values) {
-  (values.OnUpdate([callback](auto) { callback(); }), ...);
+inline void Bind(const CFClosure& callback, V&... values) {
+  (values.OnNext([callback](auto) { callback(); }), ...);
 }
 
 template <typename T>
@@ -90,7 +91,7 @@ class View final {
   explicit View(rx::Value<T>* value_ref) : value_ref_(value_ref) {}
 
   T Get() const { return value_ref_->Get(); }
-  void OnUpdate(const OnUpdateCallback& callback) { value_ref_->OnUpdate(callback); }
+  void OnNext(const OnUpdateCallback& callback) { value_ref_->OnNext(callback); }
 
  private:
   rx::Value<T>* value_ref_;

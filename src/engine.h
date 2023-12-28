@@ -22,6 +22,7 @@ class Engine final {
 
  private:
   void* renderer_;
+  CFWorker::Ptr io_worker_;
   CFWorker::Ptr main_worker_;
   CFDataChannel::Ptr main_channel_;
   CFDataChannel::Ptr platform_channel_;

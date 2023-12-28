@@ -4,6 +4,7 @@
 #include "seen/base/logger.h"
 #include "seen/pal/pal.h"
 #include "seen/scene/animation/animation.h"
+#include "seen/scene/component/sprite.h"
 #include "seen/scene/scene.h"
 
 namespace seen {
@@ -21,21 +22,26 @@ std::vector<scene::Node::Ptr> FlattenNodes(const scene::Node::Ptr& node) {
 
 }  // namespace
 
-const char* const kMainWorkerName = "Seen.Main";
-
 Engine::Engine(void* renderer)
     : renderer_(renderer),
-      main_worker_(CFWorker::Create(kMainWorkerName)),
+      io_worker_(CFWorker::Create("Seen.IO")),
+      main_worker_(CFWorker::Create("Seen.Main")),
       main_channel_(std::make_shared<CFDataChannel>(main_worker_, platform_channel_)),
       platform_channel_(std::make_shared<CFDataChannel>(GetPlatformWorker(), main_channel_)) {
   SEEN_ASSERT(GetPlatformWorker()->IsCurrent());
-  // TODO(Autokaka): Remove it after tests.
+
+  // TODO(Autokaka): Remove it after tests...
   main_worker_->DispatchAsync([]() {
     auto* scene = Scene::GetTLS();
-    auto root_node = scene::Node::Create();
-    auto test_node = scene::Node::Create();
-    root_node->AddChild(test_node);
-    scene->root_node = root_node;
+    scene->background_color = {1, 0, 0, 1};
+    // auto root_node = scene::Node::Create();
+    // auto sprite = scene::Sprite::Create();
+    // sprite->color = {0, 1, 0, 1};
+    // sprite->bounds = Rect::CreateFromOriginAndSize({0, 0}, {10, 10});
+    // root_node->component = sprite;
+    // auto test_node = scene::Node::Create();
+    // root_node->AddChild(test_node);
+    // scene->root_node = root_node;
   });
 }
 
@@ -49,25 +55,25 @@ CFDataChannel::Ptr Engine::GetChannel() const {
 }
 
 void Engine::Update(const TimeDelta& time_delta, CFClosure on_complete) {
-  main_worker_->DispatchAsync([time_delta, renderer = renderer_, on_complete = std::move(on_complete)]() {
+  SEEN_ASSERT(GetPlatformWorker()->IsCurrent());
+  main_worker_->DispatchAsync([this, time_delta, on_complete = std::move(on_complete)]() {
     scene::Animation::UpdateAll(time_delta);
     auto* scene = Scene::GetTLS();
     scene->elapsed_time_ = scene->elapsed_time_.Get() + time_delta;
-    scene->size_ = pal::renderer_get_drawable_size(renderer);
-    if (scene->needs_repaint_.Get()) {
-      pal::renderer_draw_scene(renderer, scene);
+    scene->size_ = pal::renderer_get_drawable_size(renderer_);
+    if (scene->is_dirty_.Get()) {
+      SEEN_INFO("Update scene...");
+      pal::renderer_draw_scene(renderer_, scene);
       if (auto root_node = scene->root_node.Get()) {
         auto flatten_nodes = FlattenNodes(root_node);
         for (const auto& child : flatten_nodes) {
-          pal::renderer_draw_node(renderer, child);
-          child->is_dirty_ = false;
+          pal::renderer_draw_node(renderer_, child);
         }
       }
-      scene->needs_repaint_ = false;
+      pal::renderer_present_drawable(renderer_);
+      scene->is_dirty_ = false;
     }
-    if (on_complete) {
-      on_complete();
-    }
+    GetPlatformWorker()->DispatchAsync(on_complete);
   });
 }
 

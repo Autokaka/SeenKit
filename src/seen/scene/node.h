@@ -6,54 +6,54 @@
 #include <memory>
 #include <vector>
 
-#include "engine.h"
 #include "seen/base/class_ext.h"
 #include "seen/base/rect.h"
 #include "seen/base/rx_value.h"
 
+namespace seen {
+
+class Scene;
+
+}
+
 namespace seen::scene {
 
-class NodeComponent {
- public:
-  using Ptr = std::shared_ptr<NodeComponent>;
-
-  explicit NodeComponent(const char* class_name);
-
-  const char* class_name;
-};
+class Component;
 
 class Node final : public std::enable_shared_from_this<Node> {
  public:
-  friend class seen::Engine;
-
+  friend class Component;
+  friend class seen::Scene;
   using Ptr = std::shared_ptr<Node>;
   using WeakPtr = std::weak_ptr<Node>;
 
   static Ptr Create();
   explicit Node();
 
-  rx::Value<Rect> bounds;
+  const rx::View<Rect> bounds;
   rx::Value<glm::vec2> scale;
   rx::Value<float> rotation_z;
   rx::Value<glm::vec2> position;
 
-  rx::Value<NodeComponent::Ptr> component;
+  rx::Value<std::shared_ptr<Component>> component;
 
   const rx::View<glm::mat3> parent_transform;
   const rx::View<glm::mat3> world_transform;
   glm::mat3 GetTransform(const Ptr& from_node = nullptr) const;
 
-  Ptr GetParent();
+  bool IsRootNode() const;
+  Ptr GetParent() const;
   void RemoveFromParent();
   void AddChild(const Ptr& child);
   [[nodiscard]] std::vector<Ptr> GetChildren() const;
 
- protected:
-  rx::Value<bool> is_dirty_;
-
  private:
+  void Init();
+  void UpdateParentTransform(const glm::vec2& scale, float rotation_z, const glm::vec2& position);
   WeakPtr parent_;
   std::vector<Ptr> children_;
+  rx::Value<bool> is_dirty_;
+  rx::Value<Rect> bounds_;
   rx::Value<glm::mat3> parent_transform_;
   rx::Value<glm::mat3> world_transform_;
 

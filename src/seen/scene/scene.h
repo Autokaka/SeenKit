@@ -4,7 +4,6 @@
 
 #include <glm/glm.hpp>
 
-#include "engine.h"
 #include "seen/base/class_ext.h"
 #include "seen/base/rx_value.h"
 #include "seen/base/time_delta.h"
@@ -29,9 +28,10 @@ class Scene final {
   rx::Value<scene::Node::Ptr> root_node;
 
  private:
+  void Init();
   void Reset();
 
-  rx::Value<bool> needs_repaint_;
+  rx::Value<bool> is_dirty_;
   rx::Value<glm::vec2> size_;
   rx::Value<glm::vec2> scale_;
   rx::Value<TimeDelta> elapsed_time_;

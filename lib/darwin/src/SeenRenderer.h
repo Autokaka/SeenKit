@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)drawNode:(const void*)data length:(NSUInteger)length;
 
+- (void)presentDrawable;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -2,41 +2,64 @@
 
 #include <glm/gtx/matrix_transform_2d.hpp>
 
+#include "seen/scene/component/component.h"
+#include "seen/scene/component/sprite.h"
 #include "seen/scene/node.h"
 #include "seen/scene/scene.h"
 
 namespace seen::scene {
 
-NodeComponent::NodeComponent(const char* class_name) : class_name(class_name) {}
-
 Node::Ptr Node::Create() {
-  return std::make_shared<Node>();
+  auto node = std::make_shared<Node>();
+  node->Init();
+  return node;
 }
 
-Node::Node() : parent_transform(&parent_transform_), world_transform(&world_transform_) {
-  is_dirty_.OnUpdate([](bool is_dirty) {
-    if (is_dirty) {
-      Scene::GetTLS()->needs_repaint_ = true;
+Node::Node()
+    : bounds(&bounds_),
+      parent_transform(&parent_transform_),
+      world_transform(&world_transform_),
+      scale({1, 1}),
+      rotation_z(0.0F),
+      position({0, 0}),
+      is_dirty_(false),
+      bounds_(Rect::Zero()) {}
+
+void Node::Init() {
+  component.OnNext([this](const Component::Ptr& new_component) {
+    if (auto prev_component = this->component.Get()) {
+      auto& nodes = prev_component->nodes_;
+      // clang-format off
+      nodes.erase(std::remove_if(nodes.begin(), nodes.end(), [this](const Node::WeakPtr& node) {
+        return node.lock() == shared_from_this();
+      }), nodes.end());
+      // clang-format on
+    }
+    if (new_component) {
+      new_component->nodes_.emplace_back(shared_from_this());
     }
   });
-  rx::LinkWithValues([this]() { is_dirty_ = true; }, bounds, component);
+  is_dirty_.OnNext([this](bool is_dirty) {
+    if (is_dirty) {
+      if (auto parent = GetParent()) {
+        parent->is_dirty_ = true;
+      }
+      if (IsRootNode()) {
+        Scene::GetTLS()->is_dirty_ = true;
+      }
+    } else {
+      for (auto& child : children_) {
+        child->is_dirty_ = false;
+      }
+    }
+  });
+  bounds_.OnNext([this](auto) { is_dirty_ = true; });
   // clang-format off
-  rx::LinkWithValues([this]() {
-    glm::mat3 mat(1.0F);
-    mat = glm::translate(mat, position.Get());
-    auto current_rotate = rotation_z.Get();
-    if (current_rotate != 0.0F) {
-      mat = glm::rotate(mat, current_rotate);
-    }
-    auto current_scale = scale.Get();
-    if (current_scale != glm::vec2(1.0F, 1.0F)) {
-      mat = glm::scale(mat, current_scale);
-    }
-    parent_transform_ = mat;
-    is_dirty_ = true;
-  }, scale, rotation_z, position);
+  scale.OnNext([this](const glm::vec2& new_scale) { UpdateParentTransform(new_scale, rotation_z.Get(), position.Get()); });
+  rotation_z.OnNext([this](float new_rotation_z) { UpdateParentTransform(scale.Get(), new_rotation_z, position.Get()); });
+  position.OnNext([this](const glm::vec2& new_position) { UpdateParentTransform(scale.Get(), rotation_z.Get(), new_position); });
   // clang-format on
-  parent_transform_.OnUpdate([this](const glm::mat3& parent_transform) {
+  parent_transform_.OnNext([this](const glm::mat3& parent_transform) {
     auto parent = GetParent();
     auto world_parent_transform = parent ? parent->world_transform_.Get() : glm::mat3(1.0F);
     world_transform_ = world_parent_transform * parent_transform_.Get();
@@ -44,7 +67,12 @@ Node::Node() : parent_transform(&parent_transform_), world_transform(&world_tran
   });
 }
 
-Node::Ptr Node::GetParent() {
+bool Node::IsRootNode() const {
+  auto root_node = Scene::GetTLS()->root_node.Get();
+  return root_node == shared_from_this();
+}
+
+Node::Ptr Node::GetParent() const {
   return parent_.lock();
 }
 
@@ -59,12 +87,26 @@ void Node::RemoveFromParent() {
 }
 
 void Node::AddChild(const Ptr& child) {
+  child->RemoveFromParent();
   children_.emplace_back(child);
   is_dirty_ = true;
 }
 
 std::vector<Node::Ptr> Node::GetChildren() const {
   return children_;
+}
+
+void Node::UpdateParentTransform(const glm::vec2& scale, float rotation_z, const glm::vec2& position) {
+  glm::mat3 mat(1.0F);
+  mat = glm::translate(mat, position);
+  if (rotation_z != 0.0F) {
+    mat = glm::rotate(mat, rotation_z);
+  }
+  if (scale != glm::vec2(1.0F, 1.0F)) {
+    mat = glm::scale(mat, scale);
+  }
+  parent_transform_ = mat;
+  is_dirty_ = true;
 }
 
 }  // namespace seen::scene

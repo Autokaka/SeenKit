@@ -7,6 +7,7 @@
 @property(nonatomic, strong) id<MTLDevice> device;
 @property(nonatomic, assign) MTLPixelFormat drawablePixelFormat;
 @property(nonatomic, strong) id<MTLCommandQueue> commandQueue;
+@property(nonatomic, strong) id<MTLCommandBuffer> commandBuffer;
 @property(nonatomic, strong) MTLRenderPassDescriptor* sceneDescriptor;
 @property(nonatomic, strong) id<MTLRenderPipelineState> defaultPipelineState;
 
@@ -71,11 +72,11 @@ fragment float4 fragmentFunction(VertexOutput in [[stage_in]]) {
     return float4(in.color, 1.0);
 }
 )__";
-    id<MTLLibrary> defaultLibrary = [_device newLibraryWithSource:[NSString stringWithUTF8String:shaderSource]
-                                                          options:nil
-                                                            error:nil];
-    id<MTLFunction> vertexFunction = [defaultLibrary newFunctionWithName:@"vertexFunction"];
-    id<MTLFunction> fragmentFunction = [defaultLibrary newFunctionWithName:@"fragmentFunction"];
+    auto defaultLibrary = [_device newLibraryWithSource:[NSString stringWithUTF8String:shaderSource]
+                                                options:nil
+                                                  error:nil];
+    auto vertexFunction = [defaultLibrary newFunctionWithName:@"vertexFunction"];
+    auto fragmentFunction = [defaultLibrary newFunctionWithName:@"fragmentFunction"];
     MTLRenderPipelineDescriptor* pipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
     pipelineDescriptor.label = @"DefaultPipeline";
     pipelineDescriptor.vertexFunction = vertexFunction;
@@ -87,9 +88,23 @@ fragment float4 fragmentFunction(VertexOutput in [[stage_in]]) {
 }
 
 - (void)drawScene:(MTLClearColor)backgroundColor {
-  _sceneDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
-  _sceneDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
-  _sceneDescriptor.colorAttachments[0].clearColor = backgroundColor;
+  self.sceneDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+  self.sceneDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
+  self.sceneDescriptor.colorAttachments[0].clearColor = backgroundColor;
+  self.commandBuffer = [self.commandQueue commandBuffer];
+}
+
+- (void)presentDrawable {
+  id<CAMetalDrawable> drawable = [self.layer nextDrawable];
+  if (drawable == nil) {
+    return;
+  }
+  self.sceneDescriptor.colorAttachments[0].texture = drawable.texture;
+  // auto renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:self.sceneDescriptor];
+  // [renderEncoder setRenderPipelineState:self.defaultPipelineState];
+  // [renderEncoder endEncoding];
+  [self.commandBuffer presentDrawable:drawable];
+  [self.commandBuffer commit];
 }
 
 @end
