@@ -1,15 +1,19 @@
 // Created by Autokaka (qq1909698494@gmail.com) on 2023/12/11.
 
+#include <simd/simd.h>
+
 #import "SeenRenderer.h"
 
 @interface SeenRenderer ()
 
-@property(nonatomic, strong) id<MTLDevice> device;
-@property(nonatomic, assign) MTLPixelFormat drawablePixelFormat;
-@property(nonatomic, strong) id<MTLCommandQueue> commandQueue;
-@property(nonatomic, strong) id<MTLCommandBuffer> commandBuffer;
-@property(nonatomic, strong) MTLRenderPassDescriptor* sceneDescriptor;
+@property(nonatomic, strong, readonly) id<MTLDevice> device;
+@property(nonatomic, assign, readonly) MTLPixelFormat drawablePixelFormat;
+@property(nonatomic, strong, readonly) id<MTLCommandQueue> commandQueue;
+@property(nonatomic, strong, readonly) MTLRenderPassDescriptor* sceneDescriptor;
 @property(nonatomic, strong) id<MTLRenderPipelineState> defaultPipelineState;
+
+@property(nonatomic, strong, nullable) id<MTLCommandBuffer> commandBuffer;
+@property(nonatomic, strong, nullable) id<CAMetalDrawable> drawable;
 
 @end
 
@@ -39,42 +43,38 @@
 
 using namespace metal;
 
-struct UniformInput {
-  vector_uint2 viewportSize;
-  float scale;
+struct DefaultVertexInput {
+  vector_float2 position;
 };
 
-struct VertexInput {
-  vector_float2 position;
+struct DefaultUniformInput {
   vector_float3 color;
 };
 
-struct VertexOutput {
-  float4 clipSpacePosition [[position]];
+struct DefaultVertexOutput {
+  float4 position [[position]];
   float3 color;
 };
 
-vertex VertexOutput vertexFunction(uint vertexID [[vertex_id]],
-                                 constant VertexInput* vertices [[buffer(0)]],
-                                 constant UniformInput& uniforms [[buffer(1)]]) {
-    VertexOutput out;
-    float2 pixelSpacePosition = vertices[vertexID].position.xy;
-    pixelSpacePosition *= uniforms.scale;
-    float2 viewportSize = float2(uniforms.viewportSize);
-    out.clipSpacePosition.xy = pixelSpacePosition / (viewportSize / 2.0);
-    out.clipSpacePosition.z = 0.0;
-    out.clipSpacePosition.w = 1.0;
-    out.color = vertices[vertexID].color;
+vertex DefaultVertexOutput vertexFunction(uint vertexID [[vertex_id]],
+                                 constant DefaultVertexInput* vertices [[buffer(0)]],
+                                 constant DefaultUniformInput& uniform [[buffer(1)]]) {
+    DefaultVertexOutput out;
+    out.position.xy = vertices[vertexID].position.xy;
+    out.position.z = 0.0;
+    out.position.w = 1.0;
+    out.color = uniform.color;
     return out;
 }
 
-fragment float4 fragmentFunction(VertexOutput in [[stage_in]]) {
+fragment float4 fragmentFunction(DefaultVertexOutput in [[stage_in]]) {
     return float4(in.color, 1.0);
 }
 )__";
+    NSError* error = nil;
     auto defaultLibrary = [_device newLibraryWithSource:[NSString stringWithUTF8String:shaderSource]
                                                 options:nil
-                                                  error:nil];
+                                                  error:&error];
     auto vertexFunction = [defaultLibrary newFunctionWithName:@"vertexFunction"];
     auto fragmentFunction = [defaultLibrary newFunctionWithName:@"fragmentFunction"];
     MTLRenderPipelineDescriptor* pipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
@@ -92,18 +92,24 @@ fragment float4 fragmentFunction(VertexOutput in [[stage_in]]) {
   self.sceneDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
   self.sceneDescriptor.colorAttachments[0].clearColor = backgroundColor;
   self.commandBuffer = [self.commandQueue commandBuffer];
+  self.drawable = [self.layer nextDrawable];
+  self.sceneDescriptor.colorAttachments[0].texture = self.drawable.texture;
+}
+
+- (void)drawSpriteNode:(std::vector<DefaultVertexInput>)vertices uniform:(const DefaultUniformInput&)uniform {
+  auto renderEncoder = [self.commandBuffer renderCommandEncoderWithDescriptor:self.sceneDescriptor];
+  [renderEncoder setRenderPipelineState:self.defaultPipelineState];
+  auto vbo = [self.device newBufferWithBytes:vertices.data()
+                                      length:sizeof(vertices[0]) * vertices.size()
+                                     options:MTLResourceStorageModeShared];
+  [renderEncoder setVertexBuffer:vbo offset:0 atIndex:0];
+  [renderEncoder setVertexBytes:&uniform length:sizeof(uniform) atIndex:1];
+  [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:vertices.size()];
+  [renderEncoder endEncoding];
 }
 
 - (void)presentDrawable {
-  id<CAMetalDrawable> drawable = [self.layer nextDrawable];
-  if (drawable == nil) {
-    return;
-  }
-  self.sceneDescriptor.colorAttachments[0].texture = drawable.texture;
-  auto renderEncoder = [self.commandBuffer renderCommandEncoderWithDescriptor:self.sceneDescriptor];
-  [renderEncoder setRenderPipelineState:self.defaultPipelineState];
-  [renderEncoder endEncoding];
-  [self.commandBuffer presentDrawable:drawable];
+  [self.commandBuffer presentDrawable:self.drawable];
   [self.commandBuffer commit];
 }
 

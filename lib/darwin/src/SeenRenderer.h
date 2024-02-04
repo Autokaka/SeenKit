@@ -3,6 +3,17 @@
 #import <Metal/Metal.h>
 #import <QuartzCore/CAMetalLayer.h>
 
+#include <simd/simd.h>
+#include <vector>
+
+struct DefaultVertexInput {
+  vector_float2 position;
+};
+
+struct DefaultUniformInput {
+  vector_float3 color;
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SeenRenderer : NSObject
@@ -14,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)drawScene:(MTLClearColor)backgroundColor;
 
-- (void)drawNode:(const void*)data length:(NSUInteger)length;
+- (void)drawSpriteNode:(std::vector<DefaultVertexInput>)vertices uniform:(const DefaultUniformInput&)uniform;
 
 - (void)presentDrawable;
 

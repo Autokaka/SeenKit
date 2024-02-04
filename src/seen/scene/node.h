@@ -38,7 +38,7 @@ class Node final : public std::enable_shared_from_this<Node> {
   rx::Value<std::shared_ptr<Component>> component;
 
   const rx::View<glm::mat3> parent_transform;
-  const rx::View<glm::mat3> world_transform;
+  const rx::View<glm::mat3> scene_transform;
   glm::mat3 GetTransform(const Ptr& from_node = nullptr) const;
 
   bool IsRootNode() const;
@@ -55,7 +55,7 @@ class Node final : public std::enable_shared_from_this<Node> {
   rx::Value<bool> is_dirty_;
   rx::Value<Rect> bounds_;
   rx::Value<glm::mat3> parent_transform_;
-  rx::Value<glm::mat3> world_transform_;
+  rx::Value<glm::mat3> scene_transform_;
 
   DISALLOW_COPY_ASSIGN_AND_MOVE(Node);
 };

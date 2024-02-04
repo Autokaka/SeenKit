@@ -18,7 +18,7 @@ Node::Ptr Node::Create() {
 Node::Node()
     : bounds(&bounds_),
       parent_transform(&parent_transform_),
-      world_transform(&world_transform_),
+      scene_transform(&scene_transform_),
       scale({1, 1}),
       rotation_z(0.0F),
       position({0, 0}),
@@ -61,8 +61,8 @@ void Node::Init() {
   // clang-format on
   parent_transform_.OnNext([this](const glm::mat3& parent_transform) {
     auto parent = GetParent();
-    auto world_parent_transform = parent ? parent->world_transform_.Get() : glm::mat3(1.0F);
-    world_transform_ = world_parent_transform * parent_transform_.Get();
+    auto world_parent_transform = parent ? parent->scene_transform_.Get() : glm::mat3(1.0F);
+    scene_transform_ = world_parent_transform * parent_transform_.Get();
     is_dirty_ = true;
   });
 }
@@ -80,7 +80,7 @@ void Node::RemoveFromParent() {
   if (auto parent = GetParent()) {
     auto& children = parent->children_;
     children.erase(std::remove(children.begin(), children.end(), shared_from_this()), children.end());
-    world_transform_ = parent_transform_;
+    scene_transform_ = parent_transform_;
     parent->is_dirty_ = true;
     parent_.reset();
   }
