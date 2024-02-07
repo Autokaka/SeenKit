@@ -4,7 +4,6 @@
 
 #include <cstddef>
 #include <memory>
-#include <vector>
 
 #include "seen/base/class_ext.h"
 
@@ -30,7 +29,7 @@ class CFData {
   std::size_t size_;
   std::byte* bytes_;
 
-  DISALLOW_COPY_ASSIGN_AND_MOVE(CFData);
+  SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(CFData);
 };
 
 }  // namespace seen

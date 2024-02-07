@@ -14,16 +14,16 @@ namespace seen {
 
 class CFWorker;
 
-interface CFWorkerDriver {
+class CFWorkerDriver {
  public:
   explicit CFWorkerDriver() = default;
   virtual ~CFWorkerDriver() = default;
-  PROTOCOL(void Start(CFClosure on_started));
-  PROTOCOL(void Stop());
-  PROTOCOL(bool IsCurrent());
-  PROTOCOL(void SetWakeup(const TimePoint& time_point, CFClosure task));
+  virtual void Start(CFClosure on_started) = 0;
+  virtual void Stop() = 0;
+  virtual bool IsCurrent() = 0;
+  virtual void SetWakeup(const TimePoint& time_point, CFClosure task) = 0;
 
-  DISALLOW_COPY_ASSIGN_AND_MOVE(CFWorkerDriver);
+  SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(CFWorkerDriver);
 };
 
 class CFWorkerDriverImpl final : public CFWorkerDriver {

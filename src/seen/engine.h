@@ -6,28 +6,30 @@
 
 #include "seen/base/class_ext.h"
 #include "seen/base/data_channel.h"
-#include "seen/base/time_delta.h"
 #include "seen/base/worker.h"
+#include "seen/bundle.h"
 
 namespace seen {
 
 class Engine final {
  public:
-  using Ptr = std::unique_ptr<Engine>;
+  using Ptr = std::shared_ptr<Engine>;
+  using CreateCallback = std::function<void(const Ptr& engine)>;
+  using InitCallback = std::function<void(bool success)>;
 
-  explicit Engine(void* renderer);
+  static void CreateAsync(const Bundle::Ptr& bundle, CreateCallback callback);
+  static Ptr Create(const Bundle::Ptr& bundle);
+  explicit Engine();
   ~Engine();
-  void Update(const TimeDelta& time_delta, CFClosure on_complete = nullptr);
   [[nodiscard]] CFDataChannel::Ptr GetChannel() const;
 
  private:
-  void* renderer_;
   CFWorker::Ptr io_worker_;
   CFWorker::Ptr main_worker_;
   CFDataChannel::Ptr main_channel_;
   CFDataChannel::Ptr platform_channel_;
 
-  DISALLOW_COPY_ASSIGN_AND_MOVE(Engine);
+  SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(Engine);
 };
 
 }  // namespace seen

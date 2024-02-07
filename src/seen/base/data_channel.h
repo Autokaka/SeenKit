@@ -18,6 +18,7 @@ class CFDataChannel final : public std::enable_shared_from_this<CFDataChannel> {
   using WeakPtr = std::weak_ptr<CFDataChannel>;
   using DataHandler = std::function<void(const CFData::Ptr&)>;
 
+  static Ptr Create(const CFWorker::Ptr& worker, const CFDataChannel::Ptr& paired_channel);
   explicit CFDataChannel(const CFWorker::Ptr& worker, const CFDataChannel::Ptr& paired_channel);
   void SendData(const CFData::Ptr& data, bool move = false);
   void SetDataHandler(const DataHandler& data_handler);
@@ -31,7 +32,7 @@ class CFDataChannel final : public std::enable_shared_from_this<CFDataChannel> {
   DataHandler data_handler_;
   CFDataChannel::WeakPtr paired_channel_;
 
-  DISALLOW_COPY_ASSIGN_AND_MOVE(CFDataChannel);
+  SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(CFDataChannel);
 };
 
 }  // namespace seen

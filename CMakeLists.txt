@@ -13,6 +13,7 @@ include(cmake/cpm.cmake)
 
 message(STATUS ${SEEN_VERSION})
 
+add_subdirectory(example/res)
 add_subdirectory(vendor/fmt)
 add_subdirectory(vendor/glm)
 add_subdirectory(vendor/miniz)
@@ -42,7 +43,10 @@ if(${SEEN_BUILD_DARWIN})
   source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCE})
   add_library(seen STATIC ${SOURCE})
   target_include_directories(seen PUBLIC ${darwin_SOURCE_DIR}/include)
-  target_include_directories(seen PRIVATE src ${darwin_SOURCE_DIR}/src)
+  target_include_directories(seen PRIVATE 
+    ${PROJECT_SOURCE_DIR}/src
+    ${darwin_SOURCE_DIR}/src
+  )
   target_compile_definitions(seen PUBLIC ${SEEN_COMPILE_FLAGS})
   target_link_libraries(seen PRIVATE fmt glm miniz wamr)
   set_target_properties(seen PROPERTIES
@@ -66,11 +70,18 @@ if(${SEEN_BUILD_DARWIN})
     "${seen_example_SOURCE_DIR}/*.h"
     "${seen_example_SOURCE_DIR}/*.swift"
   )
+  file(GLOB_RECURSE RESOURCES
+    "${example_res_SOURCE_DIR}/*"
+  )
   set_source_files_properties(${EXAMPLE_SOURCE} PROPERTIES COMPILE_FLAGS -fobjc-arc)
   source_group(TREE ${seen_example_SOURCE_DIR} FILES ${EXAMPLE_SOURCE})
-  add_executable(seen_example MACOSX_BUNDLE ${EXAMPLE_SOURCE})
+  add_executable(seen_example MACOSX_BUNDLE 
+    ${EXAMPLE_SOURCE}
+    ${RESOURCES}
+  )
   target_link_libraries(seen_example PRIVATE seen)
   set_target_properties(seen_example PROPERTIES
+    RESOURCE "${RESOURCES}"
     XCODE_ATTRIBUTE_CODE_SIGN_STYLE Automatic
     XCODE_ATTRIBUTE_ENABLE_PREVIEWS YES
     XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${SEEN_BUNDLE_ID}.example"

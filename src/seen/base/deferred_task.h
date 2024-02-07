@@ -14,7 +14,7 @@ class CFDeferredTask {
 
  private:
   CFClosure callback_;
-  DISALLOW_COPY_ASSIGN_AND_MOVE(CFDeferredTask);
+  SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(CFDeferredTask);
 };
 
 }  // namespace seen

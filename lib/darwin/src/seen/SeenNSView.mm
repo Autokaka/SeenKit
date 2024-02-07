@@ -2,10 +2,10 @@
 
 #if SEEN_BUILD_MACOS
 
-#import "SeenBaseView+Private.h"
-
 #import <CoreVideo/CVDisplayLink.h>
 #import <dispatch/dispatch.h>
+
+#import "seen/SeenBaseView+Private.h"
 
 @implementation SeenNSView {
   CVDisplayLinkRef _displayLink;
@@ -105,14 +105,14 @@ static CVReturn DispatchRenderLoop(CVDisplayLinkRef displayLink,
     @autoreleasepool {
       SeenNSView* strongSelf = weakSelf;
       if ([strongSelf isPausedInternal] == NO) {
-        [strongSelf setPausedInternal:YES];
-        [strongSelf.engine updateWithTimeDelta:0
-                               completionBlock:^{
-                                 SeenNSView* strongSelf = weakSelf;
-                                 if (strongSelf.isPaused == NO) {
-                                   [strongSelf setPausedInternal:NO];
-                                 }
-                               }];
+        // [strongSelf setPausedInternal:YES];
+        // [strongSelf.engine updateWithTimeDelta:0
+        //                        completionBlock:^{
+        //                          SeenNSView* strongSelf = weakSelf;
+        //                          if (strongSelf.isPaused == NO) {
+        //                            [strongSelf setPausedInternal:NO];
+        //                          }
+        //                        }];
       }
     }
   });

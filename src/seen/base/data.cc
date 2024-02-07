@@ -3,13 +3,14 @@
 #include <fstream>
 
 #include "seen/base/data.h"
+#include "seen/base/deferred_task.h"
 
 namespace seen {
 
 CFData::Ptr CFData::CreateFromAbsolutePath(const std::string& absolute_path) {
   std::ifstream ifs(absolute_path, std::ios::binary);
+  CFDeferredTask defer_ifs([&ifs]() { ifs.close(); });
   if (!ifs) {
-    ifs.close();
     return nullptr;
   }
 
@@ -23,7 +24,6 @@ CFData::Ptr CFData::CreateFromAbsolutePath(const std::string& absolute_path) {
     delete[] buffer;
     buffer = nullptr;
   }
-  ifs.close();
 
   auto* bytes = reinterpret_cast<std::byte*>(buffer);
   return bytes == nullptr ? nullptr : CreateFromBytesNoCopy(bytes, length);

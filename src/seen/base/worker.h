@@ -30,7 +30,7 @@ class CFWorker final : public std::enable_shared_from_this<CFWorker> {
  private:
   std::unique_ptr<CFWorkerDriver> driver_;
 
-  DISALLOW_COPY_ASSIGN_AND_MOVE(CFWorker);
+  SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(CFWorker);
 };
 
 CFWorker::Ptr GetPlatformWorker();

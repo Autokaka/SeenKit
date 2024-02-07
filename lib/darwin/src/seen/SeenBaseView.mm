@@ -1,7 +1,7 @@
 #import <Metal/Metal.h>
 
-#import "SeenBaseView+Private.h"
-#import "ViewMacros.h"
+#import "seen/SeenBaseView+Private.h"
+#import "seen/ViewMacros.h"
 
 @implementation SeenBaseView
 
@@ -12,7 +12,9 @@
 SEEN_VIEW_INIT_COMMON_IMPL {
   self.metalLayer.device = MTLCreateSystemDefaultDevice();
   self.metalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
-  _engine = [[SeenEngine alloc] initWithLayer:self.metalLayer];
+  NSString* path = [NSBundle.mainBundle pathForResource:@"demo" ofType:@"seen"];
+  SeenBundle* bundle = [[SeenBundle alloc] initWithPath:path];
+  _engine = [[SeenEngine alloc] initWithBundle:bundle];
 }
 
 - (void)resizeDrawable:(CGFloat)scaleFactor {

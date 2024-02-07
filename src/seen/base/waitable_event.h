@@ -23,7 +23,7 @@ class CFAutoResetWaitableEvent final {
   std::mutex cv_mutex_;
   bool stop_waiting_;
 
-  DISALLOW_COPY_ASSIGN_AND_MOVE(CFAutoResetWaitableEvent);
+  SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(CFAutoResetWaitableEvent);
 };
 
 }  // namespace seen

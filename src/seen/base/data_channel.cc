@@ -4,6 +4,10 @@
 
 namespace seen {
 
+CFDataChannel::Ptr CFDataChannel::Create(const CFWorker::Ptr& worker, const CFDataChannel::Ptr& paired_channel) {
+  return std::make_shared<CFDataChannel>(worker, paired_channel);
+}
+
 CFDataChannel::CFDataChannel(const CFWorker::Ptr& worker, const CFDataChannel::Ptr& paired_channel)
     : weak_worker_(worker), paired_channel_(paired_channel) {}
 
