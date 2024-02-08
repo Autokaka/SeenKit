@@ -10,12 +10,12 @@ namespace seen::runtime {
 
 void EvaluateModule(const ModulePtr& module) {
   auto worker_name = CFWorker::GetCurrent()->GetName();
-  SEEN_INFO("Evaluate module on worker: {}.", worker_name);
+  SEEN_INFO("Evaluate module on: {}.", worker_name);
   auto store = GetTLSStore();
   auto exports = LinkModule(module);
   auto* instance_ptr = wasm_instance_new(store.get(), module.get(), &*exports, nullptr);
   if (instance_ptr == nullptr) {
-    SEEN_INFO("Failed to evaluate module on worker: {}.", worker_name);
+    SEEN_INFO("Failed to evaluate module on: {}.", worker_name);
     return;
   }
   auto instance = std::shared_ptr<wasm_instance_t>(instance_ptr, wasm_instance_delete);

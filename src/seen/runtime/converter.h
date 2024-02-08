@@ -21,8 +21,7 @@ T ToNativeValue(wasm_val_t value) {
 template <typename T>
 wasm_valtype_t* ToWASMType() {
   // TODO(Autokaka):
-  // wasm_valtype_new(wasm_valkind_enum::WASM_I32);
-  return nullptr;
+  return wasm_valtype_new(wasm_valkind_enum::WASM_I32);
 }
 
 template <typename... Types>

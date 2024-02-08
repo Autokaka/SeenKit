@@ -24,9 +24,9 @@ EnginePtr GetEngine() {
 StorePtr GetTLSStore() {
   thread_local StorePtr store;
   if (store == nullptr) {
-    SEEN_INFO("Lazy create thread-local wasm_store on worker: {}.", CFWorker::GetCurrent()->GetName());
+    SEEN_INFO("Lazy create thread-local wasm_store on: {}.", CFWorker::GetCurrent()->GetName());
     store = StorePtr(wasm_store_new(GetEngine().get()), [](wasm_store_t* store) {
-      SEEN_INFO("Release thread-local wasm_store on worker: {}.", CFWorker::GetCurrent()->GetName());
+      SEEN_INFO("Release thread-local wasm_store on: {}.", CFWorker::GetCurrent()->GetName());
       wasm_store_delete(store);
     });
   }
