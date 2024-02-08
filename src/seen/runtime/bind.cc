@@ -12,8 +12,8 @@ using ImportVector = std::shared_ptr<wasm_importtype_vec_t>;
 const char* const kSeenModuleName = "seen";
 thread_local BindingMap tls_binding_map;
 
-void TestLog(const std::string& message) {
-  SEEN_INFO("{}", message.c_str());
+void TestLog(int message) {
+  SEEN_INFO("Hello, World!");
 }
 
 // https://github.com/bytecodealliance/wasm-micro-runtime/blob/main/samples/wasm-c-api-imports/README.md

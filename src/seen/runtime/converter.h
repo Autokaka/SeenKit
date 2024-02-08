@@ -15,7 +15,7 @@ wasm_val_t ToWASMValue(T value) {
 template <typename T>
 T ToNativeValue(wasm_val_t value) {
   // TOOO(Autokaka):
-  return nullptr;
+  // return nullptr;
 }
 
 template <typename T>

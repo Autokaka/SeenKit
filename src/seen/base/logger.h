@@ -28,7 +28,7 @@ enum class CFLogLevel { kInfo, kWarn, kError, kFatal };
 #define SEEN_FATAL(...) SEEN_LOG(kFatal, __FILE_NAME__, __LINE__, __VA_ARGS__)
 
 // clang-format off
-#define SEEN_ASSERT_WITH_MESSAGE(Condition, ...) (Condition) ? static_cast<void>(0) : SEEN_FATAL(__VA_ARGS__)
+#define SEEN_ASSERT_WITH_MESSAGE(Condition, ...) if (Condition) {} else do SEEN_FATAL(__VA_ARGS__) while (false)
 #define SEEN_ASSERT(Condition) if (Condition) {} else do SEEN_FATAL("Assert {} failed.", #Condition) while (false)
 // clang-format on
 
