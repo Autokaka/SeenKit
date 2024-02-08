@@ -17,7 +17,7 @@ void test_log(const std::string& message) {}
 // https://github.com/bytecodealliance/wasm-micro-runtime/blob/main/samples/wasm-c-api-imports/README.md
 ExportVector LinkModule(const ModulePtr& module) {
   // TODO(Autokaka):
-  Bind<test_log>("log");
+  // Bind<test_log>("log");
 
   SEEN_INFO("Link module on worker: {}.", CFWorker::GetCurrent()->GetName());
   auto* imports_ptr = new wasm_importtype_vec_t({0});
