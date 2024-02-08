@@ -12,18 +12,14 @@
 namespace seen {
 
 enum class CFLogLevel { kInfo, kWarn, kError, kFatal };
-#define SEEN_LOG(Level, FileName, Line, ...)                                                  \
-  {                                                                                           \
-    using namespace std::string_literals;                                                     \
-    pal::log(static_cast<int>(seen::CFLogLevel::Level), "@SeenKit["s.append(FileName)         \
-                                                            .append(":")                      \
-                                                            .append(std::to_string(Line))     \
-                                                            .append("] ")                     \
-                                                            .append(fmt::format(__VA_ARGS__)) \
-                                                            .c_str());                        \
-    if constexpr (seen::CFLogLevel::Level >= seen::CFLogLevel::kFatal) {                      \
-      abort();                                                                                \
-    }                                                                                         \
+#define SEEN_LOG(Level, FileName, Line, ...)                                                                    \
+  {                                                                                                             \
+    using namespace std::string_literals;                                                                       \
+    pal::log(static_cast<int>(seen::CFLogLevel::Level),                                                         \
+             ("@SeenKit["s + FileName + ":" + std::to_string(Line) + "] " + fmt::format(__VA_ARGS__)).c_str()); \
+    if constexpr (seen::CFLogLevel::Level >= seen::CFLogLevel::kFatal) {                                        \
+      abort();                                                                                                  \
+    }                                                                                                           \
   }
 
 #define SEEN_INFO(...) SEEN_LOG(kInfo, __FILE_NAME__, __LINE__, __VA_ARGS__)
