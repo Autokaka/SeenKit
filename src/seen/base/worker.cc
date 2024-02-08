@@ -6,10 +6,11 @@
 namespace seen {
 
 thread_local CFWorker::WeakPtr tls_worker;
+static const char* const kPlatformWorkerName = "Seen.Host";
 
 CFWorker::Ptr CFWorker::Create(const char* name) {
   auto worker_driver = std::make_unique<CFWorkerDriverImpl>(name);
-  auto worker = std::make_shared<CFWorker>(std::move(worker_driver));
+  auto worker = std::make_shared<CFWorker>(name, std::move(worker_driver));
   CFWorker::WeakPtr weak_worker = worker;
   worker->driver_->Start([weak_worker]() { tls_worker = weak_worker; });
   return worker;
@@ -19,7 +20,8 @@ CFWorker::Ptr CFWorker::GetCurrent() {
   return tls_worker.lock();
 }
 
-CFWorker::CFWorker(std::unique_ptr<CFWorkerDriver> driver) : driver_(std::move(driver)) {}
+CFWorker::CFWorker(const char* name, std::unique_ptr<CFWorkerDriver> driver)
+    : name_(name), driver_(std::move(driver)) {}
 
 CFWorker::~CFWorker() {
   driver_->Stop();
@@ -27,6 +29,10 @@ CFWorker::~CFWorker() {
 
 bool CFWorker::IsCurrent() const {
   return driver_->IsCurrent();
+}
+
+std::string CFWorker::GetName() const {
+  return name_;
 }
 
 void CFWorker::DispatchAsync(CFClosure macro_task) {
@@ -43,7 +49,7 @@ void CFWorker::DispatchAsync(CFClosure macro_task, const TimePoint& time_point) 
 
 CFWorker::Ptr GetPlatformWorker() {
   static auto platform_driver = std::make_unique<CFPlatformWorkerDriver>();
-  static auto platform_worker = std::make_shared<CFWorker>(std::move(platform_driver));
+  static auto platform_worker = std::make_shared<CFWorker>(kPlatformWorkerName, std::move(platform_driver));
   return platform_worker;
 }
 
