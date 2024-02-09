@@ -5,12 +5,14 @@
 #include "seen/runtime/bind.h"
 #include "seen/runtime/engine.h"
 #include "seen/runtime/eval.h"
+#include "seen/runtime/register.h"
 
 namespace seen::runtime {
 
 void EvaluateModule(const ModulePtr& module) {
   auto worker_name = CFWorker::GetCurrent()->GetName();
   SEEN_INFO("Evaluate module on: {}.", worker_name);
+  RegisterBindings();
   auto store = GetTLSStore();
   auto bindings = LinkModule(module);
   auto* instance_ptr = wasm_instance_new(store.get(), module.get(), bindings.get(), nullptr);

@@ -56,6 +56,6 @@ void Bind(const char* name) {
   Bind<OrigFn>(name, OrigFn);
 }
 
-ExportVector LinkModule(const ModulePtr& module);
+ExportVector LinkModule(const ModulePtr& wasm_module);
 
 }  // namespace seen::runtime

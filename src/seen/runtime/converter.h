@@ -25,15 +25,15 @@ wasm_valtype_t* ToWASMType() {
 }
 
 template <typename... Types>
-void ToWASMTypes(wasm_valtype_vec_t* out) {
+void ToWASMTypes(wasm_valtype_vec_t* out_types) {
   const auto type_count = sizeof...(Types);
   wasm_valtype_t* types[type_count] = {ToWASMType<Types>()...};
-  wasm_valtype_vec_new(out, type_count, types);
+  wasm_valtype_vec_new(out_types, type_count, types);
 }
 
 template <>
-inline void ToWASMTypes<void>(wasm_valtype_vec_t* out) {
-  wasm_valtype_vec_new_empty(out);
+inline void ToWASMTypes<void>(wasm_valtype_vec_t* out_types) {
+  wasm_valtype_vec_new_empty(out_types);
 }
 
 template <auto CFunc, typename ReturnType, typename... Args, std::size_t... I>

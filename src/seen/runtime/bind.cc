@@ -8,23 +8,15 @@
 
 namespace seen::runtime {
 
-using ImportVector = std::shared_ptr<wasm_importtype_vec_t>;
 const char* const kSeenModuleName = "seen";
 thread_local BindingMap tls_binding_map;
 
-void TestLog(int message) {
-  SEEN_INFO("Hello, World!");
-}
-
 // https://github.com/bytecodealliance/wasm-micro-runtime/blob/main/samples/wasm-c-api-imports/README.md
-ExportVector LinkModule(const ModulePtr& module) {
-  // TODO(Autokaka):
-  Bind<TestLog>("log");
-
+ExportVector LinkModule(const ModulePtr& wasm_module) {
   SEEN_INFO("Link module on: {}.", CFWorker::GetCurrent()->GetName());
   auto* imports_ptr = new wasm_importtype_vec_t({0});
-  auto imports = ImportVector(imports_ptr, wasm_importtype_vec_delete);
-  wasm_module_imports(module.get(), imports_ptr);
+  auto imports = std::shared_ptr<wasm_importtype_vec_t>(imports_ptr, wasm_importtype_vec_delete);
+  wasm_module_imports(wasm_module.get(), imports_ptr);
 
   std::vector<wasm_extern_t*> externs;
   externs.reserve(imports->num_elems);
