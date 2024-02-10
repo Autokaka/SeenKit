@@ -9,7 +9,7 @@ namespace seen::runtime {
 namespace {
 
 void TestLog(const char* message) {
-  SEEN_INFO("${}", message);
+  SEEN_INFO("{}", message);
 }
 
 }  // namespace

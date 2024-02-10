@@ -3,7 +3,10 @@
 #pragma once
 
 #include <wasm_c_api.h>
+#include <cstdint>
 #include <utility>
+
+#include "seen/base/logger.h"
 
 namespace seen::runtime {
 
@@ -14,19 +17,25 @@ wasm_val_t ToWASMValue(T value) {
 
 template <typename T>
 T ToNativeValue(wasm_val_t value) {
-  // TOOO(Autokaka):
-  // return nullptr;
+  // TODO(Autokaka):
+  if constexpr (std::is_pointer_v<T> || sizeof(T) == sizeof(std::int32_t)) {
+    return reinterpret_cast<T>(value.of.i32);
+  }
+  SEEN_ASSERT_WITH_MESSAGE(false, "Unbound type!");
 }
 
 template <typename T>
 wasm_valtype_t* ToWASMType() {
   // TODO(Autokaka):
-  return wasm_valtype_new(wasm_valkind_enum::WASM_I32);
+  if constexpr (std::is_pointer_v<T> || sizeof(T) == sizeof(std::int32_t)) {
+    return wasm_valtype_new_i32();
+  }
+  SEEN_ASSERT_WITH_MESSAGE(false, "Unbound type!");
 }
 
 template <typename... Types>
 void ToWASMTypes(wasm_valtype_vec_t* out_types) {
-  const auto type_count = sizeof...(Types);
+  constexpr auto type_count = sizeof...(Types);
   wasm_valtype_t* types[type_count] = {ToWASMType<Types>()...};
   wasm_valtype_vec_new(out_types, type_count, types);
 }
@@ -43,7 +52,7 @@ wasm_func_callback_t ToWASMFunction(ReturnType (*_c_fn)(Args...), std::index_seq
       CFunc(ToNativeValue<Args>(args->data[I])...);
     } else {
       auto result = CFunc(ToNativeValue<Args>(args->data[I])...);
-      results->data[0] = ToWASMValue(result);
+      results->data[0] = ToWASMValue<ReturnType>(result);
     }
     return nullptr;
   };
