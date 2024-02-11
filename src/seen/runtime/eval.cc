@@ -1,8 +1,9 @@
+// Created by Autokaka (qq1909698494@gmail.com) on 2024/02/07.
+
 #include <memory>
 
 #include "seen/base/logger.h"
 #include "seen/base/worker.h"
-#include "seen/runtime/bind.h"
 #include "seen/runtime/engine.h"
 #include "seen/runtime/eval.h"
 #include "seen/runtime/register.h"
@@ -12,16 +13,13 @@ namespace seen::runtime {
 void EvaluateModule(const ModulePtr& module) {
   auto worker_name = CFWorker::GetCurrent()->GetName();
   SEEN_INFO("Evaluate module on: {}.", worker_name);
-  RegisterBindings();
-  auto store = GetTLSStore();
-  auto bindings = LinkModule(module);
-  auto* instance_ptr = wasm_instance_new(store.get(), module.get(), bindings.get(), nullptr);
+  auto* instance_ptr = wasm_instance_new(GetTLSStore().get(), module.get(), nullptr, nullptr);
   if (instance_ptr == nullptr) {
     SEEN_INFO("Failed to evaluate module on: {}.", worker_name);
     return;
   }
   auto instance = std::shared_ptr<wasm_instance_t>(instance_ptr, wasm_instance_delete);
-  auto exports = ExportVector(new wasm_extern_vec_t, wasm_extern_vec_delete);
+  auto exports = std::shared_ptr<wasm_extern_vec_t>(new wasm_extern_vec_t, wasm_extern_vec_delete);
   wasm_instance_exports(instance.get(), exports.get());
   SEEN_ASSERT_WITH_MESSAGE(exports->size > 0, "Module exports is empty!");
   const auto* start_func = wasm_extern_as_func(exports->data[1]);

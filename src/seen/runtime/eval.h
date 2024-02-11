@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <wasm_c_api.h>
-
 #include "seen/runtime/module.h"
 
 namespace seen::runtime {

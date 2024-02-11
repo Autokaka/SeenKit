@@ -4,6 +4,6 @@
 
 namespace seen::runtime {
 
-void RegisterBindings();
+void RegisterNativeSymbols();
 
 }  // namespace seen::runtime

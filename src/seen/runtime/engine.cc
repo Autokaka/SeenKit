@@ -4,6 +4,7 @@
 #include "seen/base/logger.h"
 #include "seen/base/worker.h"
 #include "seen/runtime/engine.h"
+#include "seen/runtime/register.h"
 
 namespace seen::runtime {
 
@@ -29,6 +30,7 @@ StorePtr GetTLSStore() {
       SEEN_INFO("Release thread-local wasm_store on: {}.", CFWorker::GetCurrent()->GetName());
       wasm_store_delete(store);
     });
+    RegisterNativeSymbols();
   }
   return store;
 }
