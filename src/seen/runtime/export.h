@@ -2,8 +2,11 @@
 
 #pragma once
 
+#include <wasm_export.h>
+#include <vector>
+
 namespace seen::runtime {
 
-void RegisterNativeSymbols();
+std::vector<NativeSymbol> ExportNativeSymbols();
 
 }  // namespace seen::runtime

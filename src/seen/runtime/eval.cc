@@ -6,7 +6,6 @@
 #include "seen/base/worker.h"
 #include "seen/runtime/engine.h"
 #include "seen/runtime/eval.h"
-#include "seen/runtime/register.h"
 
 namespace seen::runtime {
 

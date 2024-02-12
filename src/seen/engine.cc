@@ -1,10 +1,8 @@
 // Created by Autokaka (qq1909698494@gmail.com) on 2023/03/03.
 
-#include <wasm_c_api.h>
-
+#include "seen/engine.h"
 #include "seen/base/logger.h"
 #include "seen/base/waitable_event.h"
-#include "seen/engine.h"
 #include "seen/runtime/eval.h"
 #include "seen/runtime/module.h"
 
