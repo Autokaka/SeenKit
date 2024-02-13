@@ -4,7 +4,6 @@
 #pragma once
 
 #include <filesystem>
-#include <glm/glm.hpp>
 
 #include "seen/base/time_point.h"
 #include "seen/base/types.h"

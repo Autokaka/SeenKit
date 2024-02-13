@@ -32,7 +32,7 @@ void EvaluateModule(const ModulePtr& module) {
   if (trap) {
     auto message = std::shared_ptr<wasm_name_t>(new wasm_name_t{0}, wasm_name_delete);
     wasm_trap_message(trap.get(), message.get());
-    SEEN_ERROR("Error: {}", message->data);
+    SEEN_ERROR("{}", message->data);
   }
 }
 

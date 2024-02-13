@@ -13,11 +13,10 @@ include(cmake/cpm.cmake)
 
 message(STATUS ${SEEN_VERSION})
 
-add_subdirectory(example/res)
 add_subdirectory(vendor/fmt)
-add_subdirectory(vendor/glm)
 add_subdirectory(vendor/miniz)
 add_subdirectory(vendor/wamr)
+add_subdirectory(vendor/wgpu)
 
 if(${SEEN_BUILD_DARWIN})
   add_subdirectory(lib/darwin)
@@ -48,7 +47,7 @@ if(${SEEN_BUILD_DARWIN})
     ${darwin_SOURCE_DIR}/src
   )
   target_compile_definitions(seen PUBLIC ${SEEN_COMPILE_FLAGS})
-  target_link_libraries(seen PRIVATE fmt glm miniz wamr)
+  target_link_libraries(seen PRIVATE fmt miniz wamr wgpu)
   set_target_properties(seen PROPERTIES
     FRAMEWORK TRUE
     MACOSX_DEPLOYMENT_TARGET "11.0"
@@ -65,6 +64,7 @@ if(${SEEN_BUILD_DARWIN})
   )
 
   # example
+  add_subdirectory(example/res)
   add_subdirectory(example/darwin)
   file(GLOB_RECURSE EXAMPLE_SOURCE
     "${seen_example_SOURCE_DIR}/*.h"
