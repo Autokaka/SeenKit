@@ -22,7 +22,7 @@ void EvaluateModule(const ModulePtr& module) {
   wasm_instance_exports(instance.get(), exports.get());
   SEEN_ASSERT_WITH_MESSAGE(exports->size > 0, "Module exports is empty!");
   const auto* start_func = wasm_extern_as_func(exports->data[1]);
-  SEEN_ASSERT_WITH_MESSAGE(start_func, "Module should always have a start function!");
+  SEEN_ASSERT_WITH_MESSAGE(start_func, "Failed to retrieve `_start` function!");
 
   wasm_val_t result_types[1] = {WASM_I32_VAL(0)};
   wasm_val_vec_t args = WASM_EMPTY_VEC;
