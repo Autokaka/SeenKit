@@ -2,10 +2,12 @@
 
 #pragma once
 
+#include <wasm_export.h>
+
 #include "seen/runtime/module.h"
 
 namespace seen::runtime {
 
-void EvaluateModule(const ModulePtr& module);
+void EvaluateModule(const Module& module);
 
 }  // namespace seen::runtime

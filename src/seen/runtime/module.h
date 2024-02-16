@@ -2,15 +2,15 @@
 
 #pragma once
 
-#include <wasm_c_api.h>
+#include <wasm_export.h>
 #include <filesystem>
 #include <memory>
 
 namespace seen::runtime {
 
 namespace fs = std::filesystem;
-using ModulePtr = std::shared_ptr<wasm_module_t>;
+using Module = std::shared_ptr<WASMModuleCommon>;
 
-ModulePtr CreateModule(const fs::path& path);
+Module LoadModule(const fs::path& path);
 
 }  // namespace seen::runtime

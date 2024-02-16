@@ -1,49 +1,26 @@
-#include <wasm_export.h>
-#include <memory>
-#include <mutex>
-
+#include "seen/runtime/engine.h"
 #include "seen/base/logger.h"
 #include "seen/base/worker.h"
-#include "seen/runtime/engine.h"
 #include "seen/runtime/export.h"
 
 namespace seen::runtime {
 
-EnginePtr GetEngine() {
-  // NOTE(Autokaka): The wasm_c_api is incomplete.
-  // According to source code, it cannot bind with
-  // pointers since it does not make address conversion
-  // from wasm_exec_env to the app space.
-  // Waiting for wamr to find a better solution, use
-  // wasm_export for now.
-  static constexpr char* module_name = "seen";
-  static auto native_symbols = ExportNativeSymbols();
-  static auto* symbols_ptr = const_cast<NativeSymbol*>(native_symbols.data());
-  static std::shared_ptr<wasm_engine_t> engine;
-  static std::once_flag engine_init_flag;
-  std::call_once(engine_init_flag, []() {
-    // https://github.com/bytecodealliance/wasm-micro-runtime/blob/main/doc/wasm_c_api.md#fyi
-    SEEN_INFO("Lazy load wasm_engine on current process.");
-    engine = std::shared_ptr<wasm_engine_t>(wasm_engine_new(), [](wasm_engine_t* engine) {
-      SEEN_INFO("Release wasm_engine on current process.");
-      wasm_runtime_unregister_natives(module_name, symbols_ptr);
-      wasm_engine_delete(engine);
-    });
-    wasm_runtime_register_natives(module_name, symbols_ptr, native_symbols.size());
-  });
-  return engine;
+static constexpr char const* kModuleName = "seen";
+
+Engine::Engine() : native_symbols_(ExportNativeSymbols()) {
+  SEEN_INFO("Create WebAssembly Engine on {}.", CFWorker::GetCurrent()->GetName());
+  RuntimeInitArgs args;
+  std::memset(&args, 0, sizeof(RuntimeInitArgs));
+  args.mem_alloc_type = Alloc_With_System_Allocator;
+  SEEN_ASSERT(wasm_runtime_full_init(&args));
+  wasm_runtime_set_log_level(WASM_LOG_LEVEL_VERBOSE);
+  SEEN_ASSERT(wasm_runtime_register_natives(kModuleName, native_symbols_.data(), native_symbols_.size()));
 }
 
-StorePtr GetTLSStore() {
-  thread_local StorePtr store;
-  if (store == nullptr) {
-    SEEN_INFO("Lazy create thread-local wasm_store on: {}.", CFWorker::GetCurrent()->GetName());
-    store = StorePtr(wasm_store_new(GetEngine().get()), [](wasm_store_t* store) {
-      SEEN_INFO("Release thread-local wasm_store on: {}.", CFWorker::GetCurrent()->GetName());
-      wasm_store_delete(store);
-    });
-  }
-  return store;
+Engine::~Engine() {
+  SEEN_INFO("Release WebAssembly Engine.");
+  wasm_runtime_unregister_natives(kModuleName, native_symbols_.data());
+  wasm_runtime_destroy();
 }
 
 }  // namespace seen::runtime

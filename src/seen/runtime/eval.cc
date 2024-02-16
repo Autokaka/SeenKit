@@ -1,38 +1,48 @@
 // Created by Autokaka (qq1909698494@gmail.com) on 2024/02/07.
 
+#include <wasm_export.h>
 #include <memory>
 
 #include "seen/base/logger.h"
 #include "seen/base/worker.h"
-#include "seen/runtime/engine.h"
 #include "seen/runtime/eval.h"
 
 namespace seen::runtime {
 
-void EvaluateModule(const ModulePtr& module) {
-  auto worker_name = CFWorker::GetCurrent()->GetName();
-  SEEN_INFO("Evaluate module on: {}.", worker_name);
-  auto* instance_ptr = wasm_instance_new(GetTLSStore().get(), module.get(), nullptr, nullptr);
-  if (instance_ptr == nullptr) {
-    SEEN_INFO("Failed to evaluate module on: {}.", worker_name);
+static constexpr auto kStackSize = 8 * 1024;
+static constexpr auto kHeapSize = 8 * 1024;
+static constexpr auto kErrorMaxLength = 256;
+
+void EvaluateModule(const Module& module) {
+  static constexpr char const* tag = "EvaluateModule";
+  SEEN_INFO("{} on {}", tag, CFWorker::GetCurrent()->GetName());
+
+  char error_buf[kErrorMaxLength];
+  auto* module_ptr = wasm_runtime_instantiate(module.get(), kStackSize, kHeapSize, error_buf, sizeof(error_buf));
+  if (module_ptr == nullptr) {
+    SEEN_ERROR("{} failed: {}", tag, error_buf);
     return;
   }
-  auto instance = std::shared_ptr<wasm_instance_t>(instance_ptr, wasm_instance_delete);
-  auto exports = std::shared_ptr<wasm_extern_vec_t>(new wasm_extern_vec_t, wasm_extern_vec_delete);
-  wasm_instance_exports(instance.get(), exports.get());
-  SEEN_ASSERT_WITH_MESSAGE(exports->size > 0, "Module exports is empty!");
-  const auto* start_func = wasm_extern_as_func(exports->data[1]);
-  SEEN_ASSERT_WITH_MESSAGE(start_func, "Failed to retrieve `_start` function!");
 
-  wasm_val_t result_types[1] = {WASM_I32_VAL(0)};
-  wasm_val_vec_t args = WASM_EMPTY_VEC;
-  wasm_val_vec_t results = WASM_ARRAY_VEC(result_types);
-  wasm_trap_t* trap_ptr = wasm_func_call(start_func, &args, &results);
-  auto trap = std::shared_ptr<wasm_trap_t>(trap_ptr, wasm_trap_delete);
-  if (trap) {
-    auto message = std::shared_ptr<wasm_name_t>(new wasm_name_t{0}, wasm_name_delete);
-    wasm_trap_message(trap.get(), message.get());
-    SEEN_ERROR("{}", message->data);
+  auto module_inst = std::shared_ptr<WASMModuleInstanceCommon>(module_ptr, wasm_runtime_deinstantiate);
+  auto* exec_env_ptr = wasm_runtime_create_exec_env(module_inst.get(), kStackSize);
+  if (exec_env_ptr == nullptr) {
+    SEEN_ERROR("{} failed: broken execution environment!", tag);
+    return;
+  }
+
+  auto exec_env = std::shared_ptr<WASMExecEnv>(exec_env_ptr, wasm_runtime_destroy_exec_env);
+  auto* start_func = wasm_runtime_lookup_wasi_start_function(module_inst.get());
+  if (start_func == nullptr) {
+    SEEN_ERROR("{} failed: no start function!", tag);
+    return;
+  }
+
+  auto success = wasm_runtime_call_wasm_a(exec_env.get(), start_func, 0, nullptr, 0, nullptr);
+  if (!success) {
+    const auto* message = wasm_runtime_get_exception(module_inst.get());
+    SEEN_ERROR("{} {}", tag, message ?: "Uncaught error.");
+    return;
   }
 }
 

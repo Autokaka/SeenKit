@@ -1,17 +1,26 @@
 // Created by Autokaka (qq1909698494@gmail.com) on 2024/02/08.
 
-#include <wasm_c_api.h>
+#include <wasm_export.h>
 #include <memory>
+#include <vector>
+
+#include "seen/base/class_ext.h"
 
 #pragma once
 
 namespace seen::runtime {
 
-using EnginePtr = std::shared_ptr<wasm_engine_t>;
-using StorePtr = std::shared_ptr<wasm_store_t>;
+class Engine final {
+ public:
+  using Ptr = std::unique_ptr<Engine>;
 
-EnginePtr GetEngine();
+  explicit Engine();
+  ~Engine();
 
-StorePtr GetTLSStore();
+ private:
+  std::vector<NativeSymbol> native_symbols_;
+
+  SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(Engine);
+};
 
 }  // namespace seen::runtime

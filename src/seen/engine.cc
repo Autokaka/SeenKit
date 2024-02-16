@@ -8,13 +8,13 @@
 
 namespace seen {
 
-thread_local runtime::ModulePtr tls_module;
+thread_local runtime::Module tls_module;
 
 void Engine::CreateAsync(const Bundle::Ptr& bundle, CreateCallback callback) {
   SEEN_ASSERT(bundle);
   auto engine = std::make_shared<Engine>();
   engine->main_worker_->DispatchAsync([engine, bundle, callback = std::move(callback)]() mutable {
-    tls_module = runtime::CreateModule(bundle->GetEntryPath());
+    tls_module = runtime::LoadModule(bundle->GetEntryPath());
     bool success = tls_module != nullptr;
     GetPlatformWorker()->DispatchAsync([engine, success, callback = std::move(callback)]() {
       // Post task to ensure the engine will be destroyed on platform thread if failed to create module.
@@ -32,7 +32,7 @@ Engine::Ptr Engine::Create(const Bundle::Ptr& bundle) {
   bool success = false;
   CFAutoResetWaitableEvent latch;
   engine->main_worker_->DispatchAsync([bundle, &success, &latch]() {
-    tls_module = runtime::CreateModule(bundle->GetEntryPath());
+    tls_module = runtime::LoadModule(bundle->GetEntryPath());
     success = tls_module != nullptr;
     latch.Signal();
     if (success) {

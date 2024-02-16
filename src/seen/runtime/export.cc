@@ -1,12 +1,14 @@
 // Created by Autokaka (qq1909698494@gmail.com) on 2024/02/09.
 
-#include <wasm_c_api.h>
 #include <wgpu/wgpu.h>
 #include <cstddef>
+#include <cstdint>
+#include <cstring>
 
 #include "seen/base/deferred_task.h"
 #include "seen/base/logger.h"
 #include "seen/runtime/export.h"
+#include "seen/runtime/wasm_ext.h"
 
 namespace seen::runtime {
 
@@ -47,12 +49,14 @@ void wgpu_instance_request_adapter(wasm_exec_env_t env,
   };
   auto* context = new Context{env, callback, user_data};
   auto c_callback = [](WGPURequestAdapterStatus status, WGPUAdapter adapter, const char* message, void* user_data) {
-    auto* context = reinterpret_cast<Context*>(user_data);
-    CFDeferredTask defer_context([context]() { delete context; });
-    auto* module_instance = get_module_inst(context->env);
-    wasm_ref_as_func(nullptr);
-    wasm_runtime_call_wasm_a(context->env, nullptr, 1, nullptr, 5, nullptr);
-    // wasm_runtime_call_indirect(context->env, context->callback, ...);
+    auto* context = static_cast<Context*>(user_data);
+    CFDeferredTask defer([context]() { delete context; });
+    auto message_len = static_cast<std::int32_t>(std::strlen(message));
+    wasm_val_t args[] = {
+        wasm_i32_val(status),      wasm_externref_val(adapter),      wasm_externref_val(message),
+        wasm_i32_val(message_len), wasm_ptr_val(context->user_data),
+    };
+    wasm_runtime_call_indirect_a(context->env, context->callback, sizeof(args) / sizeof(wasm_val_t), args);
   };
   wgpuInstanceRequestAdapter(instance, options, c_callback, context);
 }
@@ -66,9 +70,9 @@ std::vector<NativeSymbol> ExportNativeSymbols() {
       SYMBOL_OF("log", log, "($)"),
       SYMBOL_OF("get_version_byte_length", get_version_byte_length, "()i"),
       SYMBOL_OF("get_version", get_version, "(*~)"),
-      SYMBOL_OF("wgpu_create_instance", wgpu_create_instance, "()i"),
-      SYMBOL_OF("wgpu_instance_release", wgpu_instance_release, "(i)"),
-      SYMBOL_OF("wgpu_instance_request_adapter", wgpu_instance_request_adapter, "(i*)"),
+      SYMBOL_OF("wgpu_create_instance", wgpu_create_instance, "()r"),
+      SYMBOL_OF("wgpu_instance_release", wgpu_instance_release, "(r)"),
+      SYMBOL_OF("wgpu_instance_request_adapter", wgpu_instance_request_adapter, "(rrii)"),
   };
 }
 
