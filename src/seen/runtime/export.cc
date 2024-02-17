@@ -68,14 +68,12 @@ void wgpu_instance_request_adapter(wasm_exec_env_t env,
 }  // namespace
 
 std::vector<NativeSymbol> ExportNativeSymbols() {
-#define SYMBOL_OF(Symbol, FuncPtr, Sig, ...) \
-  { Symbol, reinterpret_cast<void*>(FuncPtr), Sig, __VA_ARGS__ }
   return {
-      SYMBOL_OF("log", log, "($)"),
-      SYMBOL_OF("get_version_byte_length", get_version_byte_length, "()i"),
-      SYMBOL_OF("get_version", get_version, "(*~)"),
-      SYMBOL_OF("wgpu_create_instance", wgpu_create_instance, "()r"),
-      SYMBOL_OF("wgpu_instance_request_adapter", wgpu_instance_request_adapter, "(rrii)"),
+      wasm_symbol<log>("log", "($)"),
+      wasm_symbol<get_version_byte_length>("get_version_byte_length", "()i"),
+      wasm_symbol<get_version>("get_version", "(*~)"),
+      wasm_symbol<wgpu_create_instance>("wgpu_create_instance", "()r"),
+      wasm_symbol<wgpu_instance_request_adapter>("wgpu_instance_request_adapter", "(rrii)"),
   };
 }
 
