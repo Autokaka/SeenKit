@@ -72,31 +72,9 @@ inline wasm_val_t wasm_init_val() {
   return {.kind = WASM_ANYREF, .__paddings = {0}, .of = {.ref = nullptr}};
 }
 
-class wasm_func_sig {
- public:
-  explicit wasm_func_sig(const char* orig_sig) {
-    for (int i = 0; i < std::strlen(orig_sig); ++i) {
-      auto ichar = orig_sig[i];
-      if (ichar == 'r' && sizeof(std::uintptr_t) == sizeof(std::int32_t)) {
-        sig_.push_back('i');
-      } else if (ichar == 'r' && sizeof(std::uintptr_t) == sizeof(std::int64_t)) {
-        sig_.push_back('I');
-      } else {
-        sig_.push_back(ichar);
-      }
-    }
-  }
-
-  [[nodiscard]] const char* get() const { return sig_.c_str(); }
-
- private:
-  std::string sig_;
-};
-
 template <auto FuncPtr>
-NativeSymbol wasm_symbol(const char* name, const char* sig, void* attachment = nullptr) {
-  static const auto sig_ext = wasm_func_sig(sig);
-  return {name, reinterpret_cast<void*>(FuncPtr), sig_ext.get(), attachment};
+inline constexpr NativeSymbol wasm_symbol(const char* name, const char* sig, void* attachment = nullptr) {
+  return {name, reinterpret_cast<void*>(FuncPtr), sig, attachment};
 }
 
 }  // namespace seen::runtime
