@@ -10,15 +10,19 @@
 namespace seen::runtime {
 
 static constexpr auto kStackSize = 8 * 1024;
-static constexpr auto kHeapSize = 8 * 1024;
+// NOTE(Autokaka):
+// Always require the wasm module to export malloc/free functions.
+// TL;DR, force the app to use libc heap instead of app heap.
+// Refer to wasm-micro-runtime/doc/memory_tune.md for details.
+static constexpr auto kAppHeapSize = 0;
 static constexpr auto kErrorMaxLength = 256;
 
 void EvaluateModule(const Module& module) {
   static constexpr char const* tag = "EvaluateModule";
-  SEEN_INFO("{} on {}", tag, CFWorker::GetCurrent()->GetName());
+  SEEN_INFO("{} on {}.", tag, CFWorker::GetCurrent()->GetName());
 
   char error_buf[kErrorMaxLength];
-  auto* module_ptr = wasm_runtime_instantiate(module.get(), kStackSize, kHeapSize, error_buf, sizeof(error_buf));
+  auto* module_ptr = wasm_runtime_instantiate(module.get(), kStackSize, kAppHeapSize, error_buf, sizeof(error_buf));
   if (module_ptr == nullptr) {
     SEEN_ERROR("{} failed: {}", tag, error_buf);
     return;
