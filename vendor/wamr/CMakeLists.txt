@@ -1,9 +1,0 @@
-project(wamr)
-
-set(WAMR_BUILD_REF_TYPES 1)
-
-CPMAddPackage("gh:bytecodealliance/wasm-micro-runtime#WAMR-1.3.2")
-
-add_library(wamr ALIAS iwasm_static)
-
-target_compile_options(iwasm_static PRIVATE -w)

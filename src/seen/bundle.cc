@@ -28,10 +28,10 @@ bool Unzip(const fs::path& absolute_path, const fs::path& output_dir) {
     auto* file_name = file_stat.m_filename;
     auto is_entry = !is_dir && std::strcmp(file_name, Bundle::kEntryFileName) == 0;
     auto is_assets_file = std::strncmp(file_name, Bundle::kAssetsDirName, std::strlen(Bundle::kAssetsDirName)) == 0;
-    const char* wasm_file_suffix = ".wasm";
-    const char* file_suffix = file_name + std::strlen(file_name) - std::strlen(wasm_file_suffix);
-    auto is_wasm = !is_dir && std::strcmp(file_suffix, ".wasm") == 0;
-    auto should_extract = is_entry || is_assets_file || is_wasm;
+    const char* lua_file_suffix = ".lua";
+    const char* file_suffix = file_name + std::strlen(file_name) - std::strlen(lua_file_suffix);
+    auto is_lua = !is_dir && std::strcmp(file_suffix, ".lua") == 0;
+    auto should_extract = is_entry || is_assets_file || is_lua;
     if (!should_extract) {
       continue;
     }
@@ -49,7 +49,7 @@ bool Unzip(const fs::path& absolute_path, const fs::path& output_dir) {
 
 }  // namespace
 
-const char* Bundle::kEntryFileName = "main.wasm";
+const char* Bundle::kEntryFileName = "main.lua";
 const char* Bundle::kAssetsDirName = "assets/";
 
 Bundle::Ptr Bundle::CreateFromPath(const fs::path& absolute_path) {

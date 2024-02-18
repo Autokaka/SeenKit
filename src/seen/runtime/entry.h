@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include <ScriptX/ScriptX.h>
-
-#include "seen/runtime/types.h"
+#include <filesystem>
 
 namespace seen::runtime {
 
-void ExportHostAbilities(const EnginePtr& engine);
+namespace fs = std::filesystem;
+
+void ExecEntry(const fs::path& entry_file);
 
 }  // namespace seen::runtime

@@ -4,10 +4,8 @@
 
 #include <ScriptX/ScriptX.h>
 
-#include "seen/runtime/types.h"
-
 namespace seen::runtime {
 
-void ExportHostAbilities(const EnginePtr& engine);
+using EnginePtr = std::shared_ptr<script::ScriptEngine>;
 
-}  // namespace seen::runtime
+}
