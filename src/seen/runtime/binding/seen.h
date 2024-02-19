@@ -4,7 +4,7 @@
 
 #include <sol/sol.hpp>
 
-#include "seen/runtime/bindings/gpu.h"
+#include "seen/runtime/binding/gpu.h"
 
 namespace seen::runtime {
 

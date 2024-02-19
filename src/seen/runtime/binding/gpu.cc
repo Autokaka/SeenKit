@@ -1,9 +1,9 @@
 // Created by Autokaka (qq1909698494@gmail.com) on 2024/02/18.
 
-#include "seen/runtime/bindings/gpu.h"
+#include "seen/runtime/binding/gpu.h"
 #include "seen/base/deferred_task.h"
 #include "seen/base/logger.h"
-#include "seen/runtime/bindings/gpu_adapter.h"
+#include "seen/runtime/binding/gpu_adapter.h"
 
 namespace seen::runtime {
 

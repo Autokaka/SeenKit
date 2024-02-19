@@ -1,6 +1,6 @@
 // Created by Autokaka (qq1909698494@gmail.com) on 2024/02/18.
 
-#include "seen/runtime/bindings/seen.h"
+#include "seen/runtime/binding/seen.h"
 #include "seen/base/logger.h"
 
 namespace seen::runtime {

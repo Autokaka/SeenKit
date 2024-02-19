@@ -1,6 +1,6 @@
 // Created by Autokaka (qq1909698494@gmail.com) on 2024/02/18.
 
-#include "seen/runtime/bindings/gpu_adapter.h"
+#include "seen/runtime/binding/gpu_adapter.h"
 #include "seen/base/logger.h"
 
 namespace seen::runtime {

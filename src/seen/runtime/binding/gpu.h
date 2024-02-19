@@ -7,7 +7,7 @@
 #include <sol/sol.hpp>
 
 #include "seen/base/class_ext.h"
-#include "seen/runtime/bindings/gpu_adapter.h"
+#include "seen/runtime/binding/gpu_adapter.h"
 
 namespace seen::runtime {
 
