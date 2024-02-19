@@ -7,9 +7,9 @@
 #include <sol/sol.hpp>
 
 #include "seen/base/class_ext.h"
-#include "seen/runtime/binding/gpu_adapter.h"
+#include "seen/mod/gpu_adapter.h"
 
-namespace seen::runtime {
+namespace seen::mod {
 
 class GPU final {
  public:
@@ -18,6 +18,7 @@ class GPU final {
   explicit GPU(WGPUInstance wgpu);
   ~GPU();
 
+  // FIXME(Autokaka): Get rid of sol headers and make 'mod' pure.
   GPUAdapter::Ptr RequestAdapter(const sol::variadic_args& args);
 
  private:
@@ -26,4 +27,4 @@ class GPU final {
   SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(GPU);
 };
 
-}  // namespace seen::runtime
+}  // namespace seen::mod

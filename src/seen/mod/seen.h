@@ -4,9 +4,9 @@
 
 #include <sol/sol.hpp>
 
-#include "seen/runtime/binding/gpu.h"
+#include "seen/mod/gpu.h"
 
-namespace seen::runtime {
+namespace seen::mod {
 
 class Seen final {
  public:
@@ -19,4 +19,4 @@ class Seen final {
   static GPU::Ptr GetGPU();
 };
 
-}  // namespace seen::runtime
+}  // namespace seen::mod

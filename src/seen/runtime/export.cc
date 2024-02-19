@@ -1,10 +1,13 @@
 // Created by Autokaka (qq1909698494@gmail.com) on 2024/02/18.
 
 #include "seen/runtime/export.h"
-#include "seen/runtime/binding/gpu.h"
-#include "seen/runtime/binding/seen.h"
+#include "seen/mod/gpu.h"
+#include "seen/mod/seen.h"
 
 namespace seen::runtime {
+
+// NOLINTNEXTLINE(google-build-using-namespace)
+using namespace mod;
 
 void ExportHostAbilities(sol::state* lua) {
   // seen

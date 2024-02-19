@@ -1,9 +1,9 @@
 // Created by Autokaka (qq1909698494@gmail.com) on 2024/02/18.
 
-#include "seen/runtime/binding/gpu_adapter.h"
+#include "seen/mod/gpu_adapter.h"
 #include "seen/base/logger.h"
 
-namespace seen::runtime {
+namespace seen::mod {
 
 GPUAdapter::GPUAdapter(WGPUAdapter adapter) : adapter_(adapter) {
   SEEN_ASSERT(adapter);
@@ -15,4 +15,4 @@ GPUAdapter::~GPUAdapter() {
   wgpuAdapterRelease(adapter_);
 }
 
-}  // namespace seen::runtime
+}  // namespace seen::mod

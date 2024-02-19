@@ -1,11 +1,11 @@
 // Created by Autokaka (qq1909698494@gmail.com) on 2024/02/18.
 
-#include "seen/runtime/binding/gpu.h"
+#include "seen/mod/gpu.h"
 #include "seen/base/deferred_task.h"
 #include "seen/base/logger.h"
-#include "seen/runtime/binding/gpu_adapter.h"
+#include "seen/mod/gpu_adapter.h"
 
-namespace seen::runtime {
+namespace seen::mod {
 
 GPU::Ptr GPU::Create() {
   WGPUInstanceDescriptor desc;
@@ -66,4 +66,4 @@ GPUAdapter::Ptr GPU::RequestAdapter(const sol::variadic_args& args) {
   return {};
 }
 
-}  // namespace seen::runtime
+}  // namespace seen::mod

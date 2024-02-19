@@ -7,7 +7,7 @@
 
 #include "seen/base/class_ext.h"
 
-namespace seen::runtime {
+namespace seen::mod {
 
 class GPUAdapter {
  public:
@@ -22,4 +22,4 @@ class GPUAdapter {
   SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(GPUAdapter);
 };
 
-}  // namespace seen::runtime
+}  // namespace seen::mod

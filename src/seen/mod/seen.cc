@@ -1,9 +1,9 @@
 // Created by Autokaka (qq1909698494@gmail.com) on 2024/02/18.
 
-#include "seen/runtime/binding/seen.h"
+#include "seen/mod/seen.h"
 #include "seen/base/logger.h"
 
-namespace seen::runtime {
+namespace seen::mod {
 
 void Seen::Log(const sol::variadic_args& args) {
   std::string message;
@@ -23,4 +23,4 @@ GPU::Ptr Seen::GetGPU() {
   return gpu;
 }
 
-}  // namespace seen::runtime
+}  // namespace seen::mod
