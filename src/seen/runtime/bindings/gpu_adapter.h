@@ -2,23 +2,24 @@
 
 #pragma once
 
-#include <ScriptX/ScriptX.h>
 #include <wgpu/wgpu.h>
+#include <memory>
+
+#include "seen/base/class_ext.h"
 
 namespace seen::runtime {
 
-// NOLINTNEXTLINE(google-build-using-namespace)
-using namespace script;
-
-class GPUAdapter : public ScriptClass {
+class GPUAdapter {
  public:
-  using ScriptClass::ScriptClass;
+  using Ptr = std::shared_ptr<GPUAdapter>;
 
   explicit GPUAdapter(WGPUAdapter adapter);
-  ~GPUAdapter() override;
+  ~GPUAdapter();
 
  private:
   WGPUAdapter adapter_;
+
+  SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(GPUAdapter);
 };
 
 }  // namespace seen::runtime

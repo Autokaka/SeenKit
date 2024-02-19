@@ -5,12 +5,13 @@
 
 namespace seen::runtime {
 
-GPUAdapter::GPUAdapter(WGPUAdapter adapter)
-    : ScriptClass(ScriptClass::ConstructFromCpp<GPUAdapter>{}), adapter_(adapter) {
+GPUAdapter::GPUAdapter(WGPUAdapter adapter) : adapter_(adapter) {
   SEEN_ASSERT(adapter);
+  SEEN_INFO("Create GPU adapter.");
 }
 
 GPUAdapter::~GPUAdapter() {
+  SEEN_INFO("Release GPU adapter.");
   wgpuAdapterRelease(adapter_);
 }
 

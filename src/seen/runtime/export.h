@@ -2,12 +2,10 @@
 
 #pragma once
 
-#include <ScriptX/ScriptX.h>
-
-#include "seen/runtime/types.h"
+#include <sol/sol.hpp>
 
 namespace seen::runtime {
 
-void ExportHostAbilities(const EnginePtr& engine);
+void ExportHostAbilities(sol::state* lua);
 
 }  // namespace seen::runtime

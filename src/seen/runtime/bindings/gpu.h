@@ -2,26 +2,28 @@
 
 #pragma once
 
-#include <ScriptX/ScriptX.h>
 #include <wgpu/wgpu.h>
+#include <memory>
+#include <sol/sol.hpp>
+
+#include "seen/base/class_ext.h"
+#include "seen/runtime/bindings/gpu_adapter.h"
 
 namespace seen::runtime {
 
-// NOLINTNEXTLINE(google-build-using-namespace)
-using namespace script;
-
-class GPU : public ScriptClass {
+class GPU final {
  public:
-  using ScriptClass::ScriptClass;
-
-  static GPU* Create();
+  using Ptr = std::shared_ptr<GPU>;
+  static GPU::Ptr Create();
   explicit GPU(WGPUInstance wgpu);
-  ~GPU() override;
+  ~GPU();
 
-  Local<Value> RequestAdapter(const Arguments& args);
+  GPUAdapter::Ptr RequestAdapter(const sol::variadic_args& args);
 
  private:
   WGPUInstance wgpu_;
+
+  SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(GPU);
 };
 
 }  // namespace seen::runtime

@@ -2,29 +2,25 @@
 
 #include "seen/runtime/bindings/seen.h"
 #include "seen/base/logger.h"
-#include "seen/runtime/bindings/gpu.h"
 
 namespace seen::runtime {
 
-Local<Value> Seen::Log(const Arguments& args) {
+void Seen::Log(const sol::variadic_args& args) {
   std::string message;
-  for (int i = 0; i < args.size(); ++i) {
-    message += args[i].describeUtf8() + " ";
+  for (auto&& arg : args) {
+    std::string desc = luaL_tolstring(arg.lua_state(), arg.stack_index(), nullptr);
+    message += desc + " ";
   }
   SEEN_INFO("{}", message);
-  return {};
 }
 
-Local<Value> Seen::GetVersion() {
-  return String::newString(SEEN_VERSION);
+const char* Seen::GetVersion() {
+  return SEEN_VERSION;
 }
 
-Local<Value> Seen::GetGPU() {
-  static auto* gpu = GPU::Create();
-  if (gpu == nullptr) {
-    return {};
-  }
-  return gpu->getScriptObject();
+GPU::Ptr Seen::GetGPU() {
+  thread_local auto gpu = GPU::Create();
+  return gpu;
 }
 
 }  // namespace seen::runtime

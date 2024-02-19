@@ -2,22 +2,21 @@
 
 #pragma once
 
-#include <ScriptX/ScriptX.h>
+#include <sol/sol.hpp>
+
+#include "seen/runtime/bindings/gpu.h"
 
 namespace seen::runtime {
 
-// NOLINTNEXTLINE(google-build-using-namespace)
-using namespace script;
-
-class Seen : public ScriptClass {
+class Seen final {
  public:
-  using ScriptClass::ScriptClass;
+  using Ptr = std::shared_ptr<Seen>;
 
-  static Local<Value> Log(const Arguments& args);
+  static void Log(const sol::variadic_args& args);
 
-  static Local<Value> GetVersion();
+  static const char* GetVersion();
 
-  static Local<Value> GetGPU();
+  static GPU::Ptr GetGPU();
 };
 
 }  // namespace seen::runtime

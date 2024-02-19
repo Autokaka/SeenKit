@@ -2,34 +2,24 @@
 
 #include "seen/runtime/export.h"
 #include "seen/runtime/bindings/gpu.h"
-#include "seen/runtime/bindings/gpu_adapter.h"
 #include "seen/runtime/bindings/seen.h"
 
 namespace seen::runtime {
 
-// NOLINTNEXTLINE(google-build-using-namespace)
-using namespace script;
-
-void ExportHostAbilities(const EnginePtr& engine) {
-  static auto seen = defineClass<Seen>("seen")  //
-                         .function("log", Seen::Log)
-                         .property("version", Seen::GetVersion)
-                         .property("gpu", Seen::GetGPU)
-                         .build();
-
-  engine->registerNativeClass(seen);
-  static auto gpu = defineClass<GPU>("GPU")  //
-                        .nameSpace("seen.GPU")
-                        .constructor(nullptr)
-                        .instanceFunction("requestAdapter", &GPU::RequestAdapter)
-                        .build();
-  engine->registerNativeClass(gpu);
-
-  static auto gpu_adapter = defineClass<GPUAdapter>("GPUAdapter")  //
-                                .nameSpace("seen.GPUAdapter")
-                                .constructor(nullptr)
-                                .build();
-  engine->registerNativeClass(gpu_adapter);
+void ExportHostAbilities(sol::state* lua) {
+  // seen
+  lua->new_usertype<Seen>(                 //
+      "seen", sol::no_constructor,         //
+      "log", Seen::Log,                    //
+      "version", Seen::GetVersion,         //
+      "gpu", sol::property(&Seen::GetGPU)  //
+  );
+  auto seen = lua->get<sol::table>("Seen");
+  // GPU
+  seen.new_usertype<GPU>(                     //
+      "GPU", sol::no_constructor,             //
+      "requestAdapter", &GPU::RequestAdapter  //
+  );
 }
 
 }  // namespace seen::runtime

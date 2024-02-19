@@ -16,8 +16,9 @@ include(cmake/cpm.cmake)
 message(STATUS ${SEEN_VERSION})
 
 add_subdirectory(vendor/fmt)
+add_subdirectory(vendor/luajit)
 add_subdirectory(vendor/miniz)
-add_subdirectory(vendor/scriptx)
+add_subdirectory(vendor/sol2)
 add_subdirectory(vendor/wgpu)
 
 if(${SEEN_BUILD_DARWIN})
@@ -49,7 +50,7 @@ if(${SEEN_BUILD_DARWIN})
     ${darwin_SOURCE_DIR}/src
   )
   target_compile_definitions(seen PUBLIC ${SEEN_COMPILE_FLAGS})
-  target_link_libraries(seen PRIVATE fmt miniz scriptx wgpu)
+  target_link_libraries(seen PRIVATE fmt luajit miniz sol2 wgpu)
   set_target_properties(seen PROPERTIES
     FRAMEWORK TRUE
     MACOSX_DEPLOYMENT_TARGET "11.0"
