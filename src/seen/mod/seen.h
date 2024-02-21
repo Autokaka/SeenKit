@@ -10,13 +10,13 @@ namespace seen::mod {
 
 class Seen final {
  public:
-  using Ptr = std::shared_ptr<Seen>;
-
   static void Log(const sol::variadic_args& args);
 
   static const char* GetVersion();
 
   static GPU::Ptr GetGPU();
+
+  SEEN_DISALLOW_IMPLICIT_CONSTRUCTORS(Seen);
 };
 
 }  // namespace seen::mod

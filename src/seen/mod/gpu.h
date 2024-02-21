@@ -3,8 +3,8 @@
 #pragma once
 
 #include <wgpu/wgpu.h>
+#include <functional>
 #include <memory>
-#include <sol/sol.hpp>
 
 #include "seen/base/class_ext.h"
 #include "seen/mod/gpu_adapter.h"
@@ -14,14 +14,25 @@ namespace seen::mod {
 class GPU final {
  public:
   using Ptr = std::shared_ptr<GPU>;
+  using RequestAdapterCallback = std::function<void(GPUAdapter::Ptr)>;
+
+  struct RequestAdapterOptions {
+    static const RequestAdapterOptions kDefault;
+
+    GPUAdapter::PowerPrefT power_preference;
+  };
+
   static GPU::Ptr Create();
   explicit GPU(WGPUInstance wgpu);
   ~GPU();
 
-  // FIXME(Autokaka): Get rid of sol headers and make 'mod' pure.
-  GPUAdapter::Ptr RequestAdapter(const sol::variadic_args& args);
+  void RequestAdapter(const RequestAdapterOptions& options, const RequestAdapterCallback& callback);
+  void RequestAdapter(const RequestAdapterCallback& callback);
 
  private:
+  void DoRequestAdapter(const RequestAdapterOptions& options = RequestAdapterOptions::kDefault,
+                        const RequestAdapterCallback& callback = nullptr);
+
   WGPUInstance wgpu_;
 
   SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(GPU);

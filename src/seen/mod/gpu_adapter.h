@@ -13,6 +13,13 @@ class GPUAdapter {
  public:
   using Ptr = std::shared_ptr<GPUAdapter>;
 
+  using PowerPrefT = const char*;
+  static bool IsPowerPref(const std::string& maybe);
+  struct PowerPref {
+    static PowerPrefT kLowPower;
+    static PowerPrefT kHighPerformance;
+  };
+
   explicit GPUAdapter(WGPUAdapter adapter);
   ~GPUAdapter();
 

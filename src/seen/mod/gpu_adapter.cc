@@ -5,6 +5,13 @@
 
 namespace seen::mod {
 
+GPUAdapter::PowerPrefT GPUAdapter::PowerPref::kLowPower = "low-power";
+GPUAdapter::PowerPrefT GPUAdapter::PowerPref::kHighPerformance = "high-performance";
+
+bool GPUAdapter::IsPowerPref(const std::string& maybe) {
+  return maybe == PowerPref::kLowPower || maybe == PowerPref::kHighPerformance;
+}
+
 GPUAdapter::GPUAdapter(WGPUAdapter adapter) : adapter_(adapter) {
   SEEN_ASSERT(adapter);
   SEEN_INFO("Create GPU adapter.");

@@ -7,6 +7,10 @@
 
 namespace seen::mod {
 
+const GPU::RequestAdapterOptions GPU::RequestAdapterOptions::kDefault = {
+    .power_preference = nullptr,
+};
+
 GPU::Ptr GPU::Create() {
   WGPUInstanceDescriptor desc;
   desc.nextInChain = nullptr;
@@ -24,7 +28,17 @@ GPU::~GPU() {
   wgpuInstanceRelease(wgpu_);
 }
 
-GPUAdapter::Ptr GPU::RequestAdapter(const sol::variadic_args& args) {
+void GPU::RequestAdapter(const RequestAdapterOptions& options, const RequestAdapterCallback& callback) {
+  DoRequestAdapter(options, callback);
+}
+
+void GPU::RequestAdapter(const RequestAdapterCallback& callback) {
+  DoRequestAdapter({.power_preference = nullptr}, callback);
+}
+
+void GPU::DoRequestAdapter(const RequestAdapterOptions& options, const RequestAdapterCallback& callback) {
+  SEEN_ASSERT(callback);
+
   WGPURequestAdapterOptions wgpu_options;
   wgpu_options.nextInChain = nullptr;
   // TODO(Autokaka): Get surface from system.
@@ -32,38 +46,19 @@ GPUAdapter::Ptr GPU::RequestAdapter(const sol::variadic_args& args) {
   wgpu_options.powerPreference = WGPUPowerPreference_Undefined;
   wgpu_options.forceFallbackAdapter = 0;
   wgpu_options.backendType = WGPUBackendType_Undefined;
-  if (args[0].get_type() == sol::type::table) {
-    auto options = args[0].as<sol::table>();
-    auto power_pref = options["powerPreference"];
-    auto power_pref_is_string = power_pref.get_type() == sol::type::string;
-    if (power_pref_is_string && power_pref.get<std::string>() == "low-power") {
-      wgpu_options.powerPreference = WGPUPowerPreference_LowPower;
-    } else if (power_pref_is_string && power_pref.get<std::string>() == "high-performance") {
-      wgpu_options.powerPreference = WGPUPowerPreference_HighPerformance;
-    }
+  if (options.power_preference == GPUAdapter::PowerPref::kLowPower) {
+    wgpu_options.powerPreference = WGPUPowerPreference_LowPower;
+  } else if (options.power_preference == GPUAdapter::PowerPref::kHighPerformance) {
+    wgpu_options.powerPreference = WGPUPowerPreference_HighPerformance;
   }
-  sol::function* callback = nullptr;
-  if (args[0].get_type() == sol::type::function) {
-    callback = new sol::function(args[0].as<sol::function>());
-  } else if (args[1].get_type() == sol::type::function) {
-    callback = new sol::function(args[1].as<sol::function>());
-  }
-  wgpuInstanceRequestAdapter(
-      wgpu_, &wgpu_options,
-      [](WGPURequestAdapterStatus status, WGPUAdapter adapter, char const* message_, void* user_data) {
-        auto* callback = reinterpret_cast<sol::function*>(user_data);
-        if (callback == nullptr) {
-          return;
-        }
-        CFDeferredTask defer([callback]() { delete callback; });
-        if (status == WGPURequestAdapterStatus_Success && adapter != nullptr) {
-          callback->call(std::make_shared<GPUAdapter>(adapter));
-        } else {
-          callback->call();
-        }
-      },
-      callback);
-  return {};
+  auto* callback_ptr = new RequestAdapterCallback(callback);
+  auto c_callback = [](WGPURequestAdapterStatus status, WGPUAdapter adapter, char const*, void* user_data) {
+    auto* callback_ptr = reinterpret_cast<RequestAdapterCallback*>(user_data);
+    CFDeferredTask defer([callback_ptr]() { delete callback_ptr; });
+    auto success = status == WGPURequestAdapterStatus_Success && adapter != nullptr;
+    (*callback_ptr)(success ? std::make_shared<GPUAdapter>(adapter) : nullptr);
+  };
+  wgpuInstanceRequestAdapter(wgpu_, &wgpu_options, c_callback, callback_ptr);
 }
 
 }  // namespace seen::mod
