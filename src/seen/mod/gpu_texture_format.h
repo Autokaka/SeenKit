@@ -1,0 +1,106 @@
+// Created by Autokaka (qq1909698494@gmail.com) on 2024/02/23.
+
+#pragma once
+
+namespace seen::mod {
+
+using GPUTextureFormatT = const char*;
+struct GPUTextureFormat {
+  static GPUTextureFormatT kR8Unorm;
+  static GPUTextureFormatT kR8Snorm;
+  static GPUTextureFormatT kR8Uint;
+  static GPUTextureFormatT kR8Sint;
+  static GPUTextureFormatT kR16Uint;
+  static GPUTextureFormatT kR16Sint;
+  static GPUTextureFormatT kR16Float;
+  static GPUTextureFormatT kRG8Unorm;
+  static GPUTextureFormatT kRG8Snorm;
+  static GPUTextureFormatT kRG8Uint;
+  static GPUTextureFormatT kRG8Sint;
+  static GPUTextureFormatT kR32Float;
+  static GPUTextureFormatT kR32Uint;
+  static GPUTextureFormatT kR32Sint;
+  static GPUTextureFormatT kRG16Uint;
+  static GPUTextureFormatT kRG16Sint;
+  static GPUTextureFormatT kRG16Float;
+  static GPUTextureFormatT kRGBA8Unorm;
+  static GPUTextureFormatT kRGBA8UnormSrgb;
+  static GPUTextureFormatT kRGBA8Snorm;
+  static GPUTextureFormatT kRGBA8Uint;
+  static GPUTextureFormatT kRGBA8Sint;
+  static GPUTextureFormatT kBGRA8Unorm;
+  static GPUTextureFormatT kBGRA8UnormSrgb;
+  static GPUTextureFormatT kRGB10A2Uint;
+  static GPUTextureFormatT kRGB10A2Unorm;
+  static GPUTextureFormatT kRG11B10Ufloat;
+  static GPUTextureFormatT kRGB9E5Ufloat;
+  static GPUTextureFormatT kRG32Float;
+  static GPUTextureFormatT kRG32Uint;
+  static GPUTextureFormatT kRG32Sint;
+  static GPUTextureFormatT kRGBA16Uint;
+  static GPUTextureFormatT kRGBA16Sint;
+  static GPUTextureFormatT kRGBA16Float;
+  static GPUTextureFormatT kRGBA32Float;
+  static GPUTextureFormatT kRGBA32Uint;
+  static GPUTextureFormatT kRGBA32Sint;
+  static GPUTextureFormatT kStencil8;
+  static GPUTextureFormatT kDepth16Unorm;
+  static GPUTextureFormatT kDepth24Plus;
+  static GPUTextureFormatT kDepth24PlusStencil8;
+  static GPUTextureFormatT kDepth32Float;
+  static GPUTextureFormatT kDepth32FloatStencil8;
+  static GPUTextureFormatT kBC1RGBAUnorm;
+  static GPUTextureFormatT kBC1RGBAUnormSrgb;
+  static GPUTextureFormatT kBC2RGBAUnorm;
+  static GPUTextureFormatT kBC2RGBAUnormSrgb;
+  static GPUTextureFormatT kBC3RGBAUnorm;
+  static GPUTextureFormatT kBC3RGBAUnormSrgb;
+  static GPUTextureFormatT kBC4RUnorm;
+  static GPUTextureFormatT kBC4RSnorm;
+  static GPUTextureFormatT kBC5RGUnorm;
+  static GPUTextureFormatT kBC5RGSnorm;
+  static GPUTextureFormatT kBC6HRGBUfloat;
+  static GPUTextureFormatT kBC6HRGBFloat;
+  static GPUTextureFormatT kBC7RGBAUnorm;
+  static GPUTextureFormatT kBC7RGBAUnormSrgb;
+  static GPUTextureFormatT kETC2RGB8Unorm;
+  static GPUTextureFormatT kETC2RGB8UnormSrgb;
+  static GPUTextureFormatT kETC2RGB8A1Unorm;
+  static GPUTextureFormatT kETC2RGB8A1UnormSrgb;
+  static GPUTextureFormatT kETC2RGBA8Unorm;
+  static GPUTextureFormatT kETC2RGBA8UnormSrgb;
+  static GPUTextureFormatT kEACR11Unorm;
+  static GPUTextureFormatT kEACR11Snorm;
+  static GPUTextureFormatT kEACRG11Unorm;
+  static GPUTextureFormatT kEACRG11Snorm;
+  static GPUTextureFormatT kASTC4x4Unorm;
+  static GPUTextureFormatT kASTC4x4UnormSrgb;
+  static GPUTextureFormatT kASTC5x4Unorm;
+  static GPUTextureFormatT kASTC5x4UnormSrgb;
+  static GPUTextureFormatT kASTC5x5Unorm;
+  static GPUTextureFormatT kASTC5x5UnormSrgb;
+  static GPUTextureFormatT kASTC6x5Unorm;
+  static GPUTextureFormatT kASTC6x5UnormSrgb;
+  static GPUTextureFormatT kASTC6x6Unorm;
+  static GPUTextureFormatT kASTC6x6UnormSrgb;
+  static GPUTextureFormatT kASTC8x5Unorm;
+  static GPUTextureFormatT kASTC8x5UnormSrgb;
+  static GPUTextureFormatT kASTC8x6Unorm;
+  static GPUTextureFormatT kASTC8x6UnormSrgb;
+  static GPUTextureFormatT kASTC8x8Unorm;
+  static GPUTextureFormatT kASTC8x8UnormSrgb;
+  static GPUTextureFormatT kASTC10x5Unorm;
+  static GPUTextureFormatT kASTC10x5UnormSrgb;
+  static GPUTextureFormatT kASTC10x6Unorm;
+  static GPUTextureFormatT kASTC10x6UnormSrgb;
+  static GPUTextureFormatT kASTC10x8Unorm;
+  static GPUTextureFormatT kASTC10x8UnormSrgb;
+  static GPUTextureFormatT kASTC10x10Unorm;
+  static GPUTextureFormatT kASTC10x10UnormSrgb;
+  static GPUTextureFormatT kASTC12x10Unorm;
+  static GPUTextureFormatT kASTC12x10UnormSrgb;
+  static GPUTextureFormatT kASTC12x12Unorm;
+  static GPUTextureFormatT kASTC12x12UnormSrgb;
+};
+
+}  // namespace seen::mod

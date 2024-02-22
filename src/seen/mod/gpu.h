@@ -8,6 +8,7 @@
 
 #include "seen/base/class_ext.h"
 #include "seen/mod/gpu_adapter.h"
+#include "seen/mod/gpu_texture_format.h"
 
 namespace seen::mod {
 
@@ -28,6 +29,8 @@ class GPU final {
 
   void RequestAdapter(const RequestAdapterOptions& options, const RequestAdapterCallback& callback);
   void RequestAdapter(const RequestAdapterCallback& callback);
+
+  [[nodiscard]] GPUTextureFormatT GetPreferredDrawableFormat() const;
 
  private:
   void DoRequestAdapter(const RequestAdapterOptions& options = RequestAdapterOptions::kDefault,
