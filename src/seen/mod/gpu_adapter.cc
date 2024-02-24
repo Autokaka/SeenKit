@@ -14,11 +14,11 @@ bool GPUAdapter::IsPowerPref(const std::string& maybe) {
 
 GPUAdapter::GPUAdapter(WGPUAdapter adapter) : adapter_(adapter) {
   SEEN_ASSERT(adapter);
-  SEEN_INFO("Create GPU adapter.");
+  SEEN_DEBUG("Create GPU adapter.");
 }
 
 GPUAdapter::~GPUAdapter() {
-  SEEN_INFO("Release GPU adapter.");
+  SEEN_DEBUG("Release GPU adapter.");
   wgpuAdapterRelease(adapter_);
 }
 

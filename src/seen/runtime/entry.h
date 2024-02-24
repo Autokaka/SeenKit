@@ -4,10 +4,12 @@
 
 #include <filesystem>
 
+#include "seen/mod/seen.h"
+
 namespace seen::runtime {
 
 namespace fs = std::filesystem;
 
-bool ExecEntry(const fs::path& entry_file);
+mod::Seen::Ptr ExecEntry(const fs::path& entry_file);
 
 }  // namespace seen::runtime

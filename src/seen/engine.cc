@@ -3,7 +3,6 @@
 #include "seen/engine.h"
 #include "seen/base/logger.h"
 #include "seen/base/waitable_event.h"
-#include "seen/mod/seen.h"
 #include "seen/runtime/entry.h"
 
 namespace seen {
@@ -42,17 +41,73 @@ Engine::~Engine() {
   SEEN_ASSERT(GetPlatformWorker()->IsCurrent());
 }
 
-CFDataChannel::Ptr Engine::GetChannel() const {
-  return platform_channel_;
-}
-
 void Engine::Init(const Bundle::Ptr& bundle, InitCallback callback) {
   SEEN_ASSERT(GetPlatformWorker()->IsCurrent());
   SEEN_ASSERT(bundle);
-  main_worker_->DispatchAsync([bundle, callback = std::move(callback)]() {
-    auto success = runtime::ExecEntry(bundle->GetEntryPath());
-    callback(success);
+  main_worker_->DispatchAsync([engine = shared_from_this(), bundle, callback = std::move(callback)]() {
+    engine->seen_ = runtime::ExecEntry(bundle->GetEntryPath());
+    callback(engine->seen_ != nullptr);
   });
+}
+
+void Engine::IsRunning(bool is_running) {
+  CFAutoResetWaitableEvent latch;
+  main_worker_->DispatchAsync([this, is_running, &latch]() {
+    seen_->is_running = is_running;
+    latch.Signal();
+  });
+  latch.Wait();
+}
+
+bool Engine::IsRunning() const {
+  CFAutoResetWaitableEvent latch;
+  bool is_running = false;
+  main_worker_->DispatchAsync([this, &latch, &is_running]() {
+    is_running = seen_->is_running.Get();
+    latch.Signal();
+  });
+  latch.Wait();
+  return is_running;
+}
+
+void Engine::Drawable(const void* drawable) {
+  CFAutoResetWaitableEvent latch;
+  main_worker_->DispatchAsync([this, drawable, &latch]() {
+    seen_->drawable = drawable;
+    latch.Signal();
+  });
+  latch.Wait();
+}
+
+const void* Engine::Drawable() const {
+  CFAutoResetWaitableEvent latch;
+  const void* drawable = nullptr;
+  main_worker_->DispatchAsync([this, &drawable, &latch]() {
+    drawable = seen_->drawable.Get();
+    latch.Signal();
+  });
+  latch.Wait();
+  return drawable;
+}
+
+void Engine::DrawableMetrics(const mod::DrawableMetrics& metrics) {
+  CFAutoResetWaitableEvent latch;
+  main_worker_->DispatchAsync([this, metrics, &latch]() {
+    seen_->drawable_metrics = metrics;
+    latch.Signal();
+  });
+  latch.Wait();
+}
+
+mod::DrawableMetrics Engine::DrawableMetrics() const {
+  CFAutoResetWaitableEvent latch;
+  mod::DrawableMetrics metrics;
+  main_worker_->DispatchAsync([this, &metrics, &latch]() {
+    metrics = seen_->drawable_metrics.Get();
+    latch.Signal();
+  });
+  latch.Wait();
+  return metrics;
 }
 
 }  // namespace seen

@@ -9,10 +9,10 @@
 
 namespace seen::runtime {
 
-bool ExecEntry(const fs::path& entry_file) {
+mod::Seen::Ptr ExecEntry(const fs::path& entry_file) {
   sol::state lua;
   lua.open_libraries();
-  ExportHostAbilities(&lua);
+  auto seen = ExportHostAbilities(&lua);
   auto data = CFData::CreateFromAbsolutePath(entry_file);
   std::string script = reinterpret_cast<char*>(data->GetBytes());
   try {
@@ -20,9 +20,9 @@ bool ExecEntry(const fs::path& entry_file) {
     lua.script_file(entry_file);
   } catch (const sol::error& e) {
     SEEN_ERROR("{}", e.what());
-    return false;
+    return nullptr;
   }
-  return true;
+  return seen;
 }
 
 }  // namespace seen::runtime

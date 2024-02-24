@@ -19,12 +19,12 @@ GPU::Ptr GPU::Create() {
 }
 
 GPU::GPU(WGPUInstance wgpu) : wgpu_(wgpu) {
-  SEEN_INFO("Create GPU instance.");
+  SEEN_DEBUG("Create GPU instance.");
   SEEN_ASSERT(wgpu);
 }
 
 GPU::~GPU() {
-  SEEN_INFO("Release GPU instance.");
+  SEEN_DEBUG("Release GPU instance.");
   wgpuInstanceRelease(wgpu_);
 }
 

@@ -11,7 +11,7 @@
 
 namespace seen {
 
-enum class CFLogLevel { kInfo, kWarn, kError, kFatal };
+enum class CFLogLevel { kDebug, kInfo, kWarn, kError, kFatal };
 #define SEEN_LOG(Level, FileName, Line, ...)                                                                    \
   {                                                                                                             \
     using namespace std::string_literals;                                                                       \
@@ -21,6 +21,12 @@ enum class CFLogLevel { kInfo, kWarn, kError, kFatal };
       abort();                                                                                                  \
     }                                                                                                           \
   }
+
+#if SEEN_ENABLE_DEBUG_LOG
+#define SEEN_DEBUG(...) SEEN_LOG(kDebug, __FILE_NAME__, __LINE__, __VA_ARGS__)
+#else
+#define SEEN_DEBUG(...)
+#endif
 
 #define SEEN_INFO(...) SEEN_LOG(kInfo, __FILE_NAME__, __LINE__, __VA_ARGS__)
 #define SEEN_WARN(...) SEEN_LOG(kWarn, __FILE_NAME__, __LINE__, __VA_ARGS__)
