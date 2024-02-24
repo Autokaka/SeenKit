@@ -10,13 +10,17 @@ namespace seen::mod {
 
 class Seen final {
  public:
-  static void Log(const sol::variadic_args& args);
+  explicit Seen();
 
-  static const char* GetVersion();
+  void Log(const sol::variadic_args& args) const;
+  GPU::Ptr GetGPU();
 
-  static GPU::Ptr GetGPU();
+  const char* version;
 
-  SEEN_DISALLOW_IMPLICIT_CONSTRUCTORS(Seen);
+ private:
+  GPU::Ptr gpu_;
+
+  SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(Seen);
 };
 
 }  // namespace seen::mod

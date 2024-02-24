@@ -24,6 +24,7 @@ class Engine final {
   [[nodiscard]] CFDataChannel::Ptr GetChannel() const;
 
  private:
+  void Init(const Bundle::Ptr& bundle, InitCallback callback);
   CFWorker::Ptr io_worker_;
   CFWorker::Ptr main_worker_;
   CFDataChannel::Ptr main_channel_;

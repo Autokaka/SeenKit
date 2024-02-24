@@ -8,6 +8,6 @@ namespace seen::runtime {
 
 namespace fs = std::filesystem;
 
-void ExecEntry(const fs::path& entry_file);
+bool ExecEntry(const fs::path& entry_file);
 
 }  // namespace seen::runtime

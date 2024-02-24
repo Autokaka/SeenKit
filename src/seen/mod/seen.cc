@@ -5,22 +5,21 @@
 
 namespace seen::mod {
 
-void Seen::Log(const sol::variadic_args& args) {
+Seen::Seen() : version(SEEN_VERSION) {}
+
+void Seen::Log(const sol::variadic_args& args) const {
+  auto tag = reinterpret_cast<std::uintptr_t>(this);
   std::string message;
   for (auto&& arg : args) {
     std::string desc = luaL_tolstring(arg.lua_state(), arg.stack_index(), nullptr);
     message += desc + " ";
   }
-  SEEN_INFO("{}", message);
-}
-
-const char* Seen::GetVersion() {
-  return SEEN_VERSION;
+  SEEN_INFO("<{}> {}", tag, message);
 }
 
 GPU::Ptr Seen::GetGPU() {
-  thread_local auto gpu = GPU::Create();
-  return gpu;
+  gpu_ || (gpu_ = GPU::Create());
+  return gpu_;
 }
 
 }  // namespace seen::mod

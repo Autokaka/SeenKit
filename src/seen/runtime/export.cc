@@ -11,20 +11,25 @@ namespace seen::runtime {
 using namespace mod;
 
 void ExportHostAbilities(sol::state* lua) {
-  // seen
+  // Seen
   lua->new_usertype<Seen>(                 //
-      "seen", sol::no_constructor,         //
-      "log", Seen::Log,                    //
-      "version", Seen::GetVersion,         //
+      "Seen", sol::no_constructor,         //
+      "log", &Seen::Log,                   //
+      "version", &Seen::version,           //
       "gpu", sol::property(&Seen::GetGPU)  //
   );
-  auto seen = lua->get<sol::table>("seen");
+  auto seen = lua->get<sol::table>("Seen");
+
   // GPU
   seen.new_usertype<GPU>(                                                         //
       "GPU", sol::no_constructor,                                                 //
       "requestAdapter", glue::GPURequestAdapter,                                  //
       "preferredDrawableFormat", sol::property(&GPU::GetPreferredDrawableFormat)  //
   );
+
+  // seen
+  auto global = lua->globals();
+  global["seen"] = std::make_shared<Seen>();
 }
 
 }  // namespace seen::runtime

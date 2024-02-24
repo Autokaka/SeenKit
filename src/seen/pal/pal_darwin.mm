@@ -3,8 +3,9 @@
 #if SEEN_BUILD_DARWIN
 
 #import <Foundation/Foundation.h>
-#include <dispatch/dispatch.h>
-#include <sys/syslog.h>
+#import <QuartzCore/CAMetalLayer.h>
+#import <dispatch/dispatch.h>
+#import <sys/syslog.h>
 
 #include "seen/base/logger.h"
 #include "seen/pal/pal.h"
@@ -38,6 +39,18 @@ void platform_worker_driver_dispatch_async(const TimePoint& time_point, CFClosur
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delay.ToNanoseconds()), dispatch_get_main_queue(), ^{
     task_block();
   });
+}
+
+WGPUSurface seen_create_surface(WGPUInstance instance, const void* native_window) {
+  WGPUSurfaceDescriptorFromMetalLayer metalLayerDescriptor;
+  metalLayerDescriptor.chain.next = nullptr;
+  metalLayerDescriptor.chain.sType = WGPUSType_SurfaceDescriptorFromMetalLayer;
+  metalLayerDescriptor.layer = reinterpret_cast<CAMetalLayer*>(native_window);
+
+  WGPUSurfaceDescriptor surfaceDescriptor;
+  surfaceDescriptor.nextInChain = &metalLayerDescriptor.chain;
+  surfaceDescriptor.label = nullptr;
+  return wgpuInstanceCreateSurface(instance, &surfaceDescriptor);
 }
 
 }  // namespace seen::pal

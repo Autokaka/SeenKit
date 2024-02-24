@@ -3,32 +3,31 @@
 #include "seen/engine.h"
 #include "seen/base/logger.h"
 #include "seen/base/waitable_event.h"
+#include "seen/mod/seen.h"
 #include "seen/runtime/entry.h"
 
 namespace seen {
 
 void Engine::CreateAsync(const Bundle::Ptr& bundle, CreateCallback callback) {
-  SEEN_ASSERT(bundle);
   auto engine = std::make_shared<Engine>();
-  engine->main_worker_->DispatchAsync([engine, bundle, callback = std::move(callback)]() mutable {
-    runtime::ExecEntry(bundle->GetEntryPath());
-    GetPlatformWorker()->DispatchAsync([engine = std::move(engine), callback = std::move(callback)]() {
-      // Post task to ensure the engine will be destroyed on platform thread.
-      callback(engine);
+  engine->Init(bundle, [callback = std::move(callback), engine](bool success) mutable {
+    GetPlatformWorker()->DispatchAsync([callback = std::move(callback), engine = std::move(engine), success]() {
+      // Ensure engine is released on platform thread.
+      callback(success ? engine : nullptr);
     });
   });
 }
 
 Engine::Ptr Engine::Create(const Bundle::Ptr& bundle) {
-  SEEN_ASSERT(bundle);
   auto engine = std::make_shared<Engine>();
   CFAutoResetWaitableEvent latch;
-  engine->main_worker_->DispatchAsync([bundle, &latch]() {
-    runtime::ExecEntry(bundle->GetEntryPath());
+  bool result = false;
+  engine->Init(bundle, [&latch, &result](bool success) {
+    result = success;
     latch.Signal();
   });
   latch.Wait();
-  return engine;
+  return result ? engine : nullptr;
 }
 
 Engine::Engine()
@@ -45,6 +44,15 @@ Engine::~Engine() {
 
 CFDataChannel::Ptr Engine::GetChannel() const {
   return platform_channel_;
+}
+
+void Engine::Init(const Bundle::Ptr& bundle, InitCallback callback) {
+  SEEN_ASSERT(GetPlatformWorker()->IsCurrent());
+  SEEN_ASSERT(bundle);
+  main_worker_->DispatchAsync([bundle, callback = std::move(callback)]() {
+    auto success = runtime::ExecEntry(bundle->GetEntryPath());
+    callback(success);
+  });
 }
 
 }  // namespace seen

@@ -9,7 +9,7 @@
 
 namespace seen::runtime {
 
-void ExecEntry(const fs::path& entry_file) {
+bool ExecEntry(const fs::path& entry_file) {
   sol::state lua;
   lua.open_libraries();
   ExportHostAbilities(&lua);
@@ -20,7 +20,9 @@ void ExecEntry(const fs::path& entry_file) {
     lua.script_file(entry_file);
   } catch (const sol::error& e) {
     SEEN_ERROR("{}", e.what());
+    return false;
   }
+  return true;
 }
 
 }  // namespace seen::runtime

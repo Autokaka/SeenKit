@@ -12,8 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 SEEN_VIEW_INIT_COMMON_DECL;
 
-@property(nonatomic, strong) SeenEngine* engine;
-@property(nonatomic, strong, readonly) CAMetalLayer* metalLayer;
+@property(nonatomic, strong, nullable) SeenEngine* engine;
+@property(atomic, strong, readonly) CAMetalLayer* metalLayer;
 
 - (void)resizeDrawable:(CGFloat)scaleFactor;
 
