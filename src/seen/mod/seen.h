@@ -11,6 +11,7 @@ namespace seen::mod {
 class Seen final {
  public:
   explicit Seen();
+  ~Seen();
 
   void Log(const sol::variadic_args& args) const;
   GPU::Ptr GetGPU();
