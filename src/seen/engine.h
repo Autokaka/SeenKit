@@ -9,6 +9,7 @@
 #include "seen/base/worker.h"
 #include "seen/bundle.h"
 #include "seen/mod/seen.h"
+#include "seen/runtime/entry.h"
 
 namespace seen {
 
@@ -32,12 +33,14 @@ class Engine final : public std::enable_shared_from_this<Engine> {
   mod::DrawableMetrics DrawableMetrics() const;
 
  private:
-  void Init(const Bundle::Ptr& bundle, InitCallback callback);
-  CFWorker::Ptr io_worker_;
+  void MainInit(const Bundle::Ptr& bundle, InitCallback callback);
+  void MainRelease();
+  mod::Seen::Ptr GetSeen() const;
+
   CFWorker::Ptr main_worker_;
   CFDataChannel::Ptr main_channel_;
   CFDataChannel::Ptr platform_channel_;
-  mod::Seen::Ptr seen_;
+  runtime::StatePtr state_;
 
   SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(Engine);
 };

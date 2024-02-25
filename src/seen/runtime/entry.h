@@ -3,13 +3,16 @@
 #pragma once
 
 #include <filesystem>
+#include <memory>
+#include <sol/sol.hpp>
 
-#include "seen/mod/seen.h"
+#include "seen/base/worker.h"
 
 namespace seen::runtime {
 
 namespace fs = std::filesystem;
+using StatePtr = std::shared_ptr<sol::state>;
 
-mod::Seen::Ptr ExecEntry(const fs::path& entry_file);
+StatePtr ExecEntry(const CFWorker::Ptr& runner, const fs::path& entry_file);
 
 }  // namespace seen::runtime

@@ -9,10 +9,11 @@
 #include "seen/base/class_ext.h"
 #include "seen/mod/gpu_adapter.h"
 #include "seen/mod/gpu_texture_format.h"
+#include "seen/mod/object.h"
 
 namespace seen::mod {
 
-class GPU final {
+class GPU final : public Object {
  public:
   using Ptr = std::shared_ptr<GPU>;
   using RequestAdapterCallback = std::function<void(GPUAdapter::Ptr)>;
@@ -20,7 +21,7 @@ class GPU final {
   struct RequestAdapterOptions {
     static const RequestAdapterOptions kDefault;
 
-    GPUAdapter::PowerPrefT power_preference;
+    GPUAdapter::TPowerPref power_preference;
   };
 
   static GPU::Ptr Create();
@@ -30,7 +31,7 @@ class GPU final {
   void RequestAdapter(const RequestAdapterOptions& options, const RequestAdapterCallback& callback);
   void RequestAdapter(const RequestAdapterCallback& callback);
 
-  [[nodiscard]] GPUTextureFormatT GetPreferredDrawableFormat() const;
+  [[nodiscard]] TGPUTextureFormat GetPreferredDrawableFormat() const;
 
  private:
   void DoRequestAdapter(const RequestAdapterOptions& options = RequestAdapterOptions::kDefault,

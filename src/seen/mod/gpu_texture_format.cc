@@ -1,103 +1,110 @@
 // Created by Autokaka (qq1909698494@gmail.com) on 2024/02/23.
 
+#include <unordered_map>
+
 #include "seen/mod/gpu_texture_format.h"
 
 namespace seen::mod {
 
-GPUTextureFormatT GPUTextureFormat::kR8Unorm = "r8unorm";
-GPUTextureFormatT GPUTextureFormat::kR8Snorm = "r8snorm";
-GPUTextureFormatT GPUTextureFormat::kR8Uint = "r8uint";
-GPUTextureFormatT GPUTextureFormat::kR8Sint = "r8sint";
-GPUTextureFormatT GPUTextureFormat::kR16Uint = "r16uint";
-GPUTextureFormatT GPUTextureFormat::kR16Sint = "r16sint";
-GPUTextureFormatT GPUTextureFormat::kR16Float = "r16float";
-GPUTextureFormatT GPUTextureFormat::kRG8Unorm = "rg8unorm";
-GPUTextureFormatT GPUTextureFormat::kRG8Snorm = "rg8snorm";
-GPUTextureFormatT GPUTextureFormat::kRG8Uint = "rg8uint";
-GPUTextureFormatT GPUTextureFormat::kRG8Sint = "rg8sint";
-GPUTextureFormatT GPUTextureFormat::kR32Float = "r32float";
-GPUTextureFormatT GPUTextureFormat::kR32Uint = "r32uint";
-GPUTextureFormatT GPUTextureFormat::kR32Sint = "r32sint";
-GPUTextureFormatT GPUTextureFormat::kRG16Uint = "rg16uint";
-GPUTextureFormatT GPUTextureFormat::kRG16Sint = "rg16sint";
-GPUTextureFormatT GPUTextureFormat::kRG16Float = "rg16float";
-GPUTextureFormatT GPUTextureFormat::kRGBA8Unorm = "rgba8unorm";
-GPUTextureFormatT GPUTextureFormat::kRGBA8UnormSrgb = "rgba8unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kRGBA8Snorm = "rgba8snorm";
-GPUTextureFormatT GPUTextureFormat::kRGBA8Uint = "rgba8uint";
-GPUTextureFormatT GPUTextureFormat::kRGBA8Sint = "rgba8sint";
-GPUTextureFormatT GPUTextureFormat::kBGRA8Unorm = "bgra8unorm";
-GPUTextureFormatT GPUTextureFormat::kBGRA8UnormSrgb = "bgra8unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kRGB10A2Uint = "rgb10a2uint";
-GPUTextureFormatT GPUTextureFormat::kRGB10A2Unorm = "rgb10a2unorm";
-GPUTextureFormatT GPUTextureFormat::kRG11B10Ufloat = "rg11b10ufloat";
-GPUTextureFormatT GPUTextureFormat::kRGB9E5Ufloat = "rgb9e5ufloat";
-GPUTextureFormatT GPUTextureFormat::kRG32Float = "rg32float";
-GPUTextureFormatT GPUTextureFormat::kRG32Uint = "rg32uint";
-GPUTextureFormatT GPUTextureFormat::kRG32Sint = "rg32sint";
-GPUTextureFormatT GPUTextureFormat::kRGBA16Uint = "rgba16uint";
-GPUTextureFormatT GPUTextureFormat::kRGBA16Sint = "rgba16sint";
-GPUTextureFormatT GPUTextureFormat::kRGBA16Float = "rgba16float";
-GPUTextureFormatT GPUTextureFormat::kRGBA32Float = "rgba32float";
-GPUTextureFormatT GPUTextureFormat::kRGBA32Uint = "rgba32uint";
-GPUTextureFormatT GPUTextureFormat::kRGBA32Sint = "rgba32sint";
-GPUTextureFormatT GPUTextureFormat::kStencil8 = "stencil8";
-GPUTextureFormatT GPUTextureFormat::kDepth16Unorm = "depth16unorm";
-GPUTextureFormatT GPUTextureFormat::kDepth24Plus = "depth24plus";
-GPUTextureFormatT GPUTextureFormat::kDepth24PlusStencil8 = "depth24plus-stencil8";
-GPUTextureFormatT GPUTextureFormat::kDepth32Float = "depth32float";
-GPUTextureFormatT GPUTextureFormat::kDepth32FloatStencil8 = "depth32float-stencil8";
-GPUTextureFormatT GPUTextureFormat::kBC1RGBAUnorm = "bc1-rgba-unorm";
-GPUTextureFormatT GPUTextureFormat::kBC1RGBAUnormSrgb = "bc1-rgba-unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kBC2RGBAUnorm = "bc2-rgba-unorm";
-GPUTextureFormatT GPUTextureFormat::kBC2RGBAUnormSrgb = "bc2-rgba-unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kBC3RGBAUnorm = "bc3-rgba-unorm";
-GPUTextureFormatT GPUTextureFormat::kBC3RGBAUnormSrgb = "bc3-rgba-unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kBC4RUnorm = "bc4-r-unorm";
-GPUTextureFormatT GPUTextureFormat::kBC4RSnorm = "bc4-r-snorm";
-GPUTextureFormatT GPUTextureFormat::kBC5RGUnorm = "bc5-rg-unorm";
-GPUTextureFormatT GPUTextureFormat::kBC5RGSnorm = "bc5-rg-snorm";
-GPUTextureFormatT GPUTextureFormat::kBC6HRGBUfloat = "bc6h-rgb-ufloat";
-GPUTextureFormatT GPUTextureFormat::kBC6HRGBFloat = "bc6h-rgb-float";
-GPUTextureFormatT GPUTextureFormat::kBC7RGBAUnorm = "bc7-rgba-unorm";
-GPUTextureFormatT GPUTextureFormat::kBC7RGBAUnormSrgb = "bc7-rgba-unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kETC2RGB8Unorm = "etc2-rgb8unorm";
-GPUTextureFormatT GPUTextureFormat::kETC2RGB8UnormSrgb = "etc2-rgb8unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kETC2RGB8A1Unorm = "etc2-rgb8a1unorm";
-GPUTextureFormatT GPUTextureFormat::kETC2RGB8A1UnormSrgb = "etc2-rgb8a1unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kETC2RGBA8Unorm = "etc2-rgba8unorm";
-GPUTextureFormatT GPUTextureFormat::kETC2RGBA8UnormSrgb = "etc2-rgba8unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kEACR11Unorm = "eac-r11unorm";
-GPUTextureFormatT GPUTextureFormat::kEACR11Snorm = "eac-r11snorm";
-GPUTextureFormatT GPUTextureFormat::kEACRG11Unorm = "eac-rg11unorm";
-GPUTextureFormatT GPUTextureFormat::kEACRG11Snorm = "eac-rg11snorm";
-GPUTextureFormatT GPUTextureFormat::kASTC4x4Unorm = "astc-4x4-unorm";
-GPUTextureFormatT GPUTextureFormat::kASTC4x4UnormSrgb = "astc-4x4-unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kASTC5x4Unorm = "astc-5x4-unorm";
-GPUTextureFormatT GPUTextureFormat::kASTC5x4UnormSrgb = "astc-5x4-unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kASTC5x5Unorm = "astc-5x5-unorm";
-GPUTextureFormatT GPUTextureFormat::kASTC5x5UnormSrgb = "astc-5x5-unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kASTC6x5Unorm = "astc-6x5-unorm";
-GPUTextureFormatT GPUTextureFormat::kASTC6x5UnormSrgb = "astc-6x5-unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kASTC6x6Unorm = "astc-6x6-unorm";
-GPUTextureFormatT GPUTextureFormat::kASTC6x6UnormSrgb = "astc-6x6-unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kASTC8x5Unorm = "astc-8x5-unorm";
-GPUTextureFormatT GPUTextureFormat::kASTC8x5UnormSrgb = "astc-8x5-unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kASTC8x6Unorm = "astc-8x6-unorm";
-GPUTextureFormatT GPUTextureFormat::kASTC8x6UnormSrgb = "astc-8x6-unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kASTC8x8Unorm = "astc-8x8-unorm";
-GPUTextureFormatT GPUTextureFormat::kASTC8x8UnormSrgb = "astc-8x8-unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kASTC10x5Unorm = "astc-10x5-unorm";
-GPUTextureFormatT GPUTextureFormat::kASTC10x5UnormSrgb = "astc-10x5-unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kASTC10x6Unorm = "astc-10x6-unorm";
-GPUTextureFormatT GPUTextureFormat::kASTC10x6UnormSrgb = "astc-10x6-unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kASTC10x8Unorm = "astc-10x8-unorm";
-GPUTextureFormatT GPUTextureFormat::kASTC10x8UnormSrgb = "astc-10x8-unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kASTC10x10Unorm = "astc-10x10-unorm";
-GPUTextureFormatT GPUTextureFormat::kASTC10x10UnormSrgb = "astc-10x10-unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kASTC12x10Unorm = "astc-12x10-unorm";
-GPUTextureFormatT GPUTextureFormat::kASTC12x10UnormSrgb = "astc-12x10-unorm-srgb";
-GPUTextureFormatT GPUTextureFormat::kASTC12x12Unorm = "astc-12x12-unorm";
-GPUTextureFormatT GPUTextureFormat::kASTC12x12UnormSrgb = "astc-12x12-unorm-srgb";
+TGPUTextureFormat GPUTextureFormat::From(const WGPUTextureFormat& format) {
+  static std::unordered_map<WGPUTextureFormat, TGPUTextureFormat> kWGPUToTextureFormat = {
+      {WGPUTextureFormat_R8Unorm, GPUTextureFormat::kR8Unorm},
+      {WGPUTextureFormat_R8Snorm, GPUTextureFormat::kR8Snorm},
+      {WGPUTextureFormat_R8Uint, GPUTextureFormat::kR8Uint},
+      {WGPUTextureFormat_R8Sint, GPUTextureFormat::kR8Sint},
+      {WGPUTextureFormat_R16Uint, GPUTextureFormat::kR16Uint},
+      {WGPUTextureFormat_R16Sint, GPUTextureFormat::kR16Sint},
+      {WGPUTextureFormat_R16Float, GPUTextureFormat::kR16Float},
+      {WGPUTextureFormat_RG8Unorm, GPUTextureFormat::kRG8Unorm},
+      {WGPUTextureFormat_RG8Snorm, GPUTextureFormat::kRG8Snorm},
+      {WGPUTextureFormat_RG8Uint, GPUTextureFormat::kRG8Uint},
+      {WGPUTextureFormat_RG8Sint, GPUTextureFormat::kRG8Sint},
+      {WGPUTextureFormat_R32Float, GPUTextureFormat::kR32Float},
+      {WGPUTextureFormat_R32Uint, GPUTextureFormat::kR32Uint},
+      {WGPUTextureFormat_R32Sint, GPUTextureFormat::kR32Sint},
+      {WGPUTextureFormat_RG16Uint, GPUTextureFormat::kRG16Uint},
+      {WGPUTextureFormat_RG16Sint, GPUTextureFormat::kRG16Sint},
+      {WGPUTextureFormat_RG16Float, GPUTextureFormat::kRG16Float},
+      {WGPUTextureFormat_RGBA8Unorm, GPUTextureFormat::kRGBA8Unorm},
+      {WGPUTextureFormat_RGBA8UnormSrgb, GPUTextureFormat::kRGBA8UnormSrgb},
+      {WGPUTextureFormat_RGBA8Snorm, GPUTextureFormat::kRGBA8Snorm},
+      {WGPUTextureFormat_RGBA8Uint, GPUTextureFormat::kRGBA8Uint},
+      {WGPUTextureFormat_RGBA8Sint, GPUTextureFormat::kRGBA8Sint},
+      {WGPUTextureFormat_BGRA8Unorm, GPUTextureFormat::kBGRA8Unorm},
+      {WGPUTextureFormat_BGRA8UnormSrgb, GPUTextureFormat::kBGRA8UnormSrgb},
+      {WGPUTextureFormat_RGB10A2Uint, GPUTextureFormat::kRGB10A2Uint},
+      {WGPUTextureFormat_RGB10A2Unorm, GPUTextureFormat::kRGB10A2Unorm},
+      {WGPUTextureFormat_RG11B10Ufloat, GPUTextureFormat::kRG11B10Ufloat},
+      {WGPUTextureFormat_RGB9E5Ufloat, GPUTextureFormat::kRGB9E5Ufloat},
+      {WGPUTextureFormat_RG32Float, GPUTextureFormat::kRG32Float},
+      {WGPUTextureFormat_RG32Uint, GPUTextureFormat::kRG32Uint},
+      {WGPUTextureFormat_RG32Sint, GPUTextureFormat::kRG32Sint},
+      {WGPUTextureFormat_RGBA16Uint, GPUTextureFormat::kRGBA16Uint},
+      {WGPUTextureFormat_RGBA16Sint, GPUTextureFormat::kRGBA16Sint},
+      {WGPUTextureFormat_RGBA16Float, GPUTextureFormat::kRGBA16Float},
+      {WGPUTextureFormat_RGBA32Float, GPUTextureFormat::kRGBA32Float},
+      {WGPUTextureFormat_RGBA32Uint, GPUTextureFormat::kRGBA32Uint},
+      {WGPUTextureFormat_RGBA32Sint, GPUTextureFormat::kRGBA32Sint},
+      {WGPUTextureFormat_Stencil8, GPUTextureFormat::kStencil8},
+      {WGPUTextureFormat_Depth16Unorm, GPUTextureFormat::kDepth16Unorm},
+      {WGPUTextureFormat_Depth24Plus, GPUTextureFormat::kDepth24Plus},
+      {WGPUTextureFormat_Depth24PlusStencil8, GPUTextureFormat::kDepth24PlusStencil8},
+      {WGPUTextureFormat_Depth32Float, GPUTextureFormat::kDepth32Float},
+      {WGPUTextureFormat_Depth32FloatStencil8, GPUTextureFormat::kDepth32FloatStencil8},
+      {WGPUTextureFormat_BC1RGBAUnorm, GPUTextureFormat::kBC1RGBAUnorm},
+      {WGPUTextureFormat_BC1RGBAUnormSrgb, GPUTextureFormat::kBC1RGBAUnormSrgb},
+      {WGPUTextureFormat_BC2RGBAUnorm, GPUTextureFormat::kBC2RGBAUnorm},
+      {WGPUTextureFormat_BC2RGBAUnormSrgb, GPUTextureFormat::kBC2RGBAUnormSrgb},
+      {WGPUTextureFormat_BC3RGBAUnorm, GPUTextureFormat::kBC3RGBAUnorm},
+      {WGPUTextureFormat_BC3RGBAUnormSrgb, GPUTextureFormat::kBC3RGBAUnormSrgb},
+      {WGPUTextureFormat_BC4RUnorm, GPUTextureFormat::kBC4RUnorm},
+      {WGPUTextureFormat_BC4RSnorm, GPUTextureFormat::kBC4RSnorm},
+      {WGPUTextureFormat_BC5RGUnorm, GPUTextureFormat::kBC5RGUnorm},
+      {WGPUTextureFormat_BC5RGSnorm, GPUTextureFormat::kBC5RGSnorm},
+      {WGPUTextureFormat_BC6HRGBUfloat, GPUTextureFormat::kBC6HRGBUfloat},
+      {WGPUTextureFormat_BC6HRGBFloat, GPUTextureFormat::kBC6HRGBFloat},
+      {WGPUTextureFormat_BC7RGBAUnorm, GPUTextureFormat::kBC7RGBAUnorm},
+      {WGPUTextureFormat_BC7RGBAUnormSrgb, GPUTextureFormat::kBC7RGBAUnormSrgb},
+      {WGPUTextureFormat_ETC2RGB8Unorm, GPUTextureFormat::kETC2RGB8Unorm},
+      {WGPUTextureFormat_ETC2RGB8UnormSrgb, GPUTextureFormat::kETC2RGB8UnormSrgb},
+      {WGPUTextureFormat_ETC2RGB8A1Unorm, GPUTextureFormat::kETC2RGB8A1Unorm},
+      {WGPUTextureFormat_ETC2RGB8A1UnormSrgb, GPUTextureFormat::kETC2RGB8A1UnormSrgb},
+      {WGPUTextureFormat_ETC2RGBA8Unorm, GPUTextureFormat::kETC2RGBA8Unorm},
+      {WGPUTextureFormat_ETC2RGBA8UnormSrgb, GPUTextureFormat::kETC2RGBA8UnormSrgb},
+      {WGPUTextureFormat_EACR11Unorm, GPUTextureFormat::kEACR11Unorm},
+      {WGPUTextureFormat_EACR11Snorm, GPUTextureFormat::kEACR11Snorm},
+      {WGPUTextureFormat_EACRG11Unorm, GPUTextureFormat::kEACRG11Unorm},
+      {WGPUTextureFormat_EACRG11Snorm, GPUTextureFormat::kEACRG11Snorm},
+      {WGPUTextureFormat_ASTC4x4Unorm, GPUTextureFormat::kASTC4x4Unorm},
+      {WGPUTextureFormat_ASTC4x4UnormSrgb, GPUTextureFormat::kASTC4x4UnormSrgb},
+      {WGPUTextureFormat_ASTC5x4Unorm, GPUTextureFormat::kASTC5x4Unorm},
+      {WGPUTextureFormat_ASTC5x4UnormSrgb, GPUTextureFormat::kASTC5x4UnormSrgb},
+      {WGPUTextureFormat_ASTC5x5Unorm, GPUTextureFormat::kASTC5x5Unorm},
+      {WGPUTextureFormat_ASTC5x5UnormSrgb, GPUTextureFormat::kASTC5x5UnormSrgb},
+      {WGPUTextureFormat_ASTC6x5Unorm, GPUTextureFormat::kASTC6x5Unorm},
+      {WGPUTextureFormat_ASTC6x5UnormSrgb, GPUTextureFormat::kASTC6x5UnormSrgb},
+      {WGPUTextureFormat_ASTC6x6Unorm, GPUTextureFormat::kASTC6x6Unorm},
+      {WGPUTextureFormat_ASTC6x6UnormSrgb, GPUTextureFormat::kASTC6x6UnormSrgb},
+      {WGPUTextureFormat_ASTC8x5Unorm, GPUTextureFormat::kASTC8x5Unorm},
+      {WGPUTextureFormat_ASTC8x5UnormSrgb, GPUTextureFormat::kASTC8x5UnormSrgb},
+      {WGPUTextureFormat_ASTC8x6Unorm, GPUTextureFormat::kASTC8x6Unorm},
+      {WGPUTextureFormat_ASTC8x6UnormSrgb, GPUTextureFormat::kASTC8x6UnormSrgb},
+      {WGPUTextureFormat_ASTC8x8Unorm, GPUTextureFormat::kASTC8x8Unorm},
+      {WGPUTextureFormat_ASTC8x8UnormSrgb, GPUTextureFormat::kASTC8x8UnormSrgb},
+      {WGPUTextureFormat_ASTC10x5Unorm, GPUTextureFormat::kASTC10x5Unorm},
+      {WGPUTextureFormat_ASTC10x5UnormSrgb, GPUTextureFormat::kASTC10x5UnormSrgb},
+      {WGPUTextureFormat_ASTC10x6Unorm, GPUTextureFormat::kASTC10x6Unorm},
+      {WGPUTextureFormat_ASTC10x6UnormSrgb, GPUTextureFormat::kASTC10x6UnormSrgb},
+      {WGPUTextureFormat_ASTC10x8Unorm, GPUTextureFormat::kASTC10x8Unorm},
+      {WGPUTextureFormat_ASTC10x8UnormSrgb, GPUTextureFormat::kASTC10x8UnormSrgb},
+      {WGPUTextureFormat_ASTC10x10Unorm, GPUTextureFormat::kASTC10x10Unorm},
+      {WGPUTextureFormat_ASTC10x10UnormSrgb, GPUTextureFormat::kASTC10x10UnormSrgb},
+      {WGPUTextureFormat_ASTC12x10Unorm, GPUTextureFormat::kASTC12x10Unorm},
+      {WGPUTextureFormat_ASTC12x10UnormSrgb, GPUTextureFormat::kASTC12x10UnormSrgb},
+      {WGPUTextureFormat_ASTC12x12Unorm, GPUTextureFormat::kASTC12x12Unorm},
+      {WGPUTextureFormat_ASTC12x12UnormSrgb, GPUTextureFormat::kASTC12x12UnormSrgb},
+  };
+  return kWGPUToTextureFormat[format];
+}
 
 }  // namespace seen::mod

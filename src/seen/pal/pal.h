@@ -4,6 +4,7 @@
 #pragma once
 
 #include <wgpu/wgpu.h>
+#include <optional>
 
 #include "seen/base/time_point.h"
 #include "seen/base/types.h"
@@ -20,6 +21,12 @@ bool worker_driver_is_platform_driver();
 void platform_worker_driver_dispatch_async(const TimePoint& time_point, CFClosure task);
 
 #pragma mark - seen/mod/seen.h
-WGPUSurface seen_create_surface(WGPUInstance instance, const void* native_window);
+WGPUSurface seen_surface_create(WGPUInstance instance, const void* native_window);
+
+#pragma mark - seen/base/vsync_waiter.h
+void* vsync_waiter_create();
+void vsync_waiter_release(void* handle);
+using VsyncCallback = std::function<void(std::optional<std::size_t> current_frame_due_millis)>;
+void vsync_waiter_await(void* handle, VsyncCallback callback);
 
 }  // namespace seen::pal

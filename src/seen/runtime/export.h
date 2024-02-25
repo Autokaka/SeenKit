@@ -4,10 +4,8 @@
 
 #include <sol/sol.hpp>
 
-#include "seen/mod/seen.h"
-
 namespace seen::runtime {
 
-mod::Seen::Ptr ExportHostAbilities(sol::state* lua);
+void ExportHostAbilities(sol::state* lua);
 
 }  // namespace seen::runtime

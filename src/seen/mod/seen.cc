@@ -5,22 +5,23 @@
 
 namespace seen::mod {
 
-Seen::Seen() : version(SEEN_VERSION), gpu_(nullptr) {
+Seen::Seen(const CFWorker::Ptr& runner) : Object(Object::Name::kSeen), version(SEEN_VERSION), runner_(runner) {
   SEEN_DEBUG("Create Seen instance.");
-  is_running.OnNext([this](bool is_running) {
+  Reset();
+  is_running_.OnNext([this](bool is_running) {
     SEEN_DEBUG("Is running: {}", is_running);
-    if (is_running) {
+    if (on_running_state_changed_callback) {
       on_running_state_changed_callback(is_running);
     }
   });
-  drawable.OnNext([this](const void* drawable) {
+  drawable_.OnNext([this](const void* drawable) {
     SEEN_DEBUG("Drawable available: {}", drawable != nullptr);
     if (on_drawable_changed_callback) {
       on_drawable_changed_callback(drawable != nullptr);
     }
   });
-  drawable_metrics.OnNext([this](const DrawableMetrics& metrics) {
-    SEEN_DEBUG("Drawable metrics: {}", metrics.ToString());
+  drawable_metrics_.OnNext([this](const DrawableMetrics& metrics) {
+    SEEN_DEBUG("Drawable metrics update");
     if (on_drawable_metrics_changed_callback) {
       on_drawable_metrics_changed_callback(metrics);
     }
@@ -44,6 +45,29 @@ void Seen::Log(const sol::variadic_args& args) const {
 GPU::Ptr Seen::GetGPU() {
   gpu_ || (gpu_ = GPU::Create());
   return gpu_;
+}
+
+FramePacer::Ptr Seen::CreateFramePacer() const {
+  return FramePacer::Create(runner_.lock());
+}
+
+bool Seen::isRunning() const {
+  return is_running_.Get();
+}
+
+bool Seen::IsDrawableAvailable() const {
+  return drawable_.Get() != nullptr;
+}
+
+DrawableMetrics Seen::GetDrawableMetrics() const {
+  return drawable_metrics_.Get();
+}
+
+void Seen::Reset() {
+  is_running_ = false;
+  gpu_ = nullptr;
+  drawable_metrics_ = DrawableMetrics();
+  drawable_ = nullptr;
 }
 
 }  // namespace seen::mod

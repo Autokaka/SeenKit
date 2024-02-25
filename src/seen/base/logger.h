@@ -2,7 +2,7 @@
 
 #pragma once
 
-// include the following headers by design
+// NOTE(Autokaka): Include the following headers by design!
 
 #include <fmt/core.h>
 #include <string>

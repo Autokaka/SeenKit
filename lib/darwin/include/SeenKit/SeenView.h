@@ -1,5 +1,6 @@
 // Created by Autokaka (qq1909698494@gmail.com) on 2023/10/28.
 
+#import <QuartzCore/CAMetalLayer.h>
 #import <SeenKit/SeenMacros.h>
 
 #if SEEN_BUILD_MACOS

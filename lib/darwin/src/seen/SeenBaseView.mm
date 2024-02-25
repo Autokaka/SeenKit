@@ -15,6 +15,7 @@ SEEN_VIEW_INIT_COMMON_IMPL {
   NSString* path = [NSBundle.mainBundle pathForResource:@"demo" ofType:@"seen"];
   SeenBundle* bundle = [[SeenBundle alloc] initWithPath:path];
   _engine = [[SeenEngine alloc] initWithBundle:bundle];
+  _engine.metalLayer = self.metalLayer;
 }
 
 - (void)resizeDrawable:(CGFloat)scaleFactor {
@@ -23,8 +24,13 @@ SEEN_VIEW_INIT_COMMON_IMPL {
   newSize.height *= scaleFactor;
   newSize.width = MAX(0, newSize.width);
   newSize.height = MAX(0, newSize.height);
-  self.metalLayer.contentsScale = scaleFactor;
   self.metalLayer.drawableSize = newSize;
+  self.metalLayer.contentsScale = scaleFactor;
+  [self.engine setDrawableSize:newSize scale:scaleFactor];
+}
+
+- (void)setPaused:(BOOL)paused {
+  [self.engine setPaused:paused];
 }
 
 @end

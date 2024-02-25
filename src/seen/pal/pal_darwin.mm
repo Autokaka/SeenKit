@@ -16,6 +16,8 @@ namespace seen::pal {
 
 void log(int level, const char* message) {
   switch (static_cast<CFLogLevel>(level)) {
+    case CFLogLevel::kDebug:
+      return syslog(LOG_DEBUG, "%s", message);
     case CFLogLevel::kInfo:
       return syslog(LOG_INFO, "%s", message);
     case CFLogLevel::kWarn:
@@ -24,6 +26,7 @@ void log(int level, const char* message) {
       return syslog(LOG_ERR, "%s", message);
     case CFLogLevel::kFatal:
       return syslog(LOG_CRIT, "%s", message);
+      break;
   }
 }
 
@@ -41,7 +44,8 @@ void platform_worker_driver_dispatch_async(const TimePoint& time_point, CFClosur
   });
 }
 
-WGPUSurface seen_create_surface(WGPUInstance instance, const void* native_window) {
+#pragma mark - seen/mod/seen.h
+WGPUSurface seen_surface_create(WGPUInstance instance, const void* native_window) {
   WGPUSurfaceDescriptorFromMetalLayer metalLayerDescriptor;
   metalLayerDescriptor.chain.next = nullptr;
   metalLayerDescriptor.chain.sType = WGPUSType_SurfaceDescriptorFromMetalLayer;

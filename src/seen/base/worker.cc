@@ -1,6 +1,7 @@
 // Created by Autokaka (qq1909698494@gmail.com) on 2023/02/15.
 
 #include "seen/base/worker.h"
+#include "seen/base/logger.h"
 #include "seen/base/worker_driver.h"
 
 namespace seen {
@@ -9,6 +10,7 @@ thread_local CFWorker::WeakPtr tls_worker;
 static const char* const kPlatformWorkerName = "Seen.Host";
 
 CFWorker::Ptr CFWorker::Create(const char* name) {
+  SEEN_DEBUG("Create worker: {}.", name);
   auto worker_driver = std::make_unique<CFWorkerDriverImpl>(name);
   auto worker = std::make_shared<CFWorker>(name, std::move(worker_driver));
   CFWorker::WeakPtr weak_worker = worker;
@@ -24,6 +26,7 @@ CFWorker::CFWorker(const char* name, std::unique_ptr<CFWorkerDriver> driver)
     : name_(name), driver_(std::move(driver)) {}
 
 CFWorker::~CFWorker() {
+  SEEN_DEBUG("Release worker: {}.", name_);
   driver_->Stop();
 }
 

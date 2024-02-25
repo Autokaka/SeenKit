@@ -6,22 +6,23 @@
 #include <memory>
 
 #include "seen/base/class_ext.h"
+#include "seen/mod/object.h"
 
 namespace seen::mod {
 
-class GPUAdapter {
+class GPUAdapter final : public Object {
  public:
   using Ptr = std::shared_ptr<GPUAdapter>;
 
-  using PowerPrefT = const char*;
+  using TPowerPref = const char*;
   static bool IsPowerPref(const std::string& maybe);
   struct PowerPref {
-    static PowerPrefT kLowPower;
-    static PowerPrefT kHighPerformance;
+    static constexpr TPowerPref kLowPower = "low-power";
+    static constexpr TPowerPref kHighPerformance = "high-performance";
   };
 
   explicit GPUAdapter(WGPUAdapter adapter);
-  ~GPUAdapter();
+  ~GPUAdapter() override;
 
  private:
   WGPUAdapter adapter_;

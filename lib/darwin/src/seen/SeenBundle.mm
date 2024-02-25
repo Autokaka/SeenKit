@@ -7,14 +7,17 @@
 }
 
 - (instancetype)initWithPath:(NSString*)path {
+  if (path == nil) {
+    return nil;
+  }
   self = [super init];
   if (self != nil) {
     _cppBundle = seen::Bundle::CreateFromPath(path.UTF8String);
-    if (!_cppBundle) {
-      return nil;
+    if (_cppBundle) {
+      return self;
     }
   }
-  return self;
+  return nil;
 }
 
 - (NSString*)entryPath {
