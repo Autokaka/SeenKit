@@ -53,22 +53,14 @@ function main(this: unknown) {
     seen.log("seen.onDrawableChanged", seen.onDrawableChanged);
     seen.log("seen.onDrawableMetricsChanged", seen.onDrawableMetricsChanged);
 
-    const framePacer = seen.createFramePacer();
-    seen.log("framePacer:", framePacer);
-    seen.log("framePacer.className:", framePacer.className);
-    seen.log(
-      "framePacer.requestAnimationFrame:",
-      framePacer.requestAnimationFrame
-    );
-    const onFrame = (
-      prevFrameMillis: number,
-      currentFrameDueMillis: number
-    ) => {
-      seen.log(
-        `onFrame(prevFrameMillis=${prevFrameMillis}, currentFrameDueMillis=${currentFrameDueMillis})`
-      );
-      framePacer.requestAnimationFrame((a, b) => onFrame(a, b));
+    seen.log("seen.framePacer:", seen.framePacer);
+    seen.log("seen.framePacer.className:", seen.framePacer.className);
+    seen.log("seen.framePacer.requestAnimationFrame:", seen.framePacer.requestAnimationFrame);
+    const onFrame = (prevFrameMillis: number, currentFrameDueMillis: number) => {
+      seen.log(`onFrame(prevFrameMillis=${prevFrameMillis}, currentFrameDueMillis=${currentFrameDueMillis})`);
+      // seen.framePacer.requestAnimationFrame((a, b) => onFrame(a, b));
     };
+    seen.framePacer.requestAnimationFrame((a, b) => onFrame(a, b));
   } catch (error) {
     seen.log(`Error:`, error);
   }

@@ -1,8 +1,12 @@
 {
+  "private": true,
   "name": "@seen-kit/example",
   "version": "1.0.0",
   "description": "A SeenKit example project.",
-  "dependencies": {
+  "scripts": {
+    "build": "seen tsb -o ../res"
+  },
+  "devDependencies": {
     "@seen-kit/seen": "workspace:^"
   }
 }

@@ -16,11 +16,10 @@ declare class Seen implements Seen.Object<"kSeen"> {
 
   log(...args: unknown[]): void;
 
-  createFramePacer(): Seen.FramePacer;
-
   readonly className: Seen.Object.Name.kSeen;
   readonly version: string;
   readonly gpu: Seen.GPU | undefined;
+  readonly framePacer: Seen.FramePacer;
   readonly isRunning: boolean;
   readonly isDrawableAvailable: boolean;
   readonly drawableMetrics: Seen.DrawableMetrics;
