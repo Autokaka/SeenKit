@@ -1,1 +1,0 @@
-project(example_res)

@@ -20,7 +20,7 @@
   },
   "scripts": {
     "preinstall": "tsc",
-    "demo.seen": "pnpm run --filter example build"
+    "build:demo.seen": "pnpm run --filter example build"
   },
   "engineStrict": true,
   "engines": {

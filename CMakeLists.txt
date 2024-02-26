@@ -67,28 +67,26 @@ if(${SEEN_BUILD_DARWIN})
   )
 
   # example
-  add_subdirectory(example/res)
+  add_subdirectory(example/seen)
   add_subdirectory(example/darwin)
   file(GLOB_RECURSE EXAMPLE_SOURCE
-    "${seen_example_SOURCE_DIR}/*.h"
-    "${seen_example_SOURCE_DIR}/*.swift"
+    "${example_SOURCE_DIR}/*.h"
+    "${example_SOURCE_DIR}/*.swift"
   )
-  file(GLOB_RECURSE RESOURCES
-    "${example_res_SOURCE_DIR}/*"
-  )
+  file(GLOB RESOURCES "${demo.seen_SOURCE_DIR}/demo.seen")
   set_source_files_properties(${EXAMPLE_SOURCE} PROPERTIES COMPILE_FLAGS -fobjc-arc)
-  source_group(TREE ${seen_example_SOURCE_DIR} FILES ${EXAMPLE_SOURCE})
-  add_executable(seen_example MACOSX_BUNDLE 
+  source_group(TREE ${example_SOURCE_DIR} FILES ${EXAMPLE_SOURCE})
+  add_executable(example MACOSX_BUNDLE 
     ${EXAMPLE_SOURCE}
     ${RESOURCES}
   )
-  target_link_libraries(seen_example PRIVATE seen)
-  set_target_properties(seen_example PROPERTIES
+  target_link_libraries(example PRIVATE seen)
+  set_target_properties(example PROPERTIES
     RESOURCE "${RESOURCES}"
     XCODE_ATTRIBUTE_CODE_SIGN_STYLE Automatic
     XCODE_ATTRIBUTE_ENABLE_PREVIEWS YES
     XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${SEEN_BUNDLE_ID}.example"
-    XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER "${seen_example_SOURCE_DIR}/BridgingHeaders.h"
+    XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER "${example_SOURCE_DIR}/BridgingHeaders.h"
     XCODE_ATTRIBUTE_SWIFT_OPTIMIZATION_LEVEL -Onone
   )
 endif()

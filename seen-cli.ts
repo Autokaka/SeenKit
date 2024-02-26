@@ -3,7 +3,7 @@
 import { execSync } from "child_process";
 import { program } from "commander";
 import { argv } from "process";
-import { resolve } from "path";
+import { dirname, resolve } from "path";
 import { existsSync, mkdirSync, statSync } from "fs";
 
 program //
@@ -78,19 +78,17 @@ program //
   program
     .command("tsb")
     .description("TypeScript bundler designed for SeenKit")
-    .option("-o, --output <output>", "bundle output path", "dist")
+    .option("-o, --output <output>", "bundle output path", "demo.seen")
     .action((option: { output: string }) => {
       const output = resolve(option.output);
-      if (!existsSync(output)) {
-        mkdirSync(output, { recursive: true });
-      }
-      if (!statSync(output).isDirectory()) {
-        throw new Error(`${output} is not a directory!`);
+      const outputDir = dirname(output);
+      if (!existsSync(outputDir)) {
+        mkdirSync(outputDir, { recursive: true });
       }
       // TODO(Autokaka): Make this generic and cross-platform...
       const commands = [
-        `npx tstl --luaBundle ${output}/main.lua`,
-        `cd ${output}`,
+        `npx tstl --luaBundle ${outputDir}/main.lua`,
+        `cd ${outputDir}`,
         `zip demo.seen main.lua`,
         `rm main.lua`,
       ];

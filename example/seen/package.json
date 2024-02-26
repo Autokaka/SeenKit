@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "A SeenKit example project.",
   "scripts": {
-    "build": "seen tsb -o ../res"
+    "build": "seen tsb -o demo.seen"
   },
   "devDependencies": {
     "@seen-kit/seen": "workspace:^"

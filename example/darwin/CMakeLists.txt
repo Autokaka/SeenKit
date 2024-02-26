@@ -1,1 +1,1 @@
-project(seen_example)
+project(example)
