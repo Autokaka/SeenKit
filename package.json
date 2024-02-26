@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "[NOT READY] Yet another cross-platform game engine.",
   "type": "module",
-  "types": "./lib/typescript/index.d.ts",
+  "types": "./lib/seen/index.d.ts",
   "bin": "seen-cli.js",
   "keywords": [
     "game-engine"
@@ -19,7 +19,8 @@
     "url": "https://github.com/Autokaka/SeenKit/issues"
   },
   "scripts": {
-    "preinstall": "tsc"
+    "preinstall": "tsc",
+    "demo.seen": "pnpm run --filter example build"
   },
   "engineStrict": true,
   "engines": {

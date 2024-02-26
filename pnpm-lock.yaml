@@ -22,7 +22,7 @@ importers:
         specifier: ^16.0.0
         version: 16.18.83
 
-  example/typescript:
+  example/seen:
     devDependencies:
       '@seen-kit/seen':
         specifier: workspace:^
