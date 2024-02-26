@@ -1,0 +1,8 @@
+{
+  "name": "@seen-kit/example",
+  "version": "1.0.0",
+  "description": "A SeenKit example project.",
+  "dependencies": {
+    "@seen-kit/seen": "workspace:^"
+  }
+}

@@ -66,13 +66,17 @@ void FramePacer::OnVsync() {
 
 void FramePacer::OnVsync(std::size_t current_frame_due_millis) {
   if (auto runner = runner_.lock()) {
-    auto strong_self = SharedSelf<FramePacer>();
-    auto callback = [strong_self, current_frame_due_millis]() { strong_self->OnRunnerVsync(current_frame_due_millis); };
     if (runner->IsCurrent()) {
-      callback();
-    } else {
-      runner->DispatchAsync(std::move(callback));
+      OnRunnerVsync(current_frame_due_millis);
+      return;
     }
+    auto weak_self = WeakSelf<FramePacer>();
+    auto time = current_frame_due_millis;
+    runner->DispatchAsync([weak_self, time]() {
+      if (auto self = weak_self.lock()) {
+        self->OnRunnerVsync(time);
+      }
+    });
   }
 }
 

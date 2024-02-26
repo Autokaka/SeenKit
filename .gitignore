@@ -6,6 +6,9 @@ cmake-build-*
 build
 build-*
 
+# Node
+node_modules
+
 # Gradle
 *.iml
 .gradle
@@ -37,5 +40,5 @@ local.properties
 *.user
 *.code-workspace
 
-# for fastbuild
-*.fb
+# Generated SeenKit CLI
+seen-cli.js

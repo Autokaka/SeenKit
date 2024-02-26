@@ -20,7 +20,7 @@ void ExportHostAbilities(sol::state* lua) {
       "log", &Seen::Log,                                                       //
       "version", &Seen::version,                                               //
       "gpu", sol::property(&Seen::GetGPU),                                     //
-      "createFramePacer", &Seen::CreateFramePacer,                             //
+      "framePacer", sol::property(&Seen::GetFramePacer),                       //
       "isRunning", sol::property(&Seen::isRunning),                            //
       "isDrawableAvailable", sol::property(&Seen::IsDrawableAvailable),        //
       "drawableMetrics", sol::property(&Seen::GetDrawableMetrics),             //

@@ -30,7 +30,7 @@ class Seen final : public Object {
 
   void Log(const sol::variadic_args& args) const;
   GPU::Ptr GetGPU();
-  [[nodiscard]] FramePacer::Ptr CreateFramePacer() const;
+  FramePacer::Ptr GetFramePacer();
   [[nodiscard]] bool isRunning() const;
   [[nodiscard]] bool IsDrawableAvailable() const;
   [[nodiscard]] DrawableMetrics GetDrawableMetrics() const;
@@ -48,6 +48,7 @@ class Seen final : public Object {
   rx::Value<const void*> drawable_;
   rx::Value<DrawableMetrics> drawable_metrics_;
   const CFWorker::WeakPtr runner_;
+  FramePacer::Ptr frame_pacer_;
   GPU::Ptr gpu_;
 
   SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(Seen);

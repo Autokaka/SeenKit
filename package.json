@@ -1,0 +1,35 @@
+{
+  "name": "@seen-kit/seen",
+  "version": "1.0.0",
+  "description": "[NOT READY] Yet another cross-platform game engine.",
+  "type": "module",
+  "types": "./lib/typescript/index.d.ts",
+  "bin": "seen-cli.js",
+  "keywords": [
+    "game-engine"
+  ],
+  "author": "Autokaka",
+  "license": "BSD 3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Autokaka/SeenKit.git"
+  },
+  "bugs": {
+    "email": "qq1909698494@gmail.com",
+    "url": "https://github.com/Autokaka/SeenKit/issues"
+  },
+  "scripts": {
+    "preinstall": "tsc"
+  },
+  "engineStrict": true,
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "commander": "^12.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^16.0.0",
+    "typescript": "^5.3.3"
+  }
+}

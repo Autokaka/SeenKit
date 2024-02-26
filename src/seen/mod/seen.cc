@@ -47,8 +47,9 @@ GPU::Ptr Seen::GetGPU() {
   return gpu_;
 }
 
-FramePacer::Ptr Seen::CreateFramePacer() const {
-  return FramePacer::Create(runner_.lock());
+FramePacer::Ptr Seen::GetFramePacer() {
+  frame_pacer_ || (frame_pacer_ = FramePacer::Create(runner_.lock()));
+  return frame_pacer_;
 }
 
 bool Seen::isRunning() const {
