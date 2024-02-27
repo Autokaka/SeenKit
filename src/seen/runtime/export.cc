@@ -54,17 +54,17 @@ void ExportHostAbilities(sol::state* lua) {
   );
 
   // Seen.GPU
-  seen.new_usertype<GPU>(                                                         //
-      "GPU", sol::no_constructor,                                                 //
-      sol::base_classes, sol::bases<Object>(),                                    //
-      "requestAdapter", glue::GPURequestAdapter,                                  //
-      "preferredDrawableFormat", sol::property(&GPU::GetPreferredDrawableFormat)  //
+  seen.new_usertype<GPU>(                        //
+      "GPU", sol::no_constructor,                //
+      sol::base_classes, sol::bases<Object>(),   //
+      "requestAdapter", glue::GPURequestAdapter  //
   );
 
   // Seen.GPUAdapter
-  seen.new_usertype<GPUAdapter>(               //
-      "GPUAdapter", sol::no_constructor,       //
-      sol::base_classes, sol::bases<Object>()  //
+  seen.new_usertype<GPUAdapter>(                                                       //
+      "GPUAdapter", sol::no_constructor,                                               //
+      sol::base_classes, sol::bases<Object>(),                                         //
+      "preferredTextureFormat", sol::property(&GPUAdapter::GetPreferredTextureFormat)  //
   );
 }
 

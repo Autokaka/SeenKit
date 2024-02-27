@@ -16,6 +16,7 @@ Seen::Seen(const CFWorker::Ptr& runner) : Object(Object::Name::kSeen), version(S
   });
   drawable_.OnNext([this](const void* drawable) {
     SEEN_DEBUG("Drawable available: {}", drawable != nullptr);
+    GetGPU()->drawable_ = drawable;
     if (on_drawable_changed_callback) {
       on_drawable_changed_callback(drawable != nullptr);
     }

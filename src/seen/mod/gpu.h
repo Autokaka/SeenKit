@@ -8,36 +8,32 @@
 
 #include "seen/base/class_ext.h"
 #include "seen/mod/gpu_adapter.h"
-#include "seen/mod/gpu_texture_format.h"
 #include "seen/mod/object.h"
 
 namespace seen::mod {
 
 class GPU final : public Object {
  public:
+  friend class Seen;
   using Ptr = std::shared_ptr<GPU>;
   using RequestAdapterCallback = std::function<void(GPUAdapter::Ptr)>;
 
   struct RequestAdapterOptions {
-    static const RequestAdapterOptions kDefault;
-
-    GPUAdapter::TPowerPref power_preference;
+    GPUAdapter::TPowerPref power_preference = nullptr;
   };
 
-  static GPU::Ptr Create();
-  explicit GPU(WGPUInstance wgpu);
-  ~GPU();
+  static GPU::Ptr Create(const void* drawable = nullptr);
+  explicit GPU(WGPUInstance wgpu, const void* drawable = nullptr);
+  ~GPU() override;
 
-  void RequestAdapter(const RequestAdapterOptions& options, const RequestAdapterCallback& callback);
+  void RequestAdapter(const RequestAdapterOptions& options, RequestAdapterCallback callback);
   void RequestAdapter(const RequestAdapterCallback& callback);
 
-  [[nodiscard]] TGPUTextureFormat GetPreferredDrawableFormat() const;
-
  private:
-  void DoRequestAdapter(const RequestAdapterOptions& options = RequestAdapterOptions::kDefault,
-                        const RequestAdapterCallback& callback = nullptr);
+  void DoRequestAdapter(const RequestAdapterOptions& options, RequestAdapterCallback callback);
 
   WGPUInstance wgpu_;
+  const void* drawable_;
 
   SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(GPU);
 };

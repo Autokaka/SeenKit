@@ -12,7 +12,7 @@ namespace seen::runtime::glue {
 using namespace mod;
 
 void GPURequestAdapter(GPU* gpu, const sol::variadic_args& args) {
-  auto gpu_options = GPU::RequestAdapterOptions::kDefault;
+  GPU::RequestAdapterOptions gpu_options;
   if (args[0].get_type() == sol::type::table) {
     auto options = args[0].as<sol::table>();
     auto power_pref = options["powerPreference"];

@@ -21,16 +21,16 @@ function main(this: unknown) {
     seen.log("Seen.GPU:", Seen.GPU);
     seen.log("typeof Seen.GPU:", typeof Seen.GPU);
 
-    if (!seen.gpu) {
-      return;
-    }
+    const testGPUAdapter = () => {
+      seen.gpu?.requestAdapter((adapter) => {
+        seen.log("adapter:", adapter);
+        seen.log("adapter?.className:", adapter?.className);
+        seen.log("adapter?.preferredDrawableFormat:", adapter?.preferredTextureFormat);
+      });
+    };
 
-    seen.gpu.requestAdapter((adapter) => {
-      seen.log("adapter?.className:", adapter?.className);
-      seen.log("adapter:", adapter);
-    });
+    testGPUAdapter();
 
-    // seen.log("seen.gpu.preferredDrawableFormat:", seen.gpu?.preferredDrawableFormat);
     seen.log("seen.isRunning", seen.isRunning);
     seen.log("seen.isDrawableAvailable:", seen.isDrawableAvailable);
     seen.log("seen.drawableMetrics:", seen.drawableMetrics);
@@ -42,6 +42,9 @@ function main(this: unknown) {
     };
     seen.onDrawableChanged = (isAvailable) => {
       seen.log(`seen.onDrawableChanged(isAvailable=${isAvailable})`);
+      if (isAvailable) {
+        testGPUAdapter();
+      }
     };
     seen.onDrawableMetricsChanged = (metrics) => {
       seen.log(`seen.onDrawableMetricsChanged(metrics=${metrics})`);
@@ -55,7 +58,7 @@ function main(this: unknown) {
     seen.log("seen.framePacer.requestAnimationFrame:", seen.framePacer.requestAnimationFrame);
     const onFrame: Seen.FramePacer.FrameCallback = (nowMillis, outputMillis) => {
       seen.log(`onFrame(nowMillis=${nowMillis}, outputMillis=${outputMillis})`);
-      seen.framePacer.requestAnimationFrame((a, b) => onFrame(a, b));
+      // seen.framePacer.requestAnimationFrame((a, b) => onFrame(a, b));
     };
     seen.framePacer.requestAnimationFrame((a, b) => onFrame(a, b));
   } catch (error) {
