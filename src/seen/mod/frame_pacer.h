@@ -9,7 +9,6 @@
 #include <memory>
 #include <optional>
 
-#include "seen/base/time_delta.h"
 #include "seen/base/time_point.h"
 #include "seen/base/worker.h"
 #include "seen/mod/object.h"
@@ -18,15 +17,10 @@ namespace seen::mod {
 
 class FramePacer final : public Object {
  public:
-  struct FrameWindow {
-    std::int64_t last;
-    std::int64_t now;
-    std::int64_t output;
-  };
   friend class Seen;
   using Ptr = std::shared_ptr<FramePacer>;
   using WeakPtr = std::weak_ptr<FramePacer>;
-  using FrameCallback = std::function<void(const FrameWindow& time)>;
+  using FrameCallback = std::function<void(std::int64_t now, std::int64_t output)>;
 
   std::size_t RequestAnimationFrame(FrameCallback callback);
   void CancelAnimationFrame(std::size_t token);
@@ -50,7 +44,6 @@ class FramePacer final : public Object {
   std::shared_ptr<void> handle_;
   std::list<FrameTask> tasks_;
   std::optional<TimePoint> first_frame_time_;
-  TimeDelta prev_frame_end_time_;
   bool is_pending_;
 };
 

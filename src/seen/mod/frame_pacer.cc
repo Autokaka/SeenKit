@@ -16,7 +16,6 @@ FramePacer::FramePacer(const CFWorker::Ptr& runner)
       runner_(runner),
       handle_(pal::vsync_waiter_create(), pal::vsync_waiter_release),
       first_frame_time_(std::nullopt),
-      prev_frame_end_time_(TimeDelta::Zero()),
       is_pending_(false) {}
 
 std::size_t FramePacer::RequestAnimationFrame(FrameCallback callback) {
@@ -86,40 +85,34 @@ void FramePacer::OnVsync(const TimePoint& frame_display_time) {
 }
 
 void FramePacer::OnRunnerVsync(const TimePoint& frame_display_time) {
-  if (TimePoint::Now() >= frame_display_time) {
-    SEEN_DEBUG("Vsync callback late, skip to next vsync callback...");
+  is_pending_ = false;
+  auto now = TimePoint::Now();
+  if (now >= frame_display_time) {
+    SEEN_DEBUG("Vsync callback expired, try next vsync...");
     AwaitVsync();
     return;
   }
-  auto prev_frame_end_millis = prev_frame_end_time_.ToMilliseconds();
+  auto now_time = now - first_frame_time_.value();
   auto display_time = frame_display_time - first_frame_time_.value();
   std::list<FrameTask> tasks;
   std::list<FrameTask> timeout_tasks;
   std::swap(tasks, tasks_);
-  is_pending_ = false;
   for (auto&& task : tasks) {
     if (task.cancelled) {
       continue;
     }
-    auto now = TimePoint::Now();
-    if (now >= frame_display_time) {
+    if (TimePoint::Now() < frame_display_time) {
+      task.callback(now_time.ToMilliseconds(), display_time.ToMilliseconds());
+    } else {
       timeout_tasks.emplace_back(std::move(task));
-      continue;
     }
-    auto now_millis = now - first_frame_time_.value();
-    task.callback({
-        .last = prev_frame_end_millis,
-        .now = now_millis.ToMilliseconds(),
-        .output = display_time.ToMilliseconds(),
-    });
   }
   auto timeout_count = timeout_tasks.size();
   if (timeout_count > 0) {
-    SEEN_DEBUG("{} frame(s) timeout, skip to next vsync callback...", timeout_count);
+    SEEN_DEBUG("{} frame(s) timeout, try to callback on next vsync...", timeout_count);
     tasks_.splice(tasks_.end(), std::move(timeout_tasks));
     AwaitVsync();
   }
-  prev_frame_end_time_ = TimePoint::Now() - first_frame_time_.value();
 }
 
 }  // namespace seen::mod
