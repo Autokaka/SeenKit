@@ -1,9 +1,7 @@
 // Created by Autokaka (qq1909698494@gmail.com) on 2024/02/26.
 
 declare namespace Seen {
-  abstract class Object<N extends keyof Object.Names = "kObject"> {
-    constructor(className: Object.Names[N]);
-
+  interface Object<N extends keyof Object.Names = "kObject"> {
     readonly className: Object.Names[N];
   }
 

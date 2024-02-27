@@ -3,9 +3,9 @@
 /// <reference types="./object" />
 
 declare namespace Seen {
-  class DrawableMetrics extends Object<"kDrawableMetrics"> {
-    private constructor();
+  const DrawableMetrics: never;
 
+  interface DrawableMetrics extends Object<"kDrawableMetrics"> {
     readonly width: number;
     readonly height: number;
     readonly contentScale: number;

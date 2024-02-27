@@ -3,9 +3,9 @@
 /// <reference types="./object" />
 
 declare namespace Seen {
-  class FramePacer extends Seen.Object<"kFramePacer"> {
-    private constructor();
+  const FramePacer: never;
 
+  interface FramePacer extends Seen.Object<"kFramePacer"> {
     requestAnimationFrame(callback: FramePacer.FrameCallback): number;
     cancelAnimationFrame(token: number): void;
   }

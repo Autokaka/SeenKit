@@ -7,22 +7,19 @@
 /// <reference types="./gpu" />
 /// <reference types="./object" />
 
-declare class Seen implements Seen.Object<"kSeen"> {
-  private constructor();
+declare interface Seen extends Seen.Object<"kSeen"> {
+  readonly version: string;
+  readonly gpu?: Seen.GPU;
+  readonly framePacer: Seen.FramePacer;
+  readonly isRunning: boolean;
+  readonly isDrawableAvailable: boolean;
+  readonly drawableMetrics: Seen.DrawableMetrics;
 
   onRunningStateChanged?: Seen.RunningStateChangedCallback;
   onDrawableChanged?: Seen.DrawableChangedCallback;
   onDrawableMetricsChanged?: Seen.DrawableMetricsChangedCallback;
 
   log(...args: unknown[]): void;
-
-  readonly className: Seen.Object.Name.kSeen;
-  readonly version: string;
-  readonly gpu: Seen.GPU | undefined;
-  readonly framePacer: Seen.FramePacer;
-  readonly isRunning: boolean;
-  readonly isDrawableAvailable: boolean;
-  readonly drawableMetrics: Seen.DrawableMetrics;
 }
 
 declare namespace Seen {

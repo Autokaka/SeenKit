@@ -3,7 +3,7 @@
 /// <reference types="./object" />
 
 declare namespace Seen {
-  class GPUAdapter extends Object<"kGPUAdapter"> {
-    private constructor();
-  }
+  const GPUAdapter: never;
+
+  interface GPUAdapter extends Object<"kGPUAdapter"> {}
 }

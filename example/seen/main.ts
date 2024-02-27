@@ -20,9 +20,6 @@ function main(this: unknown) {
     seen.log("seen.gpu?.constructor:", seen.gpu?.constructor);
     seen.log("Seen.GPU:", Seen.GPU);
     seen.log("typeof Seen.GPU:", typeof Seen.GPU);
-    seen.log("Seen.GPU.prototype:", Seen.GPU.prototype);
-    seen.log("Seen.GPU.constructor:", Seen.GPU.constructor);
-    seen.log("seen.gpu instanceof Seen.GPU:", seen.gpu instanceof Seen.GPU);
 
     if (!seen.gpu) {
       return;
