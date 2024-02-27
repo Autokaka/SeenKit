@@ -45,12 +45,12 @@ void ExportHostAbilities(sol::state* lua) {
   );
   auto frame_pacer = (*lua)["Seen"]["FramePacer"].get<sol::table>();
 
-  // Seen.FramePacer.FrameTime
-  frame_pacer.new_usertype<FramePacer::FrameTime>(  //
-      "FrameTime", sol::no_constructor,             //
-      "last", &FramePacer::FrameTime::last,         //
-      "now", &FramePacer::FrameTime::now,           //
-      "output", &FramePacer::FrameTime::output      //
+  // Seen.FramePacer.FrameWindow
+  frame_pacer.new_usertype<FramePacer::FrameWindow>(  //
+      "FrameWindow", sol::no_constructor,             //
+      "last", &FramePacer::FrameWindow::last,         //
+      "now", &FramePacer::FrameWindow::now,           //
+      "output", &FramePacer::FrameWindow::output      //
   );
 
   // Seen.DrawableMetrics

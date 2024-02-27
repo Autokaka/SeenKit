@@ -56,7 +56,7 @@ function main(this: unknown) {
     seen.log("seen.framePacer:", seen.framePacer);
     seen.log("seen.framePacer.className:", seen.framePacer.className);
     seen.log("seen.framePacer.requestAnimationFrame:", seen.framePacer.requestAnimationFrame);
-    const onFrame = ({ last, now, output }: Seen.FramePacer.FrameTime) => {
+    const onFrame = ({ last, now, output }: Seen.FramePacer.FrameWindow) => {
       seen.log(`onFrame(last=${last}, now=${now}, output=${output})`);
       seen.framePacer.requestAnimationFrame((time) => onFrame(time));
     };

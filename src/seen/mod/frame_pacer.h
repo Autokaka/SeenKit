@@ -18,7 +18,7 @@ namespace seen::mod {
 
 class FramePacer final : public Object {
  public:
-  struct FrameTime {
+  struct FrameWindow {
     std::int64_t last;
     std::int64_t now;
     std::int64_t output;
@@ -26,7 +26,7 @@ class FramePacer final : public Object {
   friend class Seen;
   using Ptr = std::shared_ptr<FramePacer>;
   using WeakPtr = std::weak_ptr<FramePacer>;
-  using FrameCallback = std::function<void(const FrameTime& time)>;
+  using FrameCallback = std::function<void(const FrameWindow& time)>;
 
   std::size_t RequestAnimationFrame(FrameCallback callback);
   void CancelAnimationFrame(std::size_t token);
