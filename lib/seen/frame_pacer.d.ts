@@ -11,6 +11,12 @@ declare namespace Seen {
   }
 
   namespace FramePacer {
-    type FrameCallback = (this: void, prevFrameEndMillis: number, currentFrameDueMillis: number) => void;
+    interface FrameTime {
+      readonly last: number;
+      readonly now: number;
+      readonly output: number;
+    }
+
+    type FrameCallback = (this: void, time: FrameTime) => void;
   }
 }

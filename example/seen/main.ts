@@ -56,11 +56,11 @@ function main(this: unknown) {
     seen.log("seen.framePacer:", seen.framePacer);
     seen.log("seen.framePacer.className:", seen.framePacer.className);
     seen.log("seen.framePacer.requestAnimationFrame:", seen.framePacer.requestAnimationFrame);
-    const onFrame = (prevFrameMillis: number, currentFrameDueMillis: number) => {
-      seen.log(`onFrame(prevFrameMillis=${prevFrameMillis}, currentFrameDueMillis=${currentFrameDueMillis})`);
-      // seen.framePacer.requestAnimationFrame((a, b) => onFrame(a, b));
+    const onFrame = ({ last, now, output }: Seen.FramePacer.FrameTime) => {
+      seen.log(`onFrame(last=${last}, now=${now}, output=${output})`);
+      seen.framePacer.requestAnimationFrame((time) => onFrame(time));
     };
-    seen.framePacer.requestAnimationFrame((a, b) => onFrame(a, b));
+    seen.framePacer.requestAnimationFrame((time) => onFrame(time));
   } catch (error) {
     seen.log(`Error:`, error);
   }

@@ -15,24 +15,26 @@ FramePacer::FramePacer(const CFWorker::Ptr& runner)
     : Object(Object::Name::kFramePacer),
       runner_(runner),
       handle_(pal::vsync_waiter_create(), pal::vsync_waiter_release),
-      tasks_count_(0),
+      first_frame_time_(std::nullopt),
       prev_frame_end_time_(TimeDelta::Zero()),
       is_pending_(false) {}
 
 std::size_t FramePacer::RequestAnimationFrame(FrameCallback callback) {
-  auto token = tasks_count_;
-  FrameTask task{token, std::move(callback), false};
-  tasks_.emplace_back(std::move(task));
-  tasks_count_ += 1;
-  if (!is_pending_) {
-    is_pending_ = true;
-    AwaitVsync();
+  if (!first_frame_time_) {
+    first_frame_time_ = TimePoint::Now();
   }
+  auto token = tasks_.size();
+  tasks_.emplace_back<FrameTask>({
+      .token = token,
+      .callback = std::move(callback),
+      .cancelled = false,
+  });
+  AwaitVsync();
   return token;
 }
 
 void FramePacer::CancelAnimationFrame(std::size_t token) {
-  if (token >= tasks_count_) {
+  if (token < 0 || token >= tasks_.size()) {
     return;
   }
   for (auto&& task : tasks_) {
@@ -44,11 +46,15 @@ void FramePacer::CancelAnimationFrame(std::size_t token) {
 }
 
 void FramePacer::AwaitVsync() {
+  if (is_pending_) {
+    return;
+  }
+  is_pending_ = true;
   auto weak_self = WeakSelf<FramePacer>();
-  pal::vsync_waiter_await(handle_.get(), [weak_self](std::optional<std::size_t> current_frame_due_millis) {
+  pal::vsync_waiter_await(handle_.get(), [weak_self](std::optional<TimePoint> frame_display_time) {
     if (auto self = weak_self.lock()) {
-      if (current_frame_due_millis.has_value()) {
-        self->OnVsync(*current_frame_due_millis);
+      if (frame_display_time.has_value()) {
+        self->OnVsync(frame_display_time.value());
       } else {
         self->OnVsync();
       }
@@ -60,45 +66,60 @@ void FramePacer::AwaitVsync() {
 // Could refer to https://github.com/blurbusters/RefreshRateCalculator
 void FramePacer::OnVsync() {
   // NOLINTNEXTLINE(readability-magic-numbers)
-  auto target_time = TimePoint::Now().ToEpochDelta().ToMillisecondsF() + 16.66;
-  OnVsync(static_cast<std::size_t>(target_time));
+  // auto target_time = TimePoint::Now().ToEpochDelta().ToMillisecondsF() + 16.66;
+  // OnVsync(static_cast<std::size_t>(target_time));
 }
 
-void FramePacer::OnVsync(std::size_t current_frame_due_millis) {
+void FramePacer::OnVsync(const TimePoint& frame_display_time) {
   if (auto runner = runner_.lock()) {
     if (runner->IsCurrent()) {
-      OnRunnerVsync(current_frame_due_millis);
+      OnRunnerVsync(frame_display_time);
       return;
     }
     auto weak_self = WeakSelf<FramePacer>();
-    auto time = current_frame_due_millis;
-    runner->DispatchAsync([weak_self, time]() {
+    runner->DispatchAsync([weak_self, frame_display_time]() {
       if (auto self = weak_self.lock()) {
-        self->OnRunnerVsync(time);
+        self->OnRunnerVsync(frame_display_time);
       }
     });
   }
 }
 
-void FramePacer::OnRunnerVsync(std::size_t current_frame_due_millis) {
-  auto now = TimePoint::Now();
-  auto now_millis = now.ToEpochDelta().ToMilliseconds();
-  if (now_millis >= current_frame_due_millis) {
-    SEEN_DEBUG("Frame has been skipped to next vsync callback...");
+void FramePacer::OnRunnerVsync(const TimePoint& frame_display_time) {
+  if (TimePoint::Now() >= frame_display_time) {
+    SEEN_DEBUG("Vsync callback late, skip to next vsync callback...");
     AwaitVsync();
     return;
   }
   auto prev_frame_end_millis = prev_frame_end_time_.ToMilliseconds();
-  for (auto&& task : tasks_) {
+  auto display_time = frame_display_time - first_frame_time_.value();
+  std::list<FrameTask> tasks;
+  std::list<FrameTask> timeout_tasks;
+  std::swap(tasks, tasks_);
+  is_pending_ = false;
+  for (auto&& task : tasks) {
     if (task.cancelled) {
       continue;
     }
-    task.callback(prev_frame_end_millis, current_frame_due_millis);
+    auto now = TimePoint::Now();
+    if (now >= frame_display_time) {
+      timeout_tasks.emplace_back(std::move(task));
+      continue;
+    }
+    auto now_millis = now - first_frame_time_.value();
+    task.callback({
+        .last = prev_frame_end_millis,
+        .now = now_millis.ToMilliseconds(),
+        .output = display_time.ToMilliseconds(),
+    });
   }
-  is_pending_ = false;
-  tasks_.clear();
-  tasks_count_ = 0;
-  prev_frame_end_time_ = prev_frame_end_time_ + (TimePoint::Now() - now);
+  auto timeout_count = timeout_tasks.size();
+  if (timeout_count > 0) {
+    SEEN_DEBUG("{} frame(s) timeout, skip to next vsync callback...", timeout_count);
+    tasks_.splice(tasks_.end(), std::move(timeout_tasks));
+    AwaitVsync();
+  }
+  prev_frame_end_time_ = TimePoint::Now() - first_frame_time_.value();
 }
 
 }  // namespace seen::mod

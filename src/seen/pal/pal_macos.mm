@@ -23,14 +23,13 @@ CVReturn DisplayLinkCallback(CVDisplayLinkRef display_link,
                              CVOptionFlags flags_in,
                              CVOptionFlags* flags_out,
                              void* display_link_context) {
+  CVDisplayLinkStop(display_link);
   auto* on_vsync = reinterpret_cast<VsyncCallback*>(display_link_context);
   CFDeferredTask defer([on_vsync]() { delete on_vsync; });
   auto target_sec = CVTimeStampToSeconds(*output_time);
   auto now_sec = CVTimeStampToSeconds(*now);
   auto time_delta = TimeDelta::FromSecondsF(target_sec - now_sec);
-  auto timestamp = TimePoint::Now() + time_delta;
-  (*on_vsync)(timestamp.ToEpochDelta().ToMicroseconds());
-  CVDisplayLinkStop(display_link);
+  (*on_vsync)(TimePoint::Now() + time_delta);
   return kCVReturnSuccess;
 }
 

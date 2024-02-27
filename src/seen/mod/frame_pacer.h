@@ -3,11 +3,14 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <list>
 #include <memory>
+#include <optional>
 
 #include "seen/base/time_delta.h"
+#include "seen/base/time_point.h"
 #include "seen/base/worker.h"
 #include "seen/mod/object.h"
 
@@ -15,10 +18,15 @@ namespace seen::mod {
 
 class FramePacer final : public Object {
  public:
+  struct FrameTime {
+    std::int64_t last;
+    std::int64_t now;
+    std::int64_t output;
+  };
   friend class Seen;
   using Ptr = std::shared_ptr<FramePacer>;
   using WeakPtr = std::weak_ptr<FramePacer>;
-  using FrameCallback = std::function<void(std::size_t prev_frame_end_millis, std::size_t current_frame_due_millis)>;
+  using FrameCallback = std::function<void(const FrameTime& time)>;
 
   std::size_t RequestAnimationFrame(FrameCallback callback);
   void CancelAnimationFrame(std::size_t token);
@@ -35,13 +43,13 @@ class FramePacer final : public Object {
 
   void AwaitVsync();
   void OnVsync();
-  void OnVsync(std::size_t current_frame_due_millis);
-  void OnRunnerVsync(std::size_t current_frame_due_millis);
+  void OnVsync(const TimePoint& frame_display_time);
+  void OnRunnerVsync(const TimePoint& frame_display_time);
 
   CFWorker::WeakPtr runner_;
   std::shared_ptr<void> handle_;
   std::list<FrameTask> tasks_;
-  std::size_t tasks_count_;
+  std::optional<TimePoint> first_frame_time_;
   TimeDelta prev_frame_end_time_;
   bool is_pending_;
 };

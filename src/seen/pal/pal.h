@@ -26,7 +26,7 @@ WGPUSurface seen_surface_create(WGPUInstance instance, const void* native_window
 #pragma mark - seen/base/vsync_waiter.h
 void* vsync_waiter_create();
 void vsync_waiter_release(void* handle);
-using VsyncCallback = std::function<void(std::optional<std::size_t> current_frame_due_millis)>;
+using VsyncCallback = std::function<void(std::optional<TimePoint> frame_display_time)>;
 void vsync_waiter_await(void* handle, VsyncCallback callback);
 
 }  // namespace seen::pal

@@ -28,23 +28,32 @@ void ExportHostAbilities(sol::state* lua) {
       "onDrawableChanged", &Seen::on_drawable_changed_callback,                //
       "onDrawableMetricsChanged", &Seen::on_drawable_metrics_changed_callback  //
   );
-  auto seen = lua->get<sol::table>("Seen");
+  auto seen = (*lua)["Seen"].get<sol::table>();
 
-  // Object
+  // Seen.Object
   seen.new_usertype<Object>(            //
       "Object", sol::no_constructor,    //
       "className", &Object::class_name  //
   );
 
-  // FramePacer
+  // Seen.FramePacer
   seen.new_usertype<FramePacer>(                                    //
       "FramePacer", sol::no_constructor,                            //
       sol::base_classes, sol::bases<Object>(),                      //
       "requestAnimationFrame", &FramePacer::RequestAnimationFrame,  //
       "cancelAnimationFrame", &FramePacer::CancelAnimationFrame     //
   );
+  auto frame_pacer = (*lua)["Seen"]["FramePacer"].get<sol::table>();
 
-  // DrawableMetrics
+  // Seen.FramePacer.FrameTime
+  frame_pacer.new_usertype<FramePacer::FrameTime>(  //
+      "FrameTime", sol::no_constructor,             //
+      "last", &FramePacer::FrameTime::last,         //
+      "now", &FramePacer::FrameTime::now,           //
+      "output", &FramePacer::FrameTime::output      //
+  );
+
+  // Seen.DrawableMetrics
   seen.new_usertype<DrawableMetrics>(                                 //
       "DrawableMetrics", sol::no_constructor,                         //
       sol::base_classes, sol::bases<Object>(),                        //
@@ -53,7 +62,7 @@ void ExportHostAbilities(sol::state* lua) {
       "contentScale", sol::property(&DrawableMetrics::content_scale)  //
   );
 
-  // GPU
+  // Seen.GPU
   seen.new_usertype<GPU>(                                                         //
       "GPU", sol::no_constructor,                                                 //
       sol::base_classes, sol::bases<Object>(),                                    //
@@ -61,7 +70,7 @@ void ExportHostAbilities(sol::state* lua) {
       "preferredDrawableFormat", sol::property(&GPU::GetPreferredDrawableFormat)  //
   );
 
-  // GPUAdapter
+  // Seen.GPUAdapter
   seen.new_usertype<GPUAdapter>(               //
       "GPUAdapter", sol::no_constructor,       //
       sol::base_classes, sol::bases<Object>()  //
