@@ -110,16 +110,12 @@ const void* Engine::Drawable() const {
 
 void Engine::DrawableMetrics(const mod::DrawableMetrics& metrics) {
   SEEN_ASSERT(GetPlatformWorker()->IsCurrent());
-  // FIXME(Autokaka): **CONSIDER IT AS SEVERE DEFECT**
-  // Don't know why the latch throws exception here...
-  // Exception: 'mutex lock failed: Invalid argument'.
-  // Make it `unique_ptr` for now.
-  auto latch = std::make_unique<CFAutoResetWaitableEvent>();
+  CFAutoResetWaitableEvent latch;
   main_worker_->DispatchAsync([this, metrics, &latch]() {
     GetSeen()->drawable_metrics_ = metrics;
-    latch->Signal();
+    latch.Signal();
   });
-  latch->Wait();
+  latch.Wait();
 }
 
 mod::DrawableMetrics Engine::DrawableMetrics() const {
