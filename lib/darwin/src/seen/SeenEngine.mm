@@ -24,17 +24,13 @@
   return nil;
 }
 
-- (void)setMetalLayer:(CAMetalLayer*)metalLayer {
-  _cppEngine->Drawable((__bridge void*)metalLayer);
+- (void)setView:(NSObject*)view {
+  _view = view;
+  _cppEngine->SetDrawable((__bridge void*)view);
 }
 
-- (CAMetalLayer*)metalLayer {
-  return (__bridge CAMetalLayer*)_cppEngine->Drawable();
-}
-
-- (void)setDrawableSize:(CGSize)size scale:(CGFloat)scale {
-  seen::mod::DrawableMetrics metrics{size.width, size.height, scale};
-  _cppEngine->DrawableMetrics(metrics);
+- (void)updateDrawable {
+  _cppEngine->UpdateDrawable();
 }
 
 - (void)setPaused:(BOOL)paused {

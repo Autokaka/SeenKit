@@ -8,15 +8,15 @@ CFAutoResetWaitableEvent::CFAutoResetWaitableEvent() = default;
 
 void CFAutoResetWaitableEvent::Wait() {
   std::unique_lock lock(cv_mutex_);
-  auto stop_waiting = [this]() { return stop_waiting_; };
-  cv_.wait(lock, std::move(stop_waiting));
+  cv_.wait(lock, [&]() { return stop_waiting_; });
   stop_waiting_ = false;
 }
 
 bool CFAutoResetWaitableEvent::WaitUntil(const TimePoint& time_point) {
   std::unique_lock lock(cv_mutex_);
-  auto stop_waiting = [this]() { return stop_waiting_; };
-  auto is_timeout = cv_.wait_until(lock, time_point.ToEpochTime(), std::move(stop_waiting));
+  auto is_timeout = cv_.wait_until(lock, time_point.ToEpochTime(), [&]() {  //
+    return stop_waiting_;
+  });
   stop_waiting_ = false;
   return is_timeout;
 }

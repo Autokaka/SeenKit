@@ -21,10 +21,10 @@ Seen::Seen(const CFWorker::Ptr& runner) : Object(Object::Name::kSeen), version(S
       on_drawable_changed_callback(drawable != nullptr);
     }
   });
-  drawable_metrics_.OnNext([this](const DrawableMetrics& metrics) {
-    SEEN_DEBUG("Drawable metrics update");
-    if (on_drawable_metrics_changed_callback) {
-      on_drawable_metrics_changed_callback(metrics);
+  drawable_size_.OnNext([this](const Vec2& size) {
+    SEEN_DEBUG("Drawable size changed");
+    if (on_drawable_size_changed_callback) {
+      on_drawable_size_changed_callback(size);
     }
   });
 }
@@ -61,14 +61,18 @@ bool Seen::IsDrawableAvailable() const {
   return drawable_.Get() != nullptr;
 }
 
-DrawableMetrics Seen::GetDrawableMetrics() const {
-  return drawable_metrics_.Get();
+Seen::Vec2 Seen::GetDrawableSize() const {
+  return drawable_size_.Get();
+}
+
+double Seen::GetDevicePixelRatio() const {
+  return pal::engine_get_device_pixel_ratio(drawable_.Get());
 }
 
 void Seen::Reset() {
   is_running_ = false;
   gpu_ = nullptr;
-  drawable_metrics_ = DrawableMetrics();
+  drawable_size_ = {0, 0};
   drawable_ = nullptr;
 }
 

@@ -33,10 +33,10 @@ function main(this: unknown) {
 
     seen.log("seen.isRunning", seen.isRunning);
     seen.log("seen.isDrawableAvailable:", seen.isDrawableAvailable);
-    seen.log("seen.drawableMetrics:", seen.drawableMetrics);
+    seen.log("seen.drawableSize:", seen.drawableSize);
     seen.log("seen.onRunningStateChanged", seen.onRunningStateChanged);
     seen.log("seen.onDrawableChanged", seen.onDrawableChanged);
-    seen.log("seen.onDrawableMetricsChanged", seen.onDrawableMetricsChanged);
+    seen.log("seen.onDrawableSizeChanged", seen.onDrawableSizeChanged);
     seen.onRunningStateChanged = (isRunning) => {
       seen.log(`seen.onRunningStateChanged(isRunning=${isRunning})`);
     };
@@ -46,12 +46,12 @@ function main(this: unknown) {
         testGPUAdapter();
       }
     };
-    seen.onDrawableMetricsChanged = (metrics) => {
-      seen.log(`seen.onDrawableMetricsChanged(metrics=${metrics})`);
+    seen.onDrawableSizeChanged = ([width, height]) => {
+      seen.log(`seen.onDrawableSizeChanged(width=${width}, height=${height})`);
     };
     seen.log("seen.onRunningStateChanged", seen.onRunningStateChanged);
     seen.log("seen.onDrawableChanged", seen.onDrawableChanged);
-    seen.log("seen.onDrawableMetricsChanged", seen.onDrawableMetricsChanged);
+    seen.log("seen.onDrawableSizeChanged", seen.onDrawableSizeChanged);
 
     seen.log("seen.framePacer:", seen.framePacer);
     seen.log("seen.framePacer.className:", seen.framePacer.className);

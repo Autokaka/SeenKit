@@ -2,12 +2,12 @@
 
 #pragma once
 
+#include <array>
 #include <functional>
 #include <sol/sol.hpp>
 
 #include "seen/base/rx_value.h"
 #include "seen/base/worker.h"
-#include "seen/mod/drawable_metrics.h"
 #include "seen/mod/frame_pacer.h"
 #include "seen/mod/gpu.h"
 #include "seen/mod/macros.h"
@@ -21,9 +21,10 @@ class Seen final : public Object {
  public:
   friend class seen::Engine;
   using Ptr = std::shared_ptr<Seen>;
+  using Vec2 = std::array<std::int64_t, 2>;
   using RunningStateCallback = std::function<void(bool running)>;
   using DrawabeCallback = std::function<void(bool is_drawable_available)>;
-  using DrawableMetricsCallback = std::function<void(const DrawableMetrics& metrics)>;
+  using DrawableSizeCallback = std::function<void(const Vec2& metrics)>;
 
   explicit Seen(const CFWorker::Ptr& runner);
   ~Seen() override;
@@ -33,11 +34,12 @@ class Seen final : public Object {
   FramePacer::Ptr GetFramePacer();
   [[nodiscard]] bool isRunning() const;
   [[nodiscard]] bool IsDrawableAvailable() const;
-  [[nodiscard]] DrawableMetrics GetDrawableMetrics() const;
+  [[nodiscard]] Vec2 GetDrawableSize() const;
+  [[nodiscard]] double GetDevicePixelRatio() const;
 
   RunningStateCallback on_running_state_changed_callback;
   DrawabeCallback on_drawable_changed_callback;
-  DrawableMetricsCallback on_drawable_metrics_changed_callback;
+  DrawableSizeCallback on_drawable_size_changed_callback;
 
   const char* version;
 
@@ -46,7 +48,7 @@ class Seen final : public Object {
 
   rx::Value<bool> is_running_;
   rx::Value<const void*> drawable_;
-  rx::Value<DrawableMetrics> drawable_metrics_;
+  rx::Value<Vec2> drawable_size_;
   const CFWorker::WeakPtr runner_;
   FramePacer::Ptr frame_pacer_;
   GPU::Ptr gpu_;

@@ -7,6 +7,7 @@
 #include "seen/base/class_ext.h"
 #include "seen/base/data_channel.h"
 #include "seen/base/worker.h"
+#include "seen/base/worker_coordinator.h"
 #include "seen/bundle.h"
 #include "seen/mod/seen.h"
 #include "seen/runtime/entry.h"
@@ -27,20 +28,20 @@ class Engine final : public std::enable_shared_from_this<Engine> {
 
   void IsRunning(bool is_running);
   [[nodiscard]] bool IsRunning() const;
-  void Drawable(const void* drawable);
-  const void* Drawable() const;
-  void DrawableMetrics(const mod::DrawableMetrics& metrics);
-  mod::DrawableMetrics DrawableMetrics() const;
+  void SetDrawable(const void* drawable);
+  void UpdateDrawable();
 
  private:
   void MainInit(const Bundle::Ptr& bundle, InitCallback callback);
   void MainRelease();
+  void MainUpdateDrawable(WorkerCoordinator& coordinator);
   mod::Seen::Ptr GetSeen() const;
 
   CFWorker::Ptr main_worker_;
   CFDataChannel::Ptr main_channel_;
   CFDataChannel::Ptr platform_channel_;
   runtime::StatePtr state_;
+  const void* drawable_;
 
   SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(Engine);
 };

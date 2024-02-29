@@ -14,8 +14,6 @@ SEEN_VIEW_INIT_COMMON_DECL;
 
 @property(nonatomic, strong, nullable) SeenEngine* engine;
 
-- (void)resizeDrawable:(CGFloat)scaleFactor;
-
 @end
 
 NS_ASSUME_NONNULL_END

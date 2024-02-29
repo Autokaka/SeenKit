@@ -9,14 +9,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 SEEN_EXPORT @interface SeenEngine : NSObject
 
-@property(atomic, strong, nullable) CAMetalLayer* metalLayer;
+@property(nonatomic, weak, nullable) NSObject* view;
 @property(nonatomic, assign, getter=isPaused) BOOL paused;
 @property(nonatomic, strong, readonly) SeenBundle* bundle;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (nullable instancetype)initWithBundle:(nullable SeenBundle*)bundle NS_DESIGNATED_INITIALIZER;
 
-- (void)setDrawableSize:(CGSize)size scale:(CGFloat)scale;
+- (void)updateDrawable;
 
 @end
 

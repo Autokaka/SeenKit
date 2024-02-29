@@ -86,48 +86,47 @@ bool Engine::IsRunning() const {
   return is_running;
 }
 
-void Engine::Drawable(const void* drawable) {
-  SEEN_ASSERT(GetPlatformWorker()->IsCurrent());
-  CFAutoResetWaitableEvent latch;
-  main_worker_->DispatchAsync([this, drawable, &latch]() {
-    GetSeen()->drawable_ = drawable;
-    latch.Signal();
+void Engine::SetDrawable(const void* drawable) {
+  auto platform_worker = GetPlatformWorker();
+  SEEN_ASSERT(platform_worker->IsCurrent());
+  if (drawable_ == drawable) {
+    return;
+  }
+  WorkerCoordinator coordinator(platform_worker, {main_worker_});
+  coordinator.Dispatch(main_worker_, [this]() {
+    auto seen = GetSeen();
+    seen->drawable_size_ = {0, 0};
+    seen->drawable_ = nullptr;
   });
-  latch.Wait();
+  if (drawable_ != nullptr) {
+    pal::engine_free_drawable(drawable_);
+  }
+  drawable_ = drawable;
+  if (drawable_ != nullptr) {
+    pal::engine_alloc_drawable(drawable_);
+  }
+  MainUpdateDrawable(coordinator);
 }
 
-const void* Engine::Drawable() const {
-  SEEN_ASSERT(GetPlatformWorker()->IsCurrent());
-  CFAutoResetWaitableEvent latch;
-  const void* drawable = nullptr;
-  main_worker_->DispatchAsync([this, &drawable, &latch]() {
-    drawable = GetSeen()->drawable_.Get();
-    latch.Signal();
-  });
-  latch.Wait();
-  return drawable;
+void Engine::UpdateDrawable() {
+  auto platform_worker = GetPlatformWorker();
+  SEEN_ASSERT(platform_worker->IsCurrent());
+  WorkerCoordinator coordinator(platform_worker, {main_worker_});
+  MainUpdateDrawable(coordinator);
 }
 
-void Engine::DrawableMetrics(const mod::DrawableMetrics& metrics) {
-  SEEN_ASSERT(GetPlatformWorker()->IsCurrent());
-  CFAutoResetWaitableEvent latch;
-  main_worker_->DispatchAsync([this, metrics, &latch]() {
-    GetSeen()->drawable_metrics_ = metrics;
-    latch.Signal();
+void Engine::MainUpdateDrawable(WorkerCoordinator& coordinator) {
+  if (drawable_ == nullptr) {
+    return;
+  }
+  std::int64_t width;
+  std::int64_t height;
+  pal::engine_update_drawable(drawable_, &width, &height);
+  coordinator.Dispatch(main_worker_, [this, &width, &height]() {
+    auto seen = GetSeen();
+    seen->drawable_ = drawable_;
+    seen->drawable_size_ = {width, height};
   });
-  latch.Wait();
-}
-
-mod::DrawableMetrics Engine::DrawableMetrics() const {
-  SEEN_ASSERT(GetPlatformWorker()->IsCurrent());
-  CFAutoResetWaitableEvent latch;
-  mod::DrawableMetrics metrics;
-  main_worker_->DispatchAsync([this, &metrics, &latch]() {
-    metrics = GetSeen()->drawable_metrics_.Get();
-    latch.Signal();
-  });
-  latch.Wait();
-  return metrics;
 }
 
 }  // namespace seen
