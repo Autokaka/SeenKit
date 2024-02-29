@@ -11,7 +11,7 @@ WorkerCoordinator::WorkerCoordinator(CFWorker::Ptr host, const std::vector<CFWor
   for (auto&& cooperator : cooperators) {
     auto latch = std::make_shared<CFAutoResetWaitableEvent>();
     latch_map_[cooperator] = latch;
-    cooperator->DispatchAsync([this, &latch]() {
+    cooperator->DispatchAsync([this, latch]() {
       host_latch_->Signal();
       latch->Wait();
       while (current_task_) {

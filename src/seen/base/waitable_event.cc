@@ -4,17 +4,17 @@
 
 namespace seen {
 
-CFAutoResetWaitableEvent::CFAutoResetWaitableEvent() = default;
+CFAutoResetWaitableEvent::CFAutoResetWaitableEvent() : stop_waiting_(false) {}
 
 void CFAutoResetWaitableEvent::Wait() {
   std::unique_lock lock(cv_mutex_);
-  cv_.wait(lock, [&]() { return stop_waiting_; });
+  cv_.wait(lock, [this]() { return stop_waiting_; });
   stop_waiting_ = false;
 }
 
 bool CFAutoResetWaitableEvent::WaitUntil(const TimePoint& time_point) {
   std::unique_lock lock(cv_mutex_);
-  auto is_timeout = cv_.wait_until(lock, time_point.ToEpochTime(), [&]() {  //
+  auto is_timeout = cv_.wait_until(lock, time_point.ToEpochTime(), [this]() {  //
     return stop_waiting_;
   });
   stop_waiting_ = false;
