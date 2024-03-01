@@ -2,12 +2,14 @@
 
 import SwiftUI
 
-struct SeenSwiftUIView: SeenOSViewProto {
-  func makeSeenOSView(context: Context) -> SeenView {
+public struct SeenSwiftUIView: SeenOSViewProto {
+  public init() {}
+
+  public func makeSeenOSView(context: Context) -> SeenView {
     return SeenView()
   }
 
-  func updateSeenOSView(_ view: SeenView, context: Context) {
+  public func updateSeenOSView(_ view: SeenView, context: Context) {
 
   }
 }
