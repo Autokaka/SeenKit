@@ -44,7 +44,7 @@ if(${SEEN_BUILD_DARWIN})
     ${ARC_SOURCE}
     ${MRC_SOURCE}
   )
-  set_source_files_properties(${PUB_HEADER} ${ARC_SOURCE} PROPERTIES COMPILE_FLAGS -fobjc-arc)
+  set_source_files_properties(${ARC_SOURCE} PROPERTIES COMPILE_FLAGS -fobjc-arc)
   set_source_files_properties(${MRC_SOURCE} PROPERTIES COMPILE_FLAGS -fno-objc-arc)
   source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCE})
   add_library(seen STATIC ${SOURCE})
