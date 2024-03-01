@@ -2,8 +2,9 @@
 
 #import <Foundation/Foundation.h>
 #import <QuartzCore/CAMetalLayer.h>
-#import <SeenKit/SeenBundle.h>
-#import <SeenKit/SeenMacros.h>
+
+#import "SeenBundle.h"
+#import "SeenMacros.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
