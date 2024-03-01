@@ -6,6 +6,6 @@
 
 namespace seen {
 
-using CFClosure = std::function<void()>;
+using Closure = std::function<void()>;
 
 }

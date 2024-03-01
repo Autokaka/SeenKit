@@ -4,14 +4,14 @@
 
 namespace seen {
 
-CFDataChannel::Ptr CFDataChannel::Create(const CFWorker::Ptr& worker, const CFDataChannel::Ptr& paired_channel) {
-  return std::make_shared<CFDataChannel>(worker, paired_channel);
+DataChannel::Ptr DataChannel::Create(const Worker::Ptr& worker, const DataChannel::Ptr& paired_channel) {
+  return std::make_shared<DataChannel>(worker, paired_channel);
 }
 
-CFDataChannel::CFDataChannel(const CFWorker::Ptr& worker, const CFDataChannel::Ptr& paired_channel)
+DataChannel::DataChannel(const Worker::Ptr& worker, const DataChannel::Ptr& paired_channel)
     : weak_worker_(worker), paired_channel_(paired_channel) {}
 
-void CFDataChannel::SendData(const CFData::Ptr& data, bool move) {
+void DataChannel::SendData(const Data::Ptr& data, bool move) {
   if (auto worker = weak_worker_.lock()) {
     auto transfer_data = move ? data->Move() : data->Copy();
     worker->DispatchAsync([weak_channel = paired_channel_, transfer_data]() {
@@ -22,17 +22,17 @@ void CFDataChannel::SendData(const CFData::Ptr& data, bool move) {
   }
 }
 
-void CFDataChannel::SetDataHandler(const DataHandler& data_handler) {
+void DataChannel::SetDataHandler(const DataHandler& data_handler) {
   std::scoped_lock lock(mutex_);
   data_handler_ = data_handler;
 }
 
-const CFDataChannel::DataHandler& CFDataChannel::GetDataHandler() {
+const DataChannel::DataHandler& DataChannel::GetDataHandler() {
   std::scoped_lock lock(mutex_);
   return data_handler_;
 }
 
-void CFDataChannel::ReceiveData(const CFData::Ptr& data) {
+void DataChannel::ReceiveData(const Data::Ptr& data) {
   std::scoped_lock lock(mutex_);
   if (data_handler_) {
     data_handler_(data);

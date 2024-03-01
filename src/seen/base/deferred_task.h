@@ -7,14 +7,14 @@
 
 namespace seen {
 
-class CFDeferredTask {
+class DeferredTask {
  public:
-  explicit CFDeferredTask(CFClosure callback);
-  ~CFDeferredTask();
+  explicit DeferredTask(Closure callback);
+  ~DeferredTask();
 
  private:
-  CFClosure callback_;
-  SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(CFDeferredTask);
+  Closure callback_;
+  SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(DeferredTask);
 };
 
 }  // namespace seen

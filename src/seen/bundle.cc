@@ -16,7 +16,7 @@ bool Unzip(const fs::path& absolute_path, const fs::path& output_dir) {
   if (mz_zip_reader_init_file(&zip, absolute_path.c_str(), 0) != MZ_TRUE) {
     return false;
   }
-  CFDeferredTask defer_zip([&zip]() { mz_zip_reader_end(&zip); });
+  DeferredTask defer_zip([&zip]() { mz_zip_reader_end(&zip); });
   auto file_count = mz_zip_reader_get_num_files(&zip);
   bool entry_extracted = false;
   for (int i = 0; i < file_count; i += 1) {

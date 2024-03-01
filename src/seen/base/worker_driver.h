@@ -12,32 +12,32 @@
 
 namespace seen {
 
-class CFWorker;
+class Worker;
 
-class CFWorkerDriver {
+class WorkerDriver {
  public:
-  explicit CFWorkerDriver() = default;
-  virtual ~CFWorkerDriver() = default;
-  virtual void Start(CFClosure on_started) = 0;
+  explicit WorkerDriver() = default;
+  virtual ~WorkerDriver() = default;
+  virtual void Start(Closure on_started) = 0;
   virtual void Stop() = 0;
   virtual bool IsCurrent() = 0;
-  virtual void SetWakeup(const TimePoint& time_point, CFClosure task) = 0;
+  virtual void SetWakeup(const TimePoint& time_point, Closure task) = 0;
 
-  SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(CFWorkerDriver);
+  SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(WorkerDriver);
 };
 
-class CFWorkerDriverImpl final : public CFWorkerDriver {
+class WorkerDriverImpl final : public WorkerDriver {
  public:
-  explicit CFWorkerDriverImpl(const char* name);
-  ~CFWorkerDriverImpl() override;
-  void Start(CFClosure on_started) override;
+  explicit WorkerDriverImpl(const char* name);
+  ~WorkerDriverImpl() override;
+  void Start(Closure on_started) override;
   void Stop() override;
   bool IsCurrent() override;
-  void SetWakeup(const TimePoint& time_point, CFClosure task) override;
+  void SetWakeup(const TimePoint& time_point, Closure task) override;
 
  private:
   struct WakeupTask {
-    CFClosure callback;
+    Closure callback;
     TimePoint target_time;
   };
   struct WakeupTaskCompare {
@@ -49,7 +49,7 @@ class CFWorkerDriverImpl final : public CFWorkerDriver {
 
   struct Context {
     std::optional<bool> is_stopped;
-    CFAutoResetWaitableEvent latch;
+    AutoResetWaitableEvent latch;
     std::recursive_mutex mutex;
     WakeupTaskQueue wakeup_tasks;
     TimePoint NextWakeupTime();
@@ -62,14 +62,14 @@ class CFWorkerDriverImpl final : public CFWorkerDriver {
   std::shared_ptr<Context> context_;
 };
 
-class CFPlatformWorkerDriver final : public CFWorkerDriver {
+class PlatformWorkerDriver final : public WorkerDriver {
  public:
-  explicit CFPlatformWorkerDriver();
-  ~CFPlatformWorkerDriver() override;
-  void Start(CFClosure on_started) override;
+  explicit PlatformWorkerDriver();
+  ~PlatformWorkerDriver() override;
+  void Start(Closure on_started) override;
   void Stop() override;
   bool IsCurrent() override;
-  void SetWakeup(const TimePoint& time_point, CFClosure task) override;
+  void SetWakeup(const TimePoint& time_point, Closure task) override;
 };
 
 }  // namespace seen

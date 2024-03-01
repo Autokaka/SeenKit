@@ -11,13 +11,13 @@
 
 namespace seen {
 
-enum class CFLogLevel { kDebug, kInfo, kWarn, kError, kFatal };
+enum class LogLevel { kDebug, kInfo, kWarn, kError, kFatal };
 #define SEEN_LOG(Level, FileName, Line, ...)                                                                    \
   {                                                                                                             \
     using namespace std::string_literals;                                                                       \
-    pal::log(static_cast<int>(seen::CFLogLevel::Level),                                                         \
+    pal::log(static_cast<int>(seen::LogLevel::Level),                                                           \
              ("@SeenKit["s + FileName + ":" + std::to_string(Line) + "] " + fmt::format(__VA_ARGS__)).c_str()); \
-    if constexpr (seen::CFLogLevel::Level >= seen::CFLogLevel::kFatal) {                                        \
+    if constexpr (seen::LogLevel::Level >= seen::LogLevel::kFatal) {                                            \
       abort();                                                                                                  \
     }                                                                                                           \
   }

@@ -11,31 +11,31 @@
 
 namespace seen {
 
-class CFWorkerDriver;
+class WorkerDriver;
 
-class CFWorker final : public std::enable_shared_from_this<CFWorker> {
+class Worker final : public std::enable_shared_from_this<Worker> {
  public:
-  using Ptr = std::shared_ptr<CFWorker>;
-  using WeakPtr = std::weak_ptr<CFWorker>;
+  using Ptr = std::shared_ptr<Worker>;
+  using WeakPtr = std::weak_ptr<Worker>;
 
   static Ptr Create(const char* name);
   static Ptr GetCurrent();
-  explicit CFWorker(const char* name, std::unique_ptr<CFWorkerDriver> driver);
-  virtual ~CFWorker();
+  explicit Worker(const char* name, std::unique_ptr<WorkerDriver> driver);
+  virtual ~Worker();
   [[nodiscard]] bool IsCurrent() const;
   [[nodiscard]] std::string GetName() const;
 
-  void DispatchAsync(CFClosure macro_task);
-  void DispatchAsync(CFClosure macro_task, const TimeDelta& time_delta);
-  void DispatchAsync(CFClosure macro_task, const TimePoint& time_point);
+  void DispatchAsync(Closure macro_task);
+  void DispatchAsync(Closure macro_task, const TimeDelta& time_delta);
+  void DispatchAsync(Closure macro_task, const TimePoint& time_point);
 
  private:
   std::string name_;
-  std::unique_ptr<CFWorkerDriver> driver_;
+  std::unique_ptr<WorkerDriver> driver_;
 
-  SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(CFWorker);
+  SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(Worker);
 };
 
-CFWorker::Ptr GetPlatformWorker();
+Worker::Ptr GetPlatformWorker();
 
 }  // namespace seen

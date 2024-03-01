@@ -5,11 +5,11 @@
 
 namespace seen {
 
-WorkerCoordinator::WorkerCoordinator(CFWorker::Ptr host, const std::vector<CFWorker::Ptr>& cooperators)
-    : host_(std::move(host)), host_latch_(std::make_shared<CFAutoResetWaitableEvent>()) {
+WorkerCoordinator::WorkerCoordinator(Worker::Ptr host, const std::vector<Worker::Ptr>& cooperators)
+    : host_(std::move(host)), host_latch_(std::make_shared<AutoResetWaitableEvent>()) {
   SEEN_ASSERT(host_->IsCurrent() && !cooperators.empty());
   for (auto&& cooperator : cooperators) {
-    auto latch = std::make_shared<CFAutoResetWaitableEvent>();
+    auto latch = std::make_shared<AutoResetWaitableEvent>();
     latch_map_[cooperator] = latch;
     cooperator->DispatchAsync([this, latch]() {
       host_latch_->Signal();
@@ -34,7 +34,7 @@ WorkerCoordinator::~WorkerCoordinator() {
   }
 }
 
-void WorkerCoordinator::Dispatch(const CFWorker::Ptr& worker, CFClosure task) {
+void WorkerCoordinator::Dispatch(const Worker::Ptr& worker, Closure task) {
   SEEN_ASSERT(!current_task_ && worker && task);
   if (worker->IsCurrent()) {
     task();

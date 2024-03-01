@@ -19,7 +19,7 @@ void Engine::CreateAsync(const Bundle::Ptr& bundle, CreateCallback callback) {
 
 Engine::Ptr Engine::Create(const Bundle::Ptr& bundle) {
   auto engine = std::make_shared<Engine>();
-  CFAutoResetWaitableEvent latch;
+  AutoResetWaitableEvent latch;
   bool result = false;
   engine->ExecEntry(bundle, [&latch, &result](bool success) {
     result = success;
@@ -30,9 +30,9 @@ Engine::Ptr Engine::Create(const Bundle::Ptr& bundle) {
 }
 
 Engine::Engine()
-    : main_worker_(CFWorker::Create("Seen.Main")),
-      main_channel_(CFDataChannel::Create(main_worker_, platform_channel_)),
-      platform_channel_(CFDataChannel::Create(GetPlatformWorker(), main_channel_)),
+    : main_worker_(Worker::Create("Seen.Main")),
+      main_channel_(DataChannel::Create(main_worker_, platform_channel_)),
+      platform_channel_(DataChannel::Create(GetPlatformWorker(), main_channel_)),
       state_(nullptr),
       view_(nullptr),
       drawable_(nullptr) {
@@ -42,7 +42,7 @@ Engine::Engine()
 Engine::~Engine() {
   IsRunning(false);
   SetDrawable(nullptr);
-  CFAutoResetWaitableEvent latch;
+  AutoResetWaitableEvent latch;
   main_worker_->DispatchAsync([state = std::move(state_), &latch]() mutable {
     state.reset();
     latch.Signal();
@@ -66,7 +66,7 @@ mod::Seen::Ptr Engine::GetSeen() const {
 
 void Engine::IsRunning(bool is_running) {
   SEEN_ASSERT(GetPlatformWorker()->IsCurrent());
-  CFAutoResetWaitableEvent latch;
+  AutoResetWaitableEvent latch;
   main_worker_->DispatchAsync([this, is_running, &latch]() {
     GetSeen()->is_running_ = is_running;
     latch.Signal();
@@ -76,7 +76,7 @@ void Engine::IsRunning(bool is_running) {
 
 bool Engine::IsRunning() const {
   SEEN_ASSERT(GetPlatformWorker()->IsCurrent());
-  CFAutoResetWaitableEvent latch;
+  AutoResetWaitableEvent latch;
   bool is_running = false;
   main_worker_->DispatchAsync([this, &latch, &is_running]() {
     is_running = GetSeen()->is_running_.Get();

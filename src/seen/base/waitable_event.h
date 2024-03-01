@@ -10,9 +10,9 @@
 
 namespace seen {
 
-class CFAutoResetWaitableEvent final {
+class AutoResetWaitableEvent final {
  public:
-  CFAutoResetWaitableEvent();
+  AutoResetWaitableEvent();
 
   void Signal();
   void Wait();
@@ -23,7 +23,7 @@ class CFAutoResetWaitableEvent final {
   std::mutex cv_mutex_;
   bool stop_waiting_;
 
-  SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(CFAutoResetWaitableEvent);
+  SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(AutoResetWaitableEvent);
 };
 
 }  // namespace seen

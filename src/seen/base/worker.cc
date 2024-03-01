@@ -6,53 +6,52 @@
 
 namespace seen {
 
-thread_local CFWorker::WeakPtr tls_worker;
+thread_local Worker::WeakPtr tls_worker;
 static const char* const kPlatformWorkerName = "Seen.Host";
 
-CFWorker::Ptr CFWorker::Create(const char* name) {
+Worker::Ptr Worker::Create(const char* name) {
   SEEN_DEBUG("Create worker: {}.", name);
-  auto worker_driver = std::make_unique<CFWorkerDriverImpl>(name);
-  auto worker = std::make_shared<CFWorker>(name, std::move(worker_driver));
-  CFWorker::WeakPtr weak_worker = worker;
+  auto worker_driver = std::make_unique<WorkerDriverImpl>(name);
+  auto worker = std::make_shared<Worker>(name, std::move(worker_driver));
+  Worker::WeakPtr weak_worker = worker;
   worker->driver_->Start([weak_worker]() { tls_worker = weak_worker; });
   return worker;
 }
 
-CFWorker::Ptr CFWorker::GetCurrent() {
+Worker::Ptr Worker::GetCurrent() {
   return tls_worker.lock();
 }
 
-CFWorker::CFWorker(const char* name, std::unique_ptr<CFWorkerDriver> driver)
-    : name_(name), driver_(std::move(driver)) {}
+Worker::Worker(const char* name, std::unique_ptr<WorkerDriver> driver) : name_(name), driver_(std::move(driver)) {}
 
-CFWorker::~CFWorker() {
+Worker::~Worker() {
   SEEN_DEBUG("Release worker: {}.", name_);
   driver_->Stop();
 }
 
-bool CFWorker::IsCurrent() const {
+bool Worker::IsCurrent() const {
   return driver_->IsCurrent();
 }
 
-std::string CFWorker::GetName() const {
+std::string Worker::GetName() const {
   return name_;
 }
 
-void CFWorker::DispatchAsync(CFClosure macro_task) {
+void Worker::DispatchAsync(Closure macro_task) {
   return DispatchAsync(std::move(macro_task), TimePoint::Now());
 }
 
-void CFWorker::DispatchAsync(CFClosure macro_task, const TimeDelta& time_delta) {
+void Worker::DispatchAsync(Closure macro_task, const TimeDelta& time_delta) {
   return DispatchAsync(std::move(macro_task), TimePoint::Now() + time_delta);
 }
 
-void CFWorker::DispatchAsync(CFClosure macro_task, const TimePoint& time_point) {
+void Worker::DispatchAsync(Closure macro_task, const TimePoint& time_point) {
   driver_->SetWakeup(time_point, std::move(macro_task));
 }
 
-CFWorker::Ptr GetPlatformWorker() {
-  static auto platform_driver = std::make_unique<CFPlatformWorkerDriver>();
-  static auto platform_worker = std::make_shared<CFWorker>(kPlatformWorkerName, std::move(platform_driver));
+Worker::Ptr GetPlatformWorker() {
+  static auto platform_driver = std::make_unique<PlatformWorkerDriver>();
+  static auto platform_worker = std::make_shared<Worker>(kPlatformWorkerName, std::move(platform_driver));
   return platform_worker;
 }
 

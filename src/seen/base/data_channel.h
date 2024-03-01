@@ -12,27 +12,27 @@
 
 namespace seen {
 
-class CFDataChannel final : public std::enable_shared_from_this<CFDataChannel> {
+class DataChannel final : public std::enable_shared_from_this<DataChannel> {
  public:
-  using Ptr = std::shared_ptr<CFDataChannel>;
-  using WeakPtr = std::weak_ptr<CFDataChannel>;
-  using DataHandler = std::function<void(const CFData::Ptr&)>;
+  using Ptr = std::shared_ptr<DataChannel>;
+  using WeakPtr = std::weak_ptr<DataChannel>;
+  using DataHandler = std::function<void(const Data::Ptr&)>;
 
-  static Ptr Create(const CFWorker::Ptr& worker, const CFDataChannel::Ptr& paired_channel);
-  explicit CFDataChannel(const CFWorker::Ptr& worker, const CFDataChannel::Ptr& paired_channel);
-  void SendData(const CFData::Ptr& data, bool move = false);
+  static Ptr Create(const Worker::Ptr& worker, const DataChannel::Ptr& paired_channel);
+  explicit DataChannel(const Worker::Ptr& worker, const DataChannel::Ptr& paired_channel);
+  void SendData(const Data::Ptr& data, bool move = false);
   void SetDataHandler(const DataHandler& data_handler);
   const DataHandler& GetDataHandler();
 
  private:
-  void ReceiveData(const CFData::Ptr& data);
+  void ReceiveData(const Data::Ptr& data);
 
   std::mutex mutex_;
-  CFWorker::WeakPtr weak_worker_;
+  Worker::WeakPtr weak_worker_;
   DataHandler data_handler_;
-  CFDataChannel::WeakPtr paired_channel_;
+  DataChannel::WeakPtr paired_channel_;
 
-  SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(CFDataChannel);
+  SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(DataChannel);
 };
 
 }  // namespace seen

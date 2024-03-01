@@ -7,11 +7,11 @@
 
 namespace seen::mod {
 
-FramePacer::Ptr FramePacer::Create(const CFWorker::Ptr& runner) {
+FramePacer::Ptr FramePacer::Create(const Worker::Ptr& runner) {
   return std::make_shared<FramePacer>(runner);
 }
 
-FramePacer::FramePacer(const CFWorker::Ptr& runner)
+FramePacer::FramePacer(const Worker::Ptr& runner)
     : Object(Object::Name::kFramePacer),
       runner_(runner),
       handle_(pal::vsync_waiter_create(), pal::vsync_waiter_release),

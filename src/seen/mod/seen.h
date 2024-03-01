@@ -26,7 +26,7 @@ class Seen final : public Object {
   using ClientSizeCallback = std::function<void(const Vec<2>& size)>;
   using DrawableCallback = std::function<void(bool is_available)>;
 
-  explicit Seen(const CFWorker::Ptr& runner);
+  explicit Seen(const Worker::Ptr& runner);
   ~Seen() override;
 
   void Log(const sol::variadic_args& args) const;
@@ -48,7 +48,7 @@ class Seen final : public Object {
   rx::Value<const void*> drawable_ref_;
   rx::Value<Vec<2>> client_size_;
   rx::Value<float> device_pixel_ratio_;
-  const CFWorker::WeakPtr runner_;
+  const Worker::WeakPtr runner_;
   FramePacer::Ptr frame_pacer_;
   GPU::Ptr gpu_;
 

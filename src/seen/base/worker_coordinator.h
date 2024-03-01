@@ -15,18 +15,18 @@ namespace seen {
 
 class WorkerCoordinator final {
  public:
-  explicit WorkerCoordinator(CFWorker::Ptr host, const std::vector<CFWorker::Ptr>& cooperators);
+  explicit WorkerCoordinator(Worker::Ptr host, const std::vector<Worker::Ptr>& cooperators);
   ~WorkerCoordinator();
 
-  void Dispatch(const CFWorker::Ptr& worker, CFClosure task);
+  void Dispatch(const Worker::Ptr& worker, Closure task);
 
  private:
-  using LatchPtr = std::shared_ptr<CFAutoResetWaitableEvent>;
+  using LatchPtr = std::shared_ptr<AutoResetWaitableEvent>;
 
-  CFWorker::Ptr host_;
+  Worker::Ptr host_;
   LatchPtr host_latch_;
-  std::unordered_map<CFWorker::Ptr, LatchPtr> latch_map_;
-  CFClosure current_task_;
+  std::unordered_map<Worker::Ptr, LatchPtr> latch_map_;
+  Closure current_task_;
 
   SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(WorkerCoordinator);
 };

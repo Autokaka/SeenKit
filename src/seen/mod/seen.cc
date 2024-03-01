@@ -5,7 +5,7 @@
 
 namespace seen::mod {
 
-Seen::Seen(const CFWorker::Ptr& runner)
+Seen::Seen(const Worker::Ptr& runner)
     : Object(Object::Name::kSeen),
       version(SEEN_VERSION),
       runner_(runner),

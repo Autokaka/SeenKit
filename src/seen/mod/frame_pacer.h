@@ -25,8 +25,8 @@ class FramePacer final : public Object {
   std::size_t RequestAnimationFrame(FrameCallback callback);
   void CancelAnimationFrame(std::size_t token);
 
-  static Ptr Create(const CFWorker::Ptr& runner);
-  explicit FramePacer(const CFWorker::Ptr& runner);
+  static Ptr Create(const Worker::Ptr& runner);
+  explicit FramePacer(const Worker::Ptr& runner);
 
  private:
   struct FrameTask {
@@ -40,7 +40,7 @@ class FramePacer final : public Object {
   void OnVsync(const TimePoint& frame_display_time);
   void OnRunnerVsync(const TimePoint& frame_display_time);
 
-  CFWorker::WeakPtr runner_;
+  Worker::WeakPtr runner_;
   std::shared_ptr<void> handle_;
   std::list<FrameTask> tasks_;
   std::optional<TimePoint> first_frame_time_;

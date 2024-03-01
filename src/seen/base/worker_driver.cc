@@ -10,15 +10,15 @@
 
 namespace seen {
 
-#pragma mark - CFWorkerDriverImpl::Context
+#pragma mark - WorkerDriverImpl::Context
 
-TimePoint CFWorkerDriverImpl::Context::NextWakeupTime() {
+TimePoint WorkerDriverImpl::Context::NextWakeupTime() {
   std::scoped_lock lock(mutex);
   return wakeup_tasks.empty() ? TimePoint::Max() : wakeup_tasks.top().target_time;
 }
 
-void CFWorkerDriverImpl::Context::RunExpiredTasks() {
-  std::list<CFClosure> expired_tasks;
+void WorkerDriverImpl::Context::RunExpiredTasks() {
+  std::list<Closure> expired_tasks;
   {
     std::scoped_lock lock(mutex);
     while (!wakeup_tasks.empty()) {
@@ -37,15 +37,15 @@ void CFWorkerDriverImpl::Context::RunExpiredTasks() {
   }
 }
 
-#pragma mark - CFWorkerDriverImpl
+#pragma mark - WorkerDriverImpl
 
 static constexpr int kPthreadNameMaxLength = 15;
 
-CFWorkerDriverImpl::CFWorkerDriverImpl(const char* name) : name_(name), context_(std::make_shared<Context>()) {}
+WorkerDriverImpl::WorkerDriverImpl(const char* name) : name_(name), context_(std::make_shared<Context>()) {}
 
-CFWorkerDriverImpl::~CFWorkerDriverImpl() = default;
+WorkerDriverImpl::~WorkerDriverImpl() = default;
 
-void CFWorkerDriverImpl::Start(CFClosure on_started) {
+void WorkerDriverImpl::Start(Closure on_started) {
   std::scoped_lock lock(mutex_);
   SEEN_ASSERT(!thread_);
   thread_ = std::make_unique<std::thread>([name = name_, context = context_, on_started = std::move(on_started)]() {
@@ -65,7 +65,7 @@ void CFWorkerDriverImpl::Start(CFClosure on_started) {
   thread_->detach();
 }
 
-void CFWorkerDriverImpl::Stop() {
+void WorkerDriverImpl::Stop() {
   std::scoped_lock lock(mutex_);
   SEEN_ASSERT(thread_);
   SetWakeup(TimePoint::Now(), [context = context_]() { context->is_stopped = true; });
@@ -73,12 +73,12 @@ void CFWorkerDriverImpl::Stop() {
   context_ = std::make_shared<Context>();
 }
 
-bool CFWorkerDriverImpl::IsCurrent() {
+bool WorkerDriverImpl::IsCurrent() {
   std::scoped_lock lock(mutex_);
   return std::this_thread::get_id() == thread_->get_id();
 }
 
-void CFWorkerDriverImpl::SetWakeup(const TimePoint& time_point, CFClosure task) {
+void WorkerDriverImpl::SetWakeup(const TimePoint& time_point, Closure task) {
   std::scoped_lock context_lock(mutex_);
   std::scoped_lock wakeup_tasks_lock(context_->mutex);
   WakeupTask wakeup_task{.callback = task, .target_time = time_point};
@@ -90,23 +90,23 @@ void CFWorkerDriverImpl::SetWakeup(const TimePoint& time_point, CFClosure task) 
   }
 }
 
-#pragma mark - CFPlatformWorkerDriver
+#pragma mark - PlatformWorkerDriver
 
-CFPlatformWorkerDriver::CFPlatformWorkerDriver() = default;
+PlatformWorkerDriver::PlatformWorkerDriver() = default;
 
-CFPlatformWorkerDriver::~CFPlatformWorkerDriver() = default;
+PlatformWorkerDriver::~PlatformWorkerDriver() = default;
 
-void CFPlatformWorkerDriver::Start(CFClosure on_started) {
+void PlatformWorkerDriver::Start(Closure on_started) {
   pal::platform_worker_driver_dispatch_async(TimePoint::Now(), std::move(on_started));
 }
 
-void CFPlatformWorkerDriver::Stop() {}
+void PlatformWorkerDriver::Stop() {}
 
-[[nodiscard]] bool CFPlatformWorkerDriver::IsCurrent() {
+[[nodiscard]] bool PlatformWorkerDriver::IsCurrent() {
   return pal::worker_driver_is_platform_driver();
 }
 
-void CFPlatformWorkerDriver::SetWakeup(const TimePoint& time_point, CFClosure task) {
+void PlatformWorkerDriver::SetWakeup(const TimePoint& time_point, Closure task) {
   pal::platform_worker_driver_dispatch_async(time_point, std::move(task));
 }
 

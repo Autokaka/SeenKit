@@ -36,9 +36,9 @@ class Engine final : public std::enable_shared_from_this<Engine> {
   void UpdateDrawable(WorkerCoordinator& coordinator);
   mod::Seen::Ptr GetSeen() const;
 
-  CFWorker::Ptr main_worker_;
-  CFDataChannel::Ptr main_channel_;
-  CFDataChannel::Ptr platform_channel_;
+  Worker::Ptr main_worker_;
+  DataChannel::Ptr main_channel_;
+  DataChannel::Ptr platform_channel_;
   runtime::StatePtr state_;
   const void* view_;
   void* drawable_;

@@ -61,7 +61,7 @@ void GPU::DoRequestAdapter(const RequestAdapterOptions& options, RequestAdapterC
   auto* callback_ptr = new RequestAdapterCallback(std::move(callback));
   auto c_callback = [](WGPURequestAdapterStatus status, WGPUAdapter adapter, char const*, void* user_data) {
     auto* callback = reinterpret_cast<RequestAdapterCallback*>(user_data);
-    CFDeferredTask defer([callback]() { delete callback; });
+    DeferredTask defer([callback]() { delete callback; });
     auto success = status == WGPURequestAdapterStatus_Success && adapter != nullptr;
     (*callback)(success ? GPUAdapter::Create(adapter) : nullptr);
   };

@@ -7,9 +7,9 @@
 
 namespace seen {
 
-CFData::Ptr CFData::CreateFromAbsolutePath(const std::string& absolute_path) {
+Data::Ptr Data::CreateFromAbsolutePath(const std::string& absolute_path) {
   std::ifstream ifs(absolute_path, std::ios::binary);
-  CFDeferredTask defer_ifs([&ifs]() { ifs.close(); });
+  DeferredTask defer_ifs([&ifs]() { ifs.close(); });
   if (!ifs) {
     return nullptr;
   }
@@ -29,31 +29,31 @@ CFData::Ptr CFData::CreateFromAbsolutePath(const std::string& absolute_path) {
   return bytes == nullptr ? nullptr : CreateFromBytesNoCopy(bytes, length);
 }
 
-CFData::Ptr CFData::CreateFromBytes(const std::byte* bytes, std::size_t size) {
+Data::Ptr Data::CreateFromBytes(const std::byte* bytes, std::size_t size) {
   auto* bytes_copy = new std::byte[size];
   std::memcpy(bytes_copy, bytes, size);
   return CreateFromBytesNoCopy(bytes_copy, size);
 }
 
-CFData::Ptr CFData::CreateFromBytesNoCopy(std::byte* bytes, std::size_t size) {
-  return std::make_shared<CFData>(bytes, size);
+Data::Ptr Data::CreateFromBytesNoCopy(std::byte* bytes, std::size_t size) {
+  return std::make_shared<Data>(bytes, size);
 }
 
-CFData::Ptr CFData::CreateFromSize(std::size_t size) {
+Data::Ptr Data::CreateFromSize(std::size_t size) {
   return CreateFromBytesNoCopy(new std::byte[size], size);
 }
 
-CFData::CFData(std::byte* bytes, std::size_t size) : bytes_(bytes), size_(size) {}
+Data::Data(std::byte* bytes, std::size_t size) : bytes_(bytes), size_(size) {}
 
-CFData::~CFData() {
+Data::~Data() {
   delete[] bytes_;
 }
 
-CFData::Ptr CFData::Copy() const {
-  return CFData::CreateFromBytes(bytes_, size_);
+Data::Ptr Data::Copy() const {
+  return Data::CreateFromBytes(bytes_, size_);
 }
 
-CFData::Ptr CFData::Move() {
+Data::Ptr Data::Move() {
   auto data = CreateFromBytesNoCopy(bytes_, size_);
   bytes_ = nullptr;
   size_ = 0;

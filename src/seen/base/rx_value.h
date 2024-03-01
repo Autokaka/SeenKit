@@ -46,7 +46,7 @@ class Value final {
     if (value_ == new_value) {
       return;
     }
-    CFDeferredTask apply_new_value([this, &new_value]() { value_ = new_value; });
+    DeferredTask apply_new_value([this, &new_value]() { value_ = new_value; });
     if (callbacks_.empty()) {
       return;
     }
@@ -79,7 +79,7 @@ template <typename T>
 inline constexpr bool kIsValueV = IsValue<T>::value;
 
 template <typename... V, std::enable_if_t<kIsValueV<V>>...>
-inline void Bind(const CFClosure& callback, V&... values) {
+inline void Bind(const Closure& callback, V&... values) {
   (values.OnNext([callback](auto) { callback(); }), ...);
 }
 

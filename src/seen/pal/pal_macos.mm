@@ -25,7 +25,7 @@ CVReturn DisplayLinkCallback(CVDisplayLinkRef display_link,
                              void* display_link_context) {
   CVDisplayLinkStop(display_link);
   auto* on_vsync = reinterpret_cast<VsyncCallback*>(display_link_context);
-  CFDeferredTask defer([on_vsync]() { delete on_vsync; });
+  DeferredTask defer([on_vsync]() { delete on_vsync; });
   auto target_sec = CVTimeStampToSeconds(*output_time);
   auto now_sec = CVTimeStampToSeconds(*now);
   auto time_delta = TimeDelta::FromSecondsF(target_sec - now_sec);

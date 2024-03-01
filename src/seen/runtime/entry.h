@@ -13,6 +13,6 @@ namespace seen::runtime {
 namespace fs = std::filesystem;
 using StatePtr = std::shared_ptr<sol::state>;
 
-StatePtr ExecEntry(const CFWorker::Ptr& runner, const fs::path& entry_file);
+StatePtr ExecEntry(const Worker::Ptr& runner, const fs::path& entry_file);
 
 }  // namespace seen::runtime

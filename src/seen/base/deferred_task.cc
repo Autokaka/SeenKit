@@ -4,9 +4,9 @@
 
 namespace seen {
 
-CFDeferredTask::CFDeferredTask(CFClosure callback) : callback_(std::move(callback)) {}
+DeferredTask::DeferredTask(Closure callback) : callback_(std::move(callback)) {}
 
-CFDeferredTask::~CFDeferredTask() {
+DeferredTask::~DeferredTask() {
   callback_();
 }
 
