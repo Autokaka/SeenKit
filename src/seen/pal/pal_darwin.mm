@@ -4,12 +4,12 @@
 
 #import <Foundation/Foundation.h>
 #import <QuartzCore/CAMetalLayer.h>
+#import <SeenKit/SeenView.h>
 #import <dispatch/dispatch.h>
 #import <sys/syslog.h>
 #include <algorithm>
 #include <cmath>
 
-#import "seen/SeenBaseView+Private.h"
 #include "seen/base/logger.h"
 #include "seen/pal/pal.h"
 
@@ -49,7 +49,7 @@ void platform_worker_driver_dispatch_async(const TimePoint& time_point, CFClosur
 
 #pragma mark - seen/engine.h
 void* engine_alloc_drawable(const void* view) {
-  auto* typed_view = reinterpret_cast<SeenBaseView*>(view);
+  auto* typed_view = reinterpret_cast<SeenView*>(view);
   auto* layer = [CAMetalLayer layer];
   typed_view.wantsLayer = YES;
   typed_view.layer = layer;
@@ -58,7 +58,7 @@ void* engine_alloc_drawable(const void* view) {
 }
 
 void engine_free_drawable(const void* view, void* drawable) {
-  auto* typed_view = reinterpret_cast<SeenBaseView*>(view);
+  auto* typed_view = reinterpret_cast<SeenView*>(view);
   auto* layer = reinterpret_cast<CAMetalLayer*>(drawable);
   [typed_view.layer removeFromSuperlayer];
   typed_view.layer = nil;
@@ -66,7 +66,7 @@ void engine_free_drawable(const void* view, void* drawable) {
 }
 
 void engine_get_drawable_client_size(const void* view, float* out_width, float* out_height) {
-  auto* typed_view = (SeenBaseView*)(view);
+  auto* typed_view = (SeenView*)(view);
   auto* layer = (CAMetalLayer*)(typed_view.layer);
   auto size = typed_view.bounds.size;
   auto width = std::max(0.0, std::ceil(size.width));
@@ -76,7 +76,7 @@ void engine_get_drawable_client_size(const void* view, float* out_width, float* 
 }
 
 float engine_get_device_pixel_ratio(const void* view) {
-  auto* typed_view = reinterpret_cast<SeenBaseView*>(view);
+  auto* typed_view = reinterpret_cast<SeenView*>(view);
   auto scale = typed_view.window.screen.backingScaleFactor;
   return static_cast<float>(scale);
 }

@@ -1,10 +1,28 @@
-// Created by Autokaka (qq1909698494@gmail.com) on 2023/10/28.
+// Created by Autokaka (qq1909698494@gmail.com) on 2024/03/01.
+
+#import <SeenKit/SeenEngine.h>
+#import <SeenKit/SeenView.h>
+
+#import "seen/ViewMacros.h"
+
+@interface SeenView ()
+
+SEEN_VIEW_INIT_COMMON_DECL;
+
+@property(nonatomic, strong, nullable) SeenEngine* engine;
+
+@end
+
+@implementation SeenView
+
+SEEN_VIEW_INIT_COMMON_IMPL {
+  NSString* path = [NSBundle.mainBundle pathForResource:@"demo" ofType:@"seen"];
+  SeenBundle* bundle = [[SeenBundle alloc] initWithPath:path];
+  _engine = [[SeenEngine alloc] initWithBundle:bundle];
+  _engine.view = self;
+}
 
 #if SEEN_BUILD_MACOS
-
-#import "seen/SeenBaseView+Private.h"
-
-@implementation SeenNSView
 
 - (void)viewDidMoveToWindow {
   [super viewDidMoveToWindow];
@@ -13,18 +31,17 @@
                          selector:@selector(windowWillClose:)
                              name:NSWindowWillCloseNotification
                            object:self.window];
-  self.paused = NO;
   [self.engine updateDrawable];
+  self.engine.running = YES;
 }
 
 - (void)windowWillClose:(NSNotification*)notification {
   if (notification.object == self.window) {
-    self.paused = YES;
+    self.engine = nil;
   }
 }
 
 #pragma mark - Resize
-
 - (void)viewDidChangeBackingProperties {
   [super viewDidChangeBackingProperties];
   [self.engine updateDrawable];
@@ -40,6 +57,6 @@
   [self.engine updateDrawable];
 }
 
-@end
+#endif  // SEEN_BUILD_MACOS
 
-#endif
+@end

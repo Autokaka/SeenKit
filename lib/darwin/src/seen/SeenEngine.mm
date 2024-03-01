@@ -33,13 +33,12 @@
   _cppEngine->UpdateDrawable();
 }
 
-- (void)setPaused:(BOOL)paused {
-  _cppEngine->IsRunning(paused == NO);
+- (void)setRunning:(BOOL)running {
+  _cppEngine->IsRunning(running == YES);
 }
 
-- (BOOL)isPaused {
-  auto isPaused = !_cppEngine->IsRunning();
-  return static_cast<BOOL>(isPaused);
+- (BOOL)isRunning {
+  return static_cast<BOOL>(_cppEngine->IsRunning());
 }
 
 @end

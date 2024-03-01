@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 SEEN_EXPORT @interface SeenEngine : NSObject
 
 @property(nonatomic, weak, nullable) NSObject* view;
-@property(nonatomic, assign, getter=isPaused) BOOL paused;
+@property(nonatomic, assign, getter=isRunning) BOOL running;
 @property(nonatomic, strong, readonly) SeenBundle* bundle;
 
 - (instancetype)init NS_UNAVAILABLE;
