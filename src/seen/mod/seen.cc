@@ -5,26 +5,33 @@
 
 namespace seen::mod {
 
-Seen::Seen(const CFWorker::Ptr& runner) : Object(Object::Name::kSeen), version(SEEN_VERSION), runner_(runner) {
+Seen::Seen(const CFWorker::Ptr& runner)
+    : Object(Object::Name::kSeen),
+      version(SEEN_VERSION),
+      runner_(runner),
+      is_running_(false),
+      gpu_(nullptr),
+      drawable_ref_(nullptr),
+      client_size_({0, 0}),
+      device_pixel_ratio_(1) {
   SEEN_DEBUG("Create Seen instance.");
-  Reset();
   is_running_.OnNext([this](bool is_running) {
     SEEN_DEBUG("Is running: {}", is_running);
     if (on_running_state_changed_callback) {
       on_running_state_changed_callback(is_running);
     }
   });
-  drawable_.OnNext([this](const void* drawable) {
+  drawable_ref_.OnNext([this](const void* drawable_ref) {
     SEEN_DEBUG("Drawable available: {}", drawable != nullptr);
-    GetGPU()->drawable_ = drawable;
+    GetGPU()->drawable_ref_ = drawable_ref;
     if (on_drawable_changed_callback) {
-      on_drawable_changed_callback(drawable != nullptr);
+      on_drawable_changed_callback(drawable_ref != nullptr);
     }
   });
-  drawable_size_.OnNext([this](const Vec2& size) {
-    SEEN_DEBUG("Drawable size changed");
-    if (on_drawable_size_changed_callback) {
-      on_drawable_size_changed_callback(size);
+  client_size_.OnNext([this](const Vec<2>& size) {
+    SEEN_DEBUG("Client size: {}, {}", size[0], size[1]);
+    if (on_client_size_changed_callback) {
+      on_client_size_changed_callback(size);
     }
   });
 }
@@ -57,23 +64,16 @@ bool Seen::isRunning() const {
   return is_running_.Get();
 }
 
-bool Seen::IsDrawableAvailable() const {
-  return drawable_.Get() != nullptr;
+Drawable::Ptr Seen::GetDrawable() {
+  return GetGPU()->drawable_;
 }
 
-Seen::Vec2 Seen::GetDrawableSize() const {
-  return drawable_size_.Get();
+Vec<2> Seen::GetClientSize() const {
+  return client_size_.Get();
 }
 
 double Seen::GetDevicePixelRatio() const {
-  return pal::engine_get_device_pixel_ratio(drawable_.Get());
-}
-
-void Seen::Reset() {
-  is_running_ = false;
-  gpu_ = nullptr;
-  drawable_size_ = {0, 0};
-  drawable_ = nullptr;
+  return device_pixel_ratio_.Get();
 }
 
 }  // namespace seen::mod

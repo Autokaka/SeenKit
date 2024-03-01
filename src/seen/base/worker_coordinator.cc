@@ -17,6 +17,7 @@ WorkerCoordinator::WorkerCoordinator(CFWorker::Ptr host, const std::vector<CFWor
       while (current_task_) {
         current_task_();
         current_task_ = nullptr;
+        host_latch_->Signal();
         latch->Wait();
       }
       host_latch_->Signal();
@@ -35,7 +36,7 @@ WorkerCoordinator::~WorkerCoordinator() {
 
 void WorkerCoordinator::Dispatch(const CFWorker::Ptr& worker, CFClosure task) {
   SEEN_ASSERT(!current_task_ && worker && task);
-  if (host_->IsCurrent()) {
+  if (worker->IsCurrent()) {
     task();
     return;
   }

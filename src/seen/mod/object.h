@@ -3,22 +3,33 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 namespace seen::mod {
 
 struct Object : public std::enable_shared_from_this<Object> {
-  using TName = const char*;
-  struct Name {
-    static constexpr TName kDrawableMetrics = "DrawableMetrics";
-    static constexpr TName kFramePacer = "FramePacer";
-    static constexpr TName kGPUAdapter = "GPUAdapter";
-    static constexpr TName kGPU = "GPU";
-    static constexpr TName kSeen = "Seen";
-    static constexpr TName kObject = "Object";
-  };
   using Ptr = std::shared_ptr<Object>;
 
-  explicit Object(TName name) : class_name(name) {}
+  struct Name {
+    using Type = const char*;
+    static constexpr Type kDrawable = "kDrawable";
+    static constexpr Type kFramePacer = "FramePacer";
+    static constexpr Type kGPUAdapter = "GPUAdapter";
+    static constexpr Type kGPU = "GPU";
+    static constexpr Type kSeen = "Seen";
+    static constexpr Type kObject = "Object";
+  };
+
+  static bool IsName(const std::string& maybe) {
+    return maybe == Name::kDrawable ||    //
+           maybe == Name::kFramePacer ||  //
+           maybe == Name::kGPUAdapter ||  //
+           maybe == Name::kGPU ||         //
+           maybe == Name::kSeen ||        //
+           maybe == Name::kObject;
+  }
+
+  explicit Object(Name::Type name) : class_name(name) {}
   virtual ~Object() = default;
 
   template <typename T>
@@ -41,7 +52,7 @@ struct Object : public std::enable_shared_from_this<Object> {
     return SharedSelf<T>();
   }
 
-  TName class_name;
+  Name::Type class_name;
 };
 
 }  // namespace seen::mod

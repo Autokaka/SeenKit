@@ -7,7 +7,7 @@ declare namespace Seen {
 
   namespace Object {
     enum Name {
-      kDrawableMetrics = "DrawableMetrics",
+      kDrawable = "Drawable",
       kFramePacer = "FramePacer",
       kGPUAdapter = "GPUAdapter",
       kGPU = "GPU",

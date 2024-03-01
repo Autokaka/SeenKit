@@ -5,7 +5,5 @@
 declare namespace Seen {
   const GPUAdapter: never;
 
-  interface GPUAdapter extends Object<"kGPUAdapter"> {
-    readonly preferredTextureFormat: "rgba8unorm" | "bgra8unorm";
-  }
+  interface GPUAdapter extends Object<"kGPUAdapter"> {}
 }

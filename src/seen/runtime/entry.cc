@@ -11,7 +11,7 @@ namespace seen::runtime {
 StatePtr ExecEntry(const CFWorker::Ptr& runner, const fs::path& entry_file) {
   auto lua = std::make_shared<sol::state>();
   lua->open_libraries();
-  ExportHostAbilities(lua.get());
+  ExportModules(lua.get());
   auto data = CFData::CreateFromAbsolutePath(entry_file);
   std::string script = reinterpret_cast<char*>(data->GetBytes());
   try {

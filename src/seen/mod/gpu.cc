@@ -3,20 +3,29 @@
 #include "seen/mod/gpu.h"
 #include "seen/base/deferred_task.h"
 #include "seen/base/logger.h"
-#include "seen/mod/gpu_adapter.h"
+#include "seen/pal/pal.h"
 
 namespace seen::mod {
 
-GPU::Ptr GPU::Create(const void* drawable) {
+GPU::Ptr GPU::Create() {
   WGPUInstanceDescriptor desc;
   desc.nextInChain = nullptr;
   auto* wgpu = wgpuCreateInstance(&desc);
-  return wgpu != nullptr ? std::make_shared<GPU>(wgpu, drawable) : nullptr;
+  return wgpu != nullptr ? std::make_shared<GPU>(wgpu) : nullptr;
 }
 
-GPU::GPU(WGPUInstance wgpu, const void* drawable) : Object(Object::Name::kGPU), wgpu_(wgpu), drawable_(drawable) {
+GPU::GPU(WGPUInstance wgpu) : Object(Object::Name::kGPU), wgpu_(wgpu), drawable_ref_(nullptr), drawable_(nullptr) {
   SEEN_DEBUG("Create GPU instance.");
-  SEEN_ASSERT(wgpu);
+  SEEN_ASSERT(wgpu_);
+  drawable_ref_.OnNext([this](const void* drawable) {
+    if (drawable == nullptr) {
+      drawable_ = nullptr;
+      surface_ = nullptr;
+    } else {
+      surface_ = Drawable::Surface(pal::gpu_surface_create(wgpu_, drawable), wgpuSurfaceRelease);
+      drawable_ = Drawable::Create(drawable, surface_);
+    }
+  });
 }
 
 GPU::~GPU() {
@@ -34,14 +43,13 @@ void GPU::RequestAdapter(const RequestAdapterCallback& callback) {
 
 void GPU::DoRequestAdapter(const RequestAdapterOptions& options, RequestAdapterCallback callback) {
   SEEN_ASSERT(callback);
-  if (drawable_ == nullptr) {
+  if (!surface_) {
     callback(nullptr);
     return;
   }
-  auto surface = GPUAdapter::SurfacePtr(pal::seen_surface_create(wgpu_, drawable_), wgpuSurfaceRelease);
   WGPURequestAdapterOptions wgpu_options;
   wgpu_options.nextInChain = nullptr;
-  wgpu_options.compatibleSurface = surface.get();
+  wgpu_options.compatibleSurface = surface_.get();
   wgpu_options.powerPreference = WGPUPowerPreference_Undefined;
   wgpu_options.forceFallbackAdapter = 0;
   wgpu_options.backendType = WGPUBackendType_Undefined;
@@ -50,18 +58,18 @@ void GPU::DoRequestAdapter(const RequestAdapterOptions& options, RequestAdapterC
   } else if (options.power_preference == GPUAdapter::PowerPref::kHighPerformance) {
     wgpu_options.powerPreference = WGPUPowerPreference_HighPerformance;
   }
-  struct Context {
-    GPUAdapter::SurfacePtr surface;
-    RequestAdapterCallback callback;
-  };
-  auto* context = new Context{std::move(surface), std::move(callback)};
+  auto* callback_ptr = new RequestAdapterCallback(std::move(callback));
   auto c_callback = [](WGPURequestAdapterStatus status, WGPUAdapter adapter, char const*, void* user_data) {
-    auto* context = reinterpret_cast<Context*>(user_data);
-    CFDeferredTask defer([context]() { delete context; });
+    auto* callback = reinterpret_cast<RequestAdapterCallback*>(user_data);
+    CFDeferredTask defer([callback]() { delete callback; });
     auto success = status == WGPURequestAdapterStatus_Success && adapter != nullptr;
-    context->callback(success ? GPUAdapter::Create(adapter, context->surface) : nullptr);
+    (*callback)(success ? GPUAdapter::Create(adapter) : nullptr);
   };
-  wgpuInstanceRequestAdapter(wgpu_, &wgpu_options, c_callback, context);
+  wgpuInstanceRequestAdapter(wgpu_, &wgpu_options, c_callback, callback_ptr);
+}
+
+GPUTextureFormat::Type GPU::GetPreferredTextureFormat() const {
+  return pal::gpu_get_preferred_texture_format(wgpu_);
 }
 
 }  // namespace seen::mod

@@ -23,14 +23,14 @@ void GPURequestAdapter(GPU* gpu, const sol::variadic_args& args) {
       }
     }
   }
-  gpu->RequestAdapter(gpu_options, [args](const GPUAdapter::Ptr& adapter) {
-    for (int i = 0; i < 2; ++i) {
-      if (args[i].get_type() == sol::type::function) {
-        args[i].as<sol::function>().call(adapter);
-        return;
-      }
+  mod::GPU::RequestAdapterCallback callback;
+  for (int i = 0; i < 2; ++i) {
+    if (args[i].get_type() == sol::type::function) {
+      callback = args[i].as<sol::function>();
+      break;
     }
-  });
+  }
+  gpu->RequestAdapter(gpu_options, std::move(callback));
 }
 
 }  // namespace seen::runtime::glue

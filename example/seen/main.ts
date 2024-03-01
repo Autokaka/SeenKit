@@ -17,6 +17,7 @@ function main(this: unknown) {
     seen.log("seen.gpu?.className:", seen.gpu?.className);
     seen.log("typeof seen.gpu:", typeof seen.gpu);
     // seen.log("seen.gpu.prototype:", seen.gpu ? Reflect.getPrototypeOf(seen.gpu) : undefined);
+    seen.log("seen.gpu?.preferredTextureFormat:", seen.gpu?.preferredTextureFormat);
     seen.log("seen.gpu?.constructor:", seen.gpu?.constructor);
     seen.log("Seen.GPU:", Seen.GPU);
     seen.log("typeof Seen.GPU:", typeof Seen.GPU);
@@ -25,18 +26,17 @@ function main(this: unknown) {
       seen.gpu?.requestAdapter((adapter) => {
         seen.log("adapter:", adapter);
         seen.log("adapter?.className:", adapter?.className);
-        seen.log("adapter?.preferredDrawableFormat:", adapter?.preferredTextureFormat);
       });
     };
 
     testGPUAdapter();
 
     seen.log("seen.isRunning", seen.isRunning);
-    seen.log("seen.isDrawableAvailable:", seen.isDrawableAvailable);
-    seen.log("seen.drawableSize:", seen.drawableSize);
+    seen.log("seen.drawable:", seen.drawable);
+    seen.log("seen.drawable?.size:", seen.drawable?.size);
     seen.log("seen.onRunningStateChanged", seen.onRunningStateChanged);
     seen.log("seen.onDrawableChanged", seen.onDrawableChanged);
-    seen.log("seen.onDrawableSizeChanged", seen.onDrawableSizeChanged);
+    seen.log("seen.onClientSizeChanged", seen.onClientSizeChanged);
     seen.onRunningStateChanged = (isRunning) => {
       seen.log(`seen.onRunningStateChanged(isRunning=${isRunning})`);
     };
@@ -46,12 +46,12 @@ function main(this: unknown) {
         testGPUAdapter();
       }
     };
-    seen.onDrawableSizeChanged = ([width, height]) => {
-      seen.log(`seen.onDrawableSizeChanged(width=${width}, height=${height})`);
+    seen.onClientSizeChanged = ([width, height]) => {
+      seen.log(`seen.onClientSizeChanged(width=${width}, height=${height})`);
     };
     seen.log("seen.onRunningStateChanged", seen.onRunningStateChanged);
     seen.log("seen.onDrawableChanged", seen.onDrawableChanged);
-    seen.log("seen.onDrawableSizeChanged", seen.onDrawableSizeChanged);
+    seen.log("seen.onClientSizeChanged", seen.onClientSizeChanged);
 
     seen.log("seen.framePacer:", seen.framePacer);
     seen.log("seen.framePacer.className:", seen.framePacer.className);

@@ -2,16 +2,17 @@
 
 #pragma once
 
-#include <array>
 #include <functional>
 #include <sol/sol.hpp>
 
 #include "seen/base/rx_value.h"
 #include "seen/base/worker.h"
+#include "seen/mod/drawable.h"
 #include "seen/mod/frame_pacer.h"
 #include "seen/mod/gpu.h"
 #include "seen/mod/macros.h"
 #include "seen/mod/object.h"
+#include "seen/mod/types.h"
 
 SEEN_CLASS_FORWARD_DECL(Engine);
 
@@ -21,10 +22,9 @@ class Seen final : public Object {
  public:
   friend class seen::Engine;
   using Ptr = std::shared_ptr<Seen>;
-  using Vec2 = std::array<std::int64_t, 2>;
   using RunningStateCallback = std::function<void(bool running)>;
-  using DrawabeCallback = std::function<void(bool is_drawable_available)>;
-  using DrawableSizeCallback = std::function<void(const Vec2& metrics)>;
+  using ClientSizeCallback = std::function<void(const Vec<2>& size)>;
+  using DrawableCallback = std::function<void(bool is_available)>;
 
   explicit Seen(const CFWorker::Ptr& runner);
   ~Seen() override;
@@ -33,22 +33,21 @@ class Seen final : public Object {
   GPU::Ptr GetGPU();
   FramePacer::Ptr GetFramePacer();
   [[nodiscard]] bool isRunning() const;
-  [[nodiscard]] bool IsDrawableAvailable() const;
-  [[nodiscard]] Vec2 GetDrawableSize() const;
+  [[nodiscard]] Drawable::Ptr GetDrawable();
+  [[nodiscard]] Vec<2> GetClientSize() const;
   [[nodiscard]] double GetDevicePixelRatio() const;
 
   RunningStateCallback on_running_state_changed_callback;
-  DrawabeCallback on_drawable_changed_callback;
-  DrawableSizeCallback on_drawable_size_changed_callback;
+  DrawableCallback on_drawable_changed_callback;
+  ClientSizeCallback on_client_size_changed_callback;
 
   const char* version;
 
  private:
-  void Reset();
-
   rx::Value<bool> is_running_;
-  rx::Value<const void*> drawable_;
-  rx::Value<Vec2> drawable_size_;
+  rx::Value<const void*> drawable_ref_;
+  rx::Value<Vec<2>> client_size_;
+  rx::Value<float> device_pixel_ratio_;
   const CFWorker::WeakPtr runner_;
   FramePacer::Ptr frame_pacer_;
   GPU::Ptr gpu_;

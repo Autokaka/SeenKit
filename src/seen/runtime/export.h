@@ -6,6 +6,6 @@
 
 namespace seen::runtime {
 
-void ExportHostAbilities(sol::state* lua);
+void ExportModules(sol::state* lua);
 
 }  // namespace seen::runtime

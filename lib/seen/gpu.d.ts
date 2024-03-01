@@ -7,15 +7,16 @@ declare namespace Seen {
   const GPU: never;
 
   interface GPU extends Object<"kGPU"> {
+    readonly preferredTextureFormat: "rgba8unorm" | "bgra8unorm";
+
     requestAdapter(options: GPU.RequestAdapterOptions, callback: GPU.RequestAdapterCallback): void;
     requestAdapter(callback: GPU.RequestAdapterCallback): void;
   }
 
   namespace GPU {
     type RequestAdapterCallback = (this: void, adapter?: GPUAdapter) => void;
-    type PowerPreference = "low-power" | "high-performance";
     interface RequestAdapterOptions {
-      readonly powerPreference?: PowerPreference;
+      readonly powerPreference?: "low-power" | "high-performance";
     }
   }
 }

@@ -18,7 +18,7 @@ class Engine final : public std::enable_shared_from_this<Engine> {
  public:
   using Ptr = std::shared_ptr<Engine>;
   using CreateCallback = std::function<void(const Ptr& engine)>;
-  using InitCallback = std::function<void(bool success)>;
+  using ExecCallback = std::function<void(bool success)>;
 
   static void CreateAsync(const Bundle::Ptr& bundle, CreateCallback callback);
   static Ptr Create(const Bundle::Ptr& bundle);
@@ -28,20 +28,20 @@ class Engine final : public std::enable_shared_from_this<Engine> {
 
   void IsRunning(bool is_running);
   [[nodiscard]] bool IsRunning() const;
-  void SetDrawable(const void* drawable);
+  void SetDrawable(const void* view);
   void UpdateDrawable();
 
  private:
-  void MainInit(const Bundle::Ptr& bundle, InitCallback callback);
-  void MainRelease();
-  void MainUpdateDrawable(WorkerCoordinator& coordinator);
+  void ExecEntry(const Bundle::Ptr& bundle, ExecCallback callback);
+  void UpdateDrawable(WorkerCoordinator& coordinator);
   mod::Seen::Ptr GetSeen() const;
 
   CFWorker::Ptr main_worker_;
   CFDataChannel::Ptr main_channel_;
   CFDataChannel::Ptr platform_channel_;
   runtime::StatePtr state_;
-  const void* drawable_;
+  const void* view_;
+  void* drawable_;
 
   SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(Engine);
 };

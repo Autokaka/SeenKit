@@ -6,32 +6,27 @@
 #include <memory>
 
 #include "seen/base/class_ext.h"
-#include "seen/mod/gpu_texture_format.h"
 #include "seen/mod/object.h"
 
 namespace seen::mod {
 
 class GPUAdapter final : public Object {
  public:
-  using SurfacePtr = std::shared_ptr<WGPUSurfaceImpl>;
   using Ptr = std::shared_ptr<GPUAdapter>;
 
-  using TPowerPref = const char*;
-  static bool IsPowerPref(const std::string& maybe);
-  struct PowerPref {
-    static constexpr TPowerPref kLowPower = "low-power";
-    static constexpr TPowerPref kHighPerformance = "high-performance";
+  struct PowerPref final {
+    using Type = const char*;
+    static constexpr Type kLowPower = "low-power";
+    static constexpr Type kHighPerformance = "high-performance";
   };
+  static bool IsPowerPref(const std::string& maybe);
 
-  static Ptr Create(WGPUAdapter adapter, const SurfacePtr& surface);
-  explicit GPUAdapter(WGPUAdapter adapter, SurfacePtr surface);
+  static Ptr Create(WGPUAdapter adapter);
+  explicit GPUAdapter(WGPUAdapter adapter);
   ~GPUAdapter() override;
-
-  TGPUTextureFormat GetPreferredTextureFormat() const;
 
  private:
   WGPUAdapter adapter_;
-  SurfacePtr surface_;
 
   SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(GPUAdapter);
 };

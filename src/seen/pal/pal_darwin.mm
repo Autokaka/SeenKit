@@ -47,13 +47,47 @@ void platform_worker_driver_dispatch_async(const TimePoint& time_point, CFClosur
   });
 }
 
-#pragma mark - seen/mod/seen.h
-WGPUSurface seen_surface_create(WGPUInstance instance, const void* drawable) {
-  auto* view = reinterpret_cast<SeenBaseView*>(drawable);
+#pragma mark - seen/engine.h
+void* engine_alloc_drawable(const void* view) {
+  auto* typed_view = reinterpret_cast<SeenBaseView*>(view);
+  auto* layer = [CAMetalLayer layer];
+  typed_view.wantsLayer = YES;
+  typed_view.layer = layer;
+  typed_view.layer.contentsScale = engine_get_device_pixel_ratio(view);
+  return layer;
+}
+
+void engine_free_drawable(const void* view, void* drawable) {
+  auto* typed_view = reinterpret_cast<SeenBaseView*>(view);
+  auto* layer = reinterpret_cast<CAMetalLayer*>(drawable);
+  [typed_view.layer removeFromSuperlayer];
+  typed_view.layer = nil;
+  [layer release];
+}
+
+void engine_get_drawable_client_size(const void* view, float* out_width, float* out_height) {
+  auto* typed_view = (SeenBaseView*)(view);
+  auto* layer = (CAMetalLayer*)(typed_view.layer);
+  auto size = typed_view.bounds.size;
+  auto width = std::max(0.0, std::ceil(size.width));
+  auto height = std::max(0.0, std::ceil(size.height));
+  *out_width = static_cast<float>(width);
+  *out_height = static_cast<float>(height);
+}
+
+float engine_get_device_pixel_ratio(const void* view) {
+  auto* typed_view = reinterpret_cast<SeenBaseView*>(view);
+  auto scale = typed_view.window.screen.backingScaleFactor;
+  return static_cast<float>(scale);
+}
+
+#pragma mark - seen/mod/gpu.h
+WGPUSurface gpu_surface_create(WGPUInstance instance, const void* drawable) {
+  auto* layer = reinterpret_cast<CAMetalLayer*>(drawable);
   WGPUSurfaceDescriptorFromMetalLayer metalLayerDescriptor;
   metalLayerDescriptor.chain.next = nullptr;
   metalLayerDescriptor.chain.sType = WGPUSType_SurfaceDescriptorFromMetalLayer;
-  metalLayerDescriptor.layer = view.layer;
+  metalLayerDescriptor.layer = layer;
 
   WGPUSurfaceDescriptor surfaceDescriptor;
   surfaceDescriptor.nextInChain = &metalLayerDescriptor.chain;
@@ -61,35 +95,14 @@ WGPUSurface seen_surface_create(WGPUInstance instance, const void* drawable) {
   return wgpuInstanceCreateSurface(instance, &surfaceDescriptor);
 }
 
-#pragma mark - seen/engine.h
-void engine_alloc_drawable(const void* drawable) {
-  auto* view = reinterpret_cast<SeenBaseView*>(drawable);
-  view.wantsLayer = YES;
-  view.layer = [CAMetalLayer layer];
-  view.layer.contentsScale = engine_get_device_pixel_ratio(drawable);
+const char* gpu_get_preferred_texture_format(WGPUInstance instance) {
+  return "bgra8unorm";
 }
 
-void engine_free_drawable(const void* drawable) {
-  auto* view = reinterpret_cast<SeenBaseView*>(drawable);
-  [view.layer removeFromSuperlayer];
-  view.layer = nil;
-}
-
-void engine_update_drawable(const void* drawable, std::int64_t* updated_width, std::int64_t* updated_height) {
-  auto* view = (SeenBaseView*)(drawable);
-  auto* layer = (CAMetalLayer*)(view.layer);
-  auto size = view.bounds.size;
-  auto scale = engine_get_device_pixel_ratio(drawable);
-  auto width = std::max(0.0, std::ceil(size.width * scale));
-  auto height = std::max(0.0, std::ceil(size.height * scale));
+#pragma mark - seen/mod/drawable.h
+void drawable_resize(const void* drawable, float width, float height) {
+  auto* layer = reinterpret_cast<CAMetalLayer*>(drawable);
   layer.drawableSize = CGSizeMake(width, height);
-  *updated_width = static_cast<std::int64_t>(width);
-  *updated_height = static_cast<std::int64_t>(height);
-}
-
-double engine_get_device_pixel_ratio(const void* drawable) {
-  auto* view = reinterpret_cast<SeenBaseView*>(drawable);
-  return view.window.screen.backingScaleFactor;
 }
 
 }  // namespace seen::pal
