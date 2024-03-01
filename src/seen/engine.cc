@@ -43,8 +43,7 @@ Engine::~Engine() {
   IsRunning(false);
   SetDrawable(nullptr);
   CFAutoResetWaitableEvent latch;
-  main_worker_->DispatchAsync([this, state = std::move(state_), &latch]() mutable {
-    auto seen = GetSeen();
+  main_worker_->DispatchAsync([state = std::move(state_), &latch]() mutable {
     state.reset();
     latch.Signal();
   });
