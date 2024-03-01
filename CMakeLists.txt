@@ -24,9 +24,6 @@ if(${SEEN_BUILD_DARWIN})
   enable_language(Swift)
   set(CMAKE_Swift_LANGUAGE_VERSION 5)
   add_subdirectory(lib/darwin)
-  file(GLOB_RECURSE BRIDGE_HEADER 
-    "${darwin_SOURCE_DIR}/**/SeenKit.h"
-  )
   file(GLOB_RECURSE PUB_HEADER 
     "${darwin_SOURCE_DIR}/include/*.h"
   )
@@ -73,7 +70,6 @@ if(${SEEN_BUILD_DARWIN})
     XCODE_ATTRIBUTE_DEFINES_MODULE "YES"
     XCODE_ATTRIBUTE_ENABLE_BITCODE "NO"
     XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${SEEN_BUNDLE_ID}"
-    XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER "${BRIDGE_HEADER}"
   )
 
   # example
