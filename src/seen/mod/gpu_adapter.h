@@ -6,26 +6,42 @@
 
 #include <wgpu/wgpu.h>
 #include <memory>
+#include <set>
+#include <string>
+#include <vector>
 
 #include "seen/base/class_ext.h"
+#include "seen/mod/gpu_adapter_info.h"
+#include "seen/mod/gpu_device.h"
+#include "seen/mod/gpu_device_descriptor.h"
+#include "seen/mod/gpu_feature_name.h"
+#include "seen/mod/gpu_supported_limits.h"
 #include "seen/mod/object.h"
 
 namespace seen::mod {
+
+using GPUSupportedFeatures = std::set<GPUFeatureName::Type>;
+
+using GPURequestDeviceCallback = std::function<void(const GPUDevice::Ptr& device)>;
+
+using GPUUnmaskHints = std::vector<std::string>;
+
+using GPURequestAdapterInfoCallback = std::function<void(const GPUAdapterInfo::Ptr& adapter_info)>;
 
 class GPUAdapter final : public Object {
  public:
   using Ptr = std::shared_ptr<GPUAdapter>;
 
-  struct PowerPref final {
-    using Type = const char*;
-    static constexpr Type kLowPower = "low-power";
-    static constexpr Type kHighPerformance = "high-performance";
-  };
-  static bool IsPowerPref(const std::string& maybe);
-
   static Ptr Create(WGPUAdapter adapter);
   explicit GPUAdapter(WGPUAdapter adapter);
   ~GPUAdapter() override;
+
+  GPUSupportedFeatures GetFeatures() const;
+  GPUSupportedLimits GetLimits() const;
+  bool IsFallbackAdapter() const;
+
+  void RequestDevice(const GPUDeviceDescriptor& desc, GPURequestDeviceCallback callback);
+  void RequestAdapterInfo(const GPURequestAdapterInfoCallback& callback);
 
  private:
   WGPUAdapter adapter_;

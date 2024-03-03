@@ -17,6 +17,7 @@ struct Object : public std::enable_shared_from_this<Object> {
     static constexpr Type kDrawable = "kDrawable";
     static constexpr Type kFramePacer = "FramePacer";
     static constexpr Type kGPUAdapter = "GPUAdapter";
+    static constexpr Type kGPUDevice = "GPUDevice";
     static constexpr Type kGPU = "GPU";
     static constexpr Type kSeen = "Seen";
     static constexpr Type kObject = "Object";
@@ -29,6 +30,10 @@ struct Object : public std::enable_shared_from_this<Object> {
            maybe == Name::kGPU ||         //
            maybe == Name::kSeen ||        //
            maybe == Name::kObject;
+  }
+
+  static bool IsName(const char* name) {  //
+    return name != nullptr && IsName(std::string(name));
   }
 
   explicit Object(Name::Type name) : class_name(name) {}

@@ -97,8 +97,12 @@ WGPUSurface gpu_surface_create(WGPUInstance instance, const void* drawable) {
   return wgpuInstanceCreateSurface(instance, &surfaceDescriptor);
 }
 
-const char* gpu_get_preferred_texture_format(WGPUInstance instance) {
+const char* gpu_get_preferred_texture_format() {
   return "bgra8unorm";
+}
+
+WGPUBackendType gpu_get_preferred_backend() {
+  return WGPUBackendType_Metal;
 }
 
 #pragma mark - seen/mod/drawable.h

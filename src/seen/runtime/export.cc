@@ -59,6 +59,7 @@ void ExportModules(sol::state* lua) {
       "GPU", sol::no_constructor,                                                //
       sol::base_classes, sol::bases<Object>(),                                   //
       "preferredTextureFormat", sol::property(&GPU::GetPreferredTextureFormat),  //
+      "wgslLanguageFeatures", sol::property(&GPU::GetWGSLLanguageFeatures),      //
       "requestAdapter", glue::GPURequestAdapter                                  //
   );
 

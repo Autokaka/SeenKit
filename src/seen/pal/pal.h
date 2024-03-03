@@ -36,7 +36,8 @@ float engine_get_device_pixel_ratio(const void* view);
 
 #pragma mark - seen/mod/gpu.h
 WGPUSurface gpu_surface_create(WGPUInstance instance, const void* drawable);
-const char* gpu_get_preferred_texture_format(WGPUInstance instance);
+const char* gpu_get_preferred_texture_format();
+WGPUBackendType gpu_get_preferred_backend();
 
 #pragma mark - seen/mod/drawable.h
 void drawable_resize(const void* drawable, float width, float height);
