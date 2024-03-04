@@ -4,7 +4,7 @@ import { execSync } from "child_process";
 import { program } from "commander";
 import { argv } from "process";
 import { dirname, resolve } from "path";
-import { existsSync, mkdirSync, statSync } from "fs";
+import { existsSync, mkdirSync } from "fs";
 
 program //
   .name("seen")
