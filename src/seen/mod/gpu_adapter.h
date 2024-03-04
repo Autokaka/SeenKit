@@ -41,6 +41,7 @@ class GPUAdapter final : public Object {
   bool IsFallbackAdapter() const;
 
   void RequestDevice(const GPUDeviceDescriptor& desc, GPURequestDeviceCallback callback);
+  void RequestDevice(GPURequestDeviceCallback callback);
   void RequestAdapterInfo(const GPURequestAdapterInfoCallback& callback);
 
  private:

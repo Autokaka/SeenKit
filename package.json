@@ -4,7 +4,9 @@
   "description": "[NOT READY] Yet another cross-platform game engine.",
   "type": "module",
   "types": "./lib/seen/index.d.ts",
-  "bin": "seen-cli.js",
+  "bin": {
+    "seen": "seen-cli.js"
+  },
   "keywords": [
     "game-engine"
   ],
@@ -19,7 +21,7 @@
     "url": "https://github.com/Autokaka/SeenKit/issues"
   },
   "scripts": {
-    "preinstall": "tsc",
+    "postinstall": "tsc",
     "build:demo.seen": "pnpm run --filter example build"
   },
   "engineStrict": true,

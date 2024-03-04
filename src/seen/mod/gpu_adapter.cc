@@ -62,6 +62,10 @@ void GPUAdapter::RequestDevice(const GPUDeviceDescriptor& desc, GPURequestDevice
   wgpuAdapterRequestDevice(adapter_, &wgpu_desc, std::move(c_callback), callback_ptr);
 }
 
+void GPUAdapter::RequestDevice(GPURequestDeviceCallback callback) {
+  RequestDevice({}, std::move(callback));
+}
+
 void GPUAdapter::RequestAdapterInfo(const GPURequestAdapterInfoCallback& callback) {
   WGPUAdapterProperties wgpu_props;
   wgpuAdapterGetProperties(adapter_, &wgpu_props);
