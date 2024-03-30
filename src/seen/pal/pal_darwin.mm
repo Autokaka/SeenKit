@@ -35,13 +35,13 @@ void log(int level, const char* message) {
   }
 }
 
-#pragma mark - seen/base/worker_driver.h
+#pragma mark - seen/base/worker.h
 
-bool worker_driver_is_platform_driver() {
+bool platform_worker_is_current() {
   return NSThread.isMainThread == YES;
 }
 
-void platform_worker_driver_dispatch_async(const TimePoint& time_point, Closure task) {
+void platform_worker_dispatch_async(const TimePoint& time_point, Closure task) {
   auto delay = time_point - TimePoint::Now();
   __block auto task_block = std::move(task);
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delay.ToNanoseconds()), dispatch_get_main_queue(), ^{

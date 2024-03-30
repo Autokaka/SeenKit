@@ -18,9 +18,9 @@ namespace fs = std::filesystem;
 #pragma mark - seen/base/logger.h
 void log(int level, const char* message);
 
-#pragma mark - seen/base/worker_driver.h
-bool worker_driver_is_platform_driver();
-void platform_worker_driver_dispatch_async(const TimePoint& time_point, Closure task);
+#pragma mark - seen/base/worker.h
+bool platform_worker_is_current();
+void platform_worker_dispatch_async(const TimePoint& time_point, Closure task);
 
 #pragma mark - seen/base/vsync_waiter.h
 void* vsync_waiter_create();

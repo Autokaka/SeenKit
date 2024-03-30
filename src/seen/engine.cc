@@ -12,7 +12,7 @@ namespace seen {
 void Engine::CreateAsync(const Bundle::Ptr& bundle, CreateCallback callback) {
   auto engine = std::make_shared<Engine>();
   engine->ExecEntry(bundle, [callback = std::move(callback), engine](bool success) mutable {
-    GetPlatformWorker()->DispatchAsync([callback = std::move(callback), engine = std::move(engine), success]() {
+    Worker::Platform()->DispatchAsync([callback = std::move(callback), engine = std::move(engine), success]() {
       // Ensure engine is released on platform thread.
       callback(success ? engine : nullptr);
     });
@@ -34,11 +34,11 @@ Engine::Ptr Engine::Create(const Bundle::Ptr& bundle) {
 Engine::Engine()
     : main_worker_(Worker::Create("Seen.Main")),
       main_channel_(DataChannel::Create(main_worker_, platform_channel_)),
-      platform_channel_(DataChannel::Create(GetPlatformWorker(), main_channel_)),
+      platform_channel_(DataChannel::Create(Worker::Platform(), main_channel_)),
       state_(nullptr),
       view_(nullptr),
       drawable_(nullptr) {
-  SEEN_ASSERT(GetPlatformWorker()->IsCurrent());
+  SEEN_ASSERT(Worker::Platform()->IsCurrent());
 }
 
 Engine::~Engine() {
@@ -54,7 +54,7 @@ Engine::~Engine() {
 }
 
 void Engine::ExecEntry(const Bundle::Ptr& bundle, ExecCallback callback) {
-  SEEN_ASSERT(GetPlatformWorker()->IsCurrent());
+  SEEN_ASSERT(Worker::Platform()->IsCurrent());
   SEEN_ASSERT(bundle);
   main_worker_->DispatchAsync([engine = shared_from_this(), bundle, callback = std::move(callback)]() {
     engine->state_ = runtime::ExecEntry(engine->main_worker_, bundle->GetEntryPath());
@@ -67,7 +67,7 @@ mod::Seen::Ptr Engine::GetSeen() const {
 }
 
 void Engine::IsRunning(bool is_running) {
-  SEEN_ASSERT(GetPlatformWorker()->IsCurrent());
+  SEEN_ASSERT(Worker::Platform()->IsCurrent());
   AutoResetWaitableEvent latch;
   main_worker_->DispatchAsync([this, is_running, &latch]() {
     GetSeen()->is_running_ = is_running;
@@ -77,7 +77,7 @@ void Engine::IsRunning(bool is_running) {
 }
 
 bool Engine::IsRunning() const {
-  SEEN_ASSERT(GetPlatformWorker()->IsCurrent());
+  SEEN_ASSERT(Worker::Platform()->IsCurrent());
   AutoResetWaitableEvent latch;
   bool is_running = false;
   main_worker_->DispatchAsync([this, &latch, &is_running]() {
@@ -89,7 +89,7 @@ bool Engine::IsRunning() const {
 }
 
 void Engine::SetDrawable(const void* view) {
-  auto platform_worker = GetPlatformWorker();
+  auto platform_worker = Worker::Platform();
   SEEN_ASSERT(platform_worker->IsCurrent());
   if (view_ == view) {
     return;
@@ -115,7 +115,7 @@ void Engine::SetDrawable(const void* view) {
 }
 
 void Engine::UpdateDrawable() {
-  auto platform_worker = GetPlatformWorker();
+  auto platform_worker = Worker::Platform();
   SEEN_ASSERT(platform_worker->IsCurrent());
   WorkerCoordinator coordinator(platform_worker, {main_worker_});
   UpdateDrawable(coordinator);

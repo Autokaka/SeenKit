@@ -4,8 +4,10 @@
 
 #pragma once
 
+#include <asio.hpp>
+#include <list>
 #include <memory>
-#include <string>
+#include <thread>
 
 #include "seen/base/class_ext.h"
 #include "seen/base/time_point.h"
@@ -13,31 +15,51 @@
 
 namespace seen {
 
-class WorkerDriver;
-
-class Worker final : public std::enable_shared_from_this<Worker> {
+class Worker : public std::enable_shared_from_this<Worker> {
  public:
   using Ptr = std::shared_ptr<Worker>;
   using WeakPtr = std::weak_ptr<Worker>;
 
   static Ptr Create(const char* name);
-  static Ptr GetCurrent();
-  explicit Worker(const char* name, std::unique_ptr<WorkerDriver> driver);
-  virtual ~Worker();
-  [[nodiscard]] bool IsCurrent() const;
-  [[nodiscard]] std::string GetName() const;
+  static Ptr Platform();
+  explicit Worker() = default;
+  virtual ~Worker() = default;
+
+  [[nodiscard]] virtual bool IsCurrent() const = 0;
+  [[nodiscard]] virtual const char* GetName() const = 0;
 
   void DispatchAsync(Closure macro_task);
   void DispatchAsync(Closure macro_task, const TimeDelta& time_delta);
-  void DispatchAsync(Closure macro_task, const TimePoint& time_point);
-
- private:
-  std::string name_;
-  std::unique_ptr<WorkerDriver> driver_;
+  virtual void DispatchAsync(Closure macro_task, const TimePoint& time_point) = 0;
 
   SEEN_DISALLOW_COPY_ASSIGN_AND_MOVE(Worker);
 };
 
-Worker::Ptr GetPlatformWorker();
+class WorkerImpl final : public Worker {
+ public:
+  using TimerPtr = std::shared_ptr<asio::steady_timer>;
+  using WorkGuard = asio::executor_work_guard<asio::io_context::executor_type>;
+
+  explicit WorkerImpl(const char* name);
+  ~WorkerImpl() override;
+
+  bool IsCurrent() const override;
+  const char* GetName() const override;
+  void DispatchAsync(Closure macro_task, const TimePoint& time_point) override;
+
+ private:
+  std::string name_;
+  std::shared_ptr<asio::io_context> io_context_;
+  WorkGuard work_guard_;
+  std::thread thread_;
+  std::list<TimerPtr> timers_;
+};
+
+class PlatformWorker final : public Worker {
+ public:
+  bool IsCurrent() const override;
+  const char* GetName() const override;
+  void DispatchAsync(Closure macro_task, const TimePoint& time_point) override;
+};
 
 }  // namespace seen

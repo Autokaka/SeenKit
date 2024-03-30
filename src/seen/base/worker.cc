@@ -4,39 +4,17 @@
 
 #include "seen/base/worker.h"
 #include "seen/base/logger.h"
-#include "seen/base/worker_driver.h"
+#include "seen/pal/pal.h"
 
 namespace seen {
 
-thread_local Worker::WeakPtr tls_worker;
-static const char* const kPlatformWorkerName = "Seen.Host";
-
 Worker::Ptr Worker::Create(const char* name) {
-  SEEN_DEBUG("Create worker: {}.", name);
-  auto worker_driver = std::make_unique<WorkerDriverImpl>(name);
-  auto worker = std::make_shared<Worker>(name, std::move(worker_driver));
-  Worker::WeakPtr weak_worker = worker;
-  worker->driver_->Start([weak_worker]() { tls_worker = weak_worker; });
+  return std::make_shared<WorkerImpl>(name);
+}
+
+Worker::Ptr Worker::Platform() {
+  static auto worker = std::make_shared<PlatformWorker>();
   return worker;
-}
-
-Worker::Ptr Worker::GetCurrent() {
-  return tls_worker.lock();
-}
-
-Worker::Worker(const char* name, std::unique_ptr<WorkerDriver> driver) : name_(name), driver_(std::move(driver)) {}
-
-Worker::~Worker() {
-  SEEN_DEBUG("Release worker: {}.", name_);
-  driver_->Stop();
-}
-
-bool Worker::IsCurrent() const {
-  return driver_->IsCurrent();
-}
-
-std::string Worker::GetName() const {
-  return name_;
 }
 
 void Worker::DispatchAsync(Closure macro_task) {
@@ -48,13 +26,56 @@ void Worker::DispatchAsync(Closure macro_task, const TimeDelta& time_delta) {
 }
 
 void Worker::DispatchAsync(Closure macro_task, const TimePoint& time_point) {
-  driver_->SetWakeup(time_point, std::move(macro_task));
+  DispatchAsync(std::move(macro_task), time_point);
 }
 
-Worker::Ptr GetPlatformWorker() {
-  static auto platform_driver = std::make_unique<PlatformWorkerDriver>();
-  static auto platform_worker = std::make_shared<Worker>(kPlatformWorkerName, std::move(platform_driver));
-  return platform_worker;
+WorkerImpl::WorkerImpl(const char* name)
+    : name_(name),
+      io_context_(std::make_shared<asio::io_context>()),
+      work_guard_(asio::make_work_guard(*io_context_)),
+      thread_([this]() { io_context_->run(); }) {}
+
+WorkerImpl::~WorkerImpl() {
+  asio::post(*io_context_, [this]() {
+    for (auto& timer : timers_) {
+      timer->cancel();
+    }
+    SEEN_ASSERT(timers_.empty());
+    io_context_->stop();
+  });
+  thread_.join();
+}
+
+bool WorkerImpl::IsCurrent() const {
+  return io_context_->get_executor().running_in_this_thread();
+}
+
+const char* WorkerImpl::GetName() const {
+  return name_.c_str();
+}
+
+void WorkerImpl::DispatchAsync(Closure macro_task, const TimePoint& time_point) {
+  auto timer = std::make_shared<asio::steady_timer>(*io_context_);
+  timer->expires_at(time_point.ToEpochTime());
+  timer->async_wait([this, task = std::move(macro_task), timer](const asio::error_code& error) {
+    if (!error) {
+      task();
+    }
+    timers_.remove(timer);
+  });
+  timers_.emplace_back(timer);
+}
+
+bool PlatformWorker::IsCurrent() const {
+  return pal::platform_worker_is_current();
+}
+
+const char* PlatformWorker::GetName() const {
+  return "Seen.Platform";
+}
+
+void PlatformWorker::DispatchAsync(Closure macro_task, const TimePoint& time_point) {
+  pal::platform_worker_dispatch_async(time_point, std::move(macro_task));
 }
 
 }  // namespace seen
