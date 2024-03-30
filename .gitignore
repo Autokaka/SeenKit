@@ -39,6 +39,3 @@ local.properties
 *.suo
 *.user
 *.code-workspace
-
-# Generated SeenKit CLI
-seen-cli.js

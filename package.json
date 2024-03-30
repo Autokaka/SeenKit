@@ -7,6 +7,10 @@
   "bin": {
     "seen": "seen-cli.js"
   },
+  "workspaces": [
+    "example/seen",
+    "lib/seen"
+  ],
   "keywords": [
     "game-engine"
   ],
@@ -21,7 +25,8 @@
     "url": "https://github.com/Autokaka/SeenKit/issues"
   },
   "scripts": {
-    "postinstall": "tsc",
+    "prepublish": "bun run build:cli",
+    "build:cli": "tsc",
     "build:demo.seen": "pnpm run --filter example build"
   },
   "engineStrict": true,

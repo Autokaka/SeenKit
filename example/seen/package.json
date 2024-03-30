@@ -7,6 +7,6 @@
     "build": "seen tsb -o demo.seen"
   },
   "devDependencies": {
-    "@seen-kit/seen": "workspace:^"
+    "@seen-kit/seen": "workspace:*"
   }
 }
